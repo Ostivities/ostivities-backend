@@ -1,4 +1,5 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import {
   PrismaClientKnownRequestError,
@@ -6,13 +7,14 @@ import {
 } from '@prisma/client/runtime/library';
 import * as argon from 'argon2';
 import { PrismaService } from 'src/prisma/prisma.service';
-import { CreateUserDto } from './dto/auth.dto';
+import { CreateUserDto, LoginUserDto } from './dto/auth.dto';
 
 @Injectable()
 export class AuthService {
   constructor(
     private jwtService: JwtService,
     private prisma: PrismaService,
+    private configService: ConfigService,
   ) {}
 
   async register(dto: CreateUserDto) {
@@ -54,5 +56,26 @@ export class AuthService {
     }
   }
 
-  // async login(dto: LoggerService) {}
+  async login(dto: LoginUserDto) {
+    await this.prisma.$connect();
+    const user = await this.prisma.user.findUnique({
+      where: {
+        email: dto.email,
+      },
+    });
+    const pwdMatch = await argon.verify(user.hash, dto.password);
+    if (!pwdMatch) {
+      throw new ForbiddenException(`User with this credentials doesn't exist`);
+    } else {
+      const payload = { ...user };
+      const secret = this.configService.get('JWT_SECRET');
+      const token = await this.jwtService.signAsync(payload, {
+        expiresIn: '24h',
+        secret: secret,
+      });
+      return { accessToken: token };
+    }
+  }
+
+  async forgotPassword() {}
 }
