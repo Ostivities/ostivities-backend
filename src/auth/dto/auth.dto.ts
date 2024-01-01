@@ -49,6 +49,7 @@ export class CreateUserDto {
 }
 
 export class LoginUserDto {
+  @IsString()
   @IsEmail()
   @IsNotEmpty()
   @Matches(
@@ -59,6 +60,8 @@ export class LoginUserDto {
 
   @IsString()
   @IsNotEmpty()
+  @MinLength(8)
+  @MaxLength(20)
   @Matches(
     /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
     {

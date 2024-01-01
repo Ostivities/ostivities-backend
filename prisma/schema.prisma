@@ -17,6 +17,12 @@ model User {
   hash      String
   firstName String
   lastName  String
-  country    String 
+  accountType    ACCOUNT_TYPE   @default(PERSONAL)
   @@unique([email], map: "emailShouldBeUnique")
 }
+
+enum ACCOUNT_TYPE {
+  PERSONAL
+  ORGANISATION
+}
+
