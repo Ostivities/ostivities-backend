@@ -1,51 +1,34 @@
-import { ForbiddenException, Inject, Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-// import { Prisma } from '@prisma/client';
+import { InjectModel } from '@nestjs/mongoose';
 import * as argon from 'argon2';
+import { Model } from 'mongoose';
 import { PrismaService } from 'src/prisma/prisma.service';
+// import { ACCOUNT_TYPE } from 'src/util/types';
 import { ACCOUNT_TYPE } from 'src/util/types';
 import { CreateUserDto, LoginUserDto } from './dto/auth.dto';
+import { User } from './schema/auth.schema';
 
 @Injectable()
 export class AuthService {
   constructor(
-    @Inject(PrismaService)
     private jwtService: JwtService,
     private prisma: PrismaService,
     private configService: ConfigService,
+    @InjectModel(User.name) private userModel: Model<User>,
   ) {}
 
-  async register(dto: CreateUserDto) {
-    await this.prisma.$connect();
+  async register(dto: CreateUserDto): Promise<User> {
     const hash = await argon.hash(dto.password);
-    const checkIfUserExist = await this.prisma.user.findUnique({
-      where: {
-        email: dto.email,
-      },
+    const createdUser = new this.userModel({
+      firstName: dto.firstName,
+      lastName: dto.lastName,
+      hash: hash,
+      email: dto.email,
+      accountType: ACCOUNT_TYPE[dto.accountType],
     });
-    if (checkIfUserExist) {
-      throw new ForbiddenException('User with these credentials already exist');
-    }
-    try {
-      const user = await this.prisma.user.create({
-        data: {
-          firstName: dto.firstName,
-          lastName: dto.lastName,
-          email: dto.email,
-          hash: hash,
-          accountType: ACCOUNT_TYPE[dto.accountType],
-        },
-      });
-      return {
-        data: user,
-        message: 'Account created successfully',
-        success: true,
-      };
-    } catch (e) {
-      console.log(e, 'e');
-      throw e;
-    }
+    return createdUser.save();
   }
 
   async login(dto: LoginUserDto) {

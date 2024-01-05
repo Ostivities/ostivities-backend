@@ -1,12 +1,8 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
+import { ACCOUNT_TYPE } from 'src/util/types';
 
 export type UserDocument = HydratedDocument<User>;
-
-export enum ACCOUNT_TYPE {
-  PERSONAL = 'PERSONAL',
-  ORGANISATION = 'ORGANISATION',
-}
 
 @Schema()
 export class User extends Document {
