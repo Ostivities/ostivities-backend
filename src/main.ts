@@ -19,7 +19,7 @@ async function bootstrap() {
     .setTitle('Ostivities')
     .setDescription('This is the official Ostivities API documentation')
     .setVersion('1.0.0')
-    // .addServer('https://ostivities.herokuapp.com/v1/api')
+    .addServer('https://ostivities.herokuapp.com/v1/api')
     .build();
 
   const document = SwaggerModule.createDocument(app, config);

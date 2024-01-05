@@ -1,17 +1,16 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import { ForbiddenException, Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
-import {
-  PrismaClientKnownRequestError,
-  PrismaClientValidationError,
-} from '@prisma/client/runtime/library';
+// import { Prisma } from '@prisma/client';
 import * as argon from 'argon2';
 import { PrismaService } from 'src/prisma/prisma.service';
+import { ACCOUNT_TYPE } from 'src/util/types';
 import { CreateUserDto, LoginUserDto } from './dto/auth.dto';
 
 @Injectable()
 export class AuthService {
   constructor(
+    @Inject(PrismaService)
     private jwtService: JwtService,
     private prisma: PrismaService,
     private configService: ConfigService,
@@ -35,7 +34,7 @@ export class AuthService {
           lastName: dto.lastName,
           email: dto.email,
           hash: hash,
-          accountType: dto.accountType,
+          accountType: ACCOUNT_TYPE[dto.accountType],
         },
       });
       return {
@@ -43,21 +42,13 @@ export class AuthService {
         message: 'Account created successfully',
         success: true,
       };
-    } catch (error) {
-      if (error instanceof PrismaClientKnownRequestError) {
-        throw new ForbiddenException(
-          'User with these credentials already exist',
-        );
-      } else if (error instanceof PrismaClientValidationError) {
-        throw new ForbiddenException('Invalid credentials');
-      } else {
-        throw error;
-      }
+    } catch (e) {
+      console.log(e, 'e');
+      throw e;
     }
   }
 
   async login(dto: LoginUserDto) {
-    await this.prisma.$connect();
     const user = await this.prisma.user.findUnique({
       where: {
         email: dto.email,

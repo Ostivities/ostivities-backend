@@ -16,20 +16,17 @@ export class CreateUserDto {
   accountType: string;
 
   @IsNotEmpty()
-  @IsString()
   @IsAlpha()
   firstName: string;
 
   @IsNotEmpty()
-  @IsString()
   @IsAlpha()
   lastName: string;
 
-  @IsNotEmpty()
-  @IsString()
   @IsEmail()
+  @IsNotEmpty()
   @Matches(
-    /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/,
+    /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/,
     { message: 'email must be a valid email' },
   )
   email: string;

@@ -4,7 +4,7 @@ import { PrismaClient } from '@prisma/client';
 
 @Injectable()
 export class PrismaService extends PrismaClient implements OnModuleInit {
-  constructor(private config: ConfigService) {
+  constructor(config: ConfigService) {
     super({
       datasources: {
         db: {
