@@ -4,6 +4,7 @@ import {
   IsEnum,
   IsNotEmpty,
   IsString,
+  IsUrl,
   Matches,
   MaxLength,
   MinLength,
@@ -67,4 +68,20 @@ export class LoginUserDto {
     },
   )
   password: string;
+}
+
+export class ForgotPasswordDto {
+  @IsString()
+  @IsEmail()
+  @IsNotEmpty()
+  @Matches(
+    /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/,
+    { message: 'email must be a valid email' },
+  )
+  email: string;
+
+  @IsString()
+  @IsNotEmpty()
+  @IsUrl()
+  originUrl: string;
 }

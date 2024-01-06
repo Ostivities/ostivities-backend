@@ -1,7 +1,7 @@
 import { Body, Controller, HttpStatus, Post } from '@nestjs/common';
 import { IResponse } from 'src/util/types';
 import { AuthService } from './auth.service';
-import { CreateUserDto } from './dto/auth.dto';
+import { CreateUserDto, ForgotPasswordDto, LoginUserDto } from './dto/auth.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -13,8 +13,22 @@ export class AuthController {
     return { statusCode: HttpStatus.CREATED, data, message: 'Success' };
   }
 
-  // @Post('login')
-  // login(@Body() dto: LoginUserDto) {
-  //   return this.authService.login(dto);
-  // }
+  @Post('login')
+  async login(@Body() dto: LoginUserDto): Promise<IResponse> {
+    const data = await this.authService.login(dto);
+    return {
+      statusCode: HttpStatus.OK,
+      data,
+      message: 'successfully logged in',
+    };
+  }
+
+  @Post('forgotPassword')
+  async forgotPasssword(@Body() dto: ForgotPasswordDto): Promise<any> {
+    await this.authService.forgotPassword(dto);
+    return {
+      statusCode: HttpStatus.OK,
+      message: 'successful',
+    };
+  }
 }
