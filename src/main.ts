@@ -8,7 +8,7 @@ async function bootstrap() {
 
   app.useGlobalPipes(
     new ValidationPipe({
-      disableErrorMessages: true,
+      disableErrorMessages: false,
       whitelist: true,
       forbidNonWhitelisted: true,
     }),
@@ -33,6 +33,7 @@ async function bootstrap() {
   app.setGlobalPrefix('v1/api');
 
   app.enableCors();
+  // app.useGlobalFilters(new HttpExceptionFilter());
 
   await app.listen(process.env.PORT || 8080);
 }

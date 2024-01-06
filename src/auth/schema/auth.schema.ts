@@ -5,7 +5,7 @@ import { ACCOUNT_TYPE } from 'src/util/types';
 export type UserDocument = HydratedDocument<User>;
 
 @Schema()
-export class User extends Document {
+export class User {
   @Prop({ default: () => new mongoose.Types.ObjectId().toString() })
   _id: string;
 
@@ -29,15 +29,16 @@ export class User extends Document {
 
   @Prop({
     required: [true, 'password is required'],
-    validate: {
-      validator: function (v: string) {
-        return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(
-          v,
-        );
-      },
-      message: (props: { value: any }) =>
-        `${props.value} must contain Min of eight characters, at least one uppercase letter, one lowercase letter, one number and one special character`,
-    },
+    // validate: {
+    //   validator: function (v: string) {
+    //     console.log(v, 'vv');
+    //     return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(
+    //       v,
+    //     );
+    //   },
+    //   message: (props: { value: any }) =>
+    //     `${props.value} must contain Min of eight characters, at least one uppercase letter, one lowercase letter, one number and one special character`,
+    // },
   })
   hash: string;
 
