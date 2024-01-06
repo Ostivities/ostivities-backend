@@ -6,5 +6,5 @@ export enum ACCOUNT_TYPE {
 export interface IResponse {
   statusCode: string | any;
   message: string | any;
-  data: any;
+  data?: any;
 }

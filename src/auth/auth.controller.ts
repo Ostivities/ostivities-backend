@@ -1,7 +1,12 @@
 import { Body, Controller, HttpStatus, Post } from '@nestjs/common';
 import { IResponse } from 'src/util/types';
 import { AuthService } from './auth.service';
-import { CreateUserDto, ForgotPasswordDto, LoginUserDto } from './dto/auth.dto';
+import {
+  CreateUserDto,
+  ForgotPasswordDto,
+  LoginUserDto,
+  ResetPasswordDto,
+} from './dto/auth.dto';
 
 @Controller('auth')
 export class AuthController {
@@ -23,12 +28,23 @@ export class AuthController {
     };
   }
 
-  @Post('forgotPassword')
-  async forgotPasssword(@Body() dto: ForgotPasswordDto): Promise<any> {
-    await this.authService.forgotPassword(dto);
+  @Post('resetToken')
+  async resetToken(@Body() dto: ForgotPasswordDto): Promise<IResponse> {
+    const data = await this.authService.resetToken(dto);
     return {
       statusCode: HttpStatus.OK,
       message: 'successful',
+      data,
+    };
+  }
+
+  @Post('resetPassword')
+  async resetPassword(@Body() dto: ResetPasswordDto): Promise<IResponse> {
+    const data = await this.authService.resetPassword(dto);
+    return {
+      statusCode: HttpStatus.OK,
+      message: 'successful',
+      data,
     };
   }
 }
