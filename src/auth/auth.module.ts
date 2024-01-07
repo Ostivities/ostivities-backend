@@ -9,7 +9,10 @@ import { User, UserSchema } from './schema/auth.schema';
 
 @Module({
   imports: [
-    JwtModule.register({}),
+    JwtModule.register({
+      global: true,
+      signOptions: { expiresIn: '24h' },
+    }),
     MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
     DatabaseModule,
   ],
