@@ -6,6 +6,10 @@ import { AuthController } from './auth.controller';
 import { authProviders } from './auth.providers';
 import { AuthService } from './auth.service';
 import { User, UserSchema } from './schema/auth.schema';
+import {
+  ForgotPasswordModel,
+  ForgotPasswordSchema,
+} from './schema/forgotpassword.schema';
 import { JwtStrategy } from './strategy/jwt.strategy';
 
 @Module({
@@ -14,7 +18,10 @@ import { JwtStrategy } from './strategy/jwt.strategy';
       global: true,
       signOptions: { expiresIn: '24h' },
     }),
-    MongooseModule.forFeature([{ name: User.name, schema: UserSchema }]),
+    MongooseModule.forFeature([
+      { name: User.name, schema: UserSchema },
+      { name: ForgotPasswordModel.name, schema: ForgotPasswordSchema },
+    ]),
     DatabaseModule,
   ],
   controllers: [AuthController],

@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   ConflictException,
+  ForbiddenException,
   Injectable,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
@@ -15,6 +16,7 @@ import {
   ResetPasswordDto,
 } from './dto/auth.dto';
 import { User } from './schema/auth.schema';
+import { ForgotPasswordModel } from './schema/forgotpassword.schema';
 
 @Injectable()
 export class AuthService {
@@ -22,6 +24,8 @@ export class AuthService {
     private jwtService: JwtService,
     private configService: ConfigService,
     @InjectModel(User.name) private userModel: Model<User>,
+    @InjectModel(ForgotPasswordModel.name)
+    private forgotPasswordModel: Model<ForgotPasswordModel>,
   ) {}
 
   // REGISTER USER
@@ -79,20 +83,42 @@ export class AuthService {
   // CREATE TOKEN
   async resetToken(dto: ForgotPasswordDto) {
     try {
-      const user = await this.userModel.findOne({
+      const forgottenPassword: any = await this.forgotPasswordModel.findOne({
         email: dto.email,
       });
 
-      if (!user) {
-        throw new ConflictException('User not found');
+      console.log(forgottenPassword, 'fr');
+
+      if (forgottenPassword) {
+        const currentTime = new Date().getTime();
+        const forgottenPasswordTimestamp = new Date(
+          forgottenPassword?.timeStamp,
+        ).getTime();
+
+        const timeDifference = Math.abs(
+          currentTime - forgottenPasswordTimestamp,
+        );
+        const fifteenMinutesInMilliseconds = 15 * 60 * 1000;
+        if (timeDifference < fifteenMinutesInMilliseconds) {
+          throw new ForbiddenException('token as already been sent');
+        }
+      } else {
+        const forgottenPasswordModelUpdate =
+          await this.forgotPasswordModel.findOneAndUpdate(
+            { email: dto.email },
+            {
+              $set: {
+                email: dto.email,
+                token: (Math.floor(Math.random() * 900000) + 100000).toString(),
+              },
+            },
+            { upsert: true, new: true },
+          );
+
+        if (forgottenPasswordModelUpdate) {
+          return forgottenPasswordModelUpdate;
+        }
       }
-
-      // CREATE EMAIL TOKEN
-      const emailToken = (
-        Math.floor(Math.random() * 900000) + 100000
-      ).toString();
-
-      return emailToken;
     } catch (error) {
       throw error;
     }
