@@ -1,3 +1,4 @@
+import { ApiProperty } from '@nestjs/swagger';
 import {
   IsAlpha,
   IsEmail,
@@ -12,18 +13,37 @@ import {
 import { ACCOUNT_TYPE } from '../../util/types';
 
 export class CreateUserDto {
+  @ApiProperty({
+    enum: ACCOUNT_TYPE,
+    description: 'Account type',
+  })
   @IsEnum(ACCOUNT_TYPE)
   @IsNotEmpty()
   accountType: string;
 
+  @ApiProperty({
+    description: 'First name',
+    type: String,
+    required: true,
+  })
   @IsNotEmpty()
   @IsAlpha()
   firstName: string;
 
+  @ApiProperty({
+    description: 'Last name',
+    type: String,
+    required: true,
+  })
   @IsNotEmpty()
   @IsAlpha()
   lastName: string;
 
+  @ApiProperty({
+    description: 'email address',
+    type: String,
+    required: true,
+  })
   @IsEmail()
   @IsNotEmpty()
   @Matches(
@@ -32,6 +52,13 @@ export class CreateUserDto {
   )
   email: string;
 
+  @ApiProperty({
+    description: 'Password',
+    type: String,
+    required: true,
+    maxLength: 20,
+    minLength: 8,
+  })
   @IsString()
   @IsNotEmpty()
   @MinLength(8)
@@ -47,6 +74,11 @@ export class CreateUserDto {
 }
 
 export class LoginUserDto {
+  @ApiProperty({
+    description: 'Email address',
+    type: String,
+    required: true,
+  })
   @IsString()
   @IsEmail()
   @IsNotEmpty()
@@ -56,6 +88,13 @@ export class LoginUserDto {
   )
   email: string;
 
+  @ApiProperty({
+    description: 'Password',
+    type: String,
+    required: true,
+    maxLength: 20,
+    minLength: 8,
+  })
   @IsString()
   @IsNotEmpty()
   @MinLength(8)
@@ -80,6 +119,11 @@ export class ForgotPasswordDto {
   )
   email: string;
 
+  @ApiProperty({
+    description: 'Origin URL',
+    type: String,
+    required: true,
+  })
   @IsString()
   @IsNotEmpty()
   @IsUrl()
@@ -87,6 +131,11 @@ export class ForgotPasswordDto {
 }
 
 export class ResetPasswordDto {
+  @ApiProperty({
+    description: 'Email address',
+    type: String,
+    required: true,
+  })
   @IsString()
   @IsEmail()
   @IsNotEmpty()
@@ -96,6 +145,13 @@ export class ResetPasswordDto {
   )
   email: string;
 
+  @ApiProperty({
+    description: 'Password',
+    type: String,
+    required: true,
+    maxLength: 20,
+    minLength: 8,
+  })
   @IsString()
   @IsNotEmpty()
   @MinLength(8)
@@ -109,6 +165,11 @@ export class ResetPasswordDto {
   )
   password: string;
 
+  @ApiProperty({
+    description: 'Token from email address',
+    type: String,
+    required: true,
+  })
   @IsString()
   @IsNotEmpty()
   token: string;

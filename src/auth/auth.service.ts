@@ -87,8 +87,6 @@ export class AuthService {
         email: dto.email,
       });
 
-      console.log(forgottenPassword, 'fr');
-
       if (forgottenPassword) {
         const currentTime = new Date().getTime();
         const forgottenPasswordTimestamp = new Date(

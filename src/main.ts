@@ -1,6 +1,10 @@
 import { ValidationPipe, VersioningType } from '@nestjs/common';
 import { NestFactory } from '@nestjs/core';
-import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
+import {
+  DocumentBuilder,
+  SwaggerDocumentOptions,
+  SwaggerModule,
+} from '@nestjs/swagger';
 import { AppModule } from './app.module';
 
 async function bootstrap() {
@@ -22,7 +26,11 @@ async function bootstrap() {
     .addServer('https://ostivities.herokuapp.com/v1/api')
     .build();
 
-  const document = SwaggerModule.createDocument(app, config);
+  const options: SwaggerDocumentOptions = {
+    operationIdFactory: (controllerKey: string, methodKey: string) => methodKey,
+  };
+
+  const document = SwaggerModule.createDocument(app, config, options);
 
   SwaggerModule.setup('docs', app, document);
 
@@ -33,7 +41,6 @@ async function bootstrap() {
   app.setGlobalPrefix('v1/api');
 
   app.enableCors();
-  // app.useGlobalFilters(new HttpExceptionFilter());
 
   await app.listen(process.env.PORT || 8080);
 }
