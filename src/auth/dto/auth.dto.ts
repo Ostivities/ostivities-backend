@@ -40,7 +40,7 @@ export class CreateUserDto {
   lastName: string;
 
   @ApiProperty({
-    description: 'email address',
+    description: 'Email address',
     type: String,
     required: true,
   })
@@ -110,6 +110,11 @@ export class LoginUserDto {
 }
 
 export class ForgotPasswordDto {
+  @ApiProperty({
+    description: 'email address',
+    type: String,
+    required: true,
+  })
   @IsString()
   @IsEmail()
   @IsNotEmpty()
