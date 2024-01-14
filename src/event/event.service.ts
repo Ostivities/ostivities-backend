@@ -37,7 +37,7 @@ export class EventService {
     }
   }
 
-  async getEvents() {
+  async getEvents(): Promise<Events[]> {
     try {
       const events = await this.eventModel.find().exec();
       return events;

@@ -17,6 +17,7 @@ import { EventService } from './event.service';
 @ApiTags('Event Service')
 export class EventController {
   constructor(private eventService: EventService) {}
+
   @Post('create')
   async createEvents(@Body() dto: CreateEventDto): Promise<IResponse> {
     const data = await this.eventService.createEvent(dto);
