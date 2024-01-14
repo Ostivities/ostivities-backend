@@ -36,4 +36,13 @@ export class EventService {
       throw new ForbiddenException(FORBIDDEN_MESSAGE);
     }
   }
+
+  async getEvents() {
+    try {
+      const events = await this.eventModel.find().exec();
+      return events;
+    } catch (error) {
+      throw new ForbiddenException(FORBIDDEN_MESSAGE);
+    }
+  }
 }
