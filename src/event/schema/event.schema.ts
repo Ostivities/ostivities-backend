@@ -1,5 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose, { HydratedDocument, SchemaTypes } from 'mongoose';
+import mongoose, { HydratedDocument } from 'mongoose';
 import { User } from 'src/auth/schema/auth.schema';
 import {
   EVENT_TYPES,
@@ -115,8 +115,8 @@ export class Events {
     collectiveTicket?: ICollectiveEvents;
   };
 
-  @Prop({ type: SchemaTypes.ObjectId, ref: 'User' })
-  owner: User;
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: () => User })
+  user: mongoose.Types.ObjectId;
 }
 
 export const EventSchema = SchemaFactory.createForClass(Events);
