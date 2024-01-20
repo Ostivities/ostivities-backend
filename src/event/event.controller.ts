@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpStatus,
   Param,
@@ -38,6 +39,18 @@ export class EventController {
   @Get('retrieve_event/:id')
   async getEvent(@Param('id') id: string): Promise<IResponse> {
     const data = await this.eventService.getEventsById(id);
+    return { statusCode: HttpStatus.OK, data: data, message: 'Success' };
+  }
+
+  @Delete('delete_event/:id')
+  async deleteEvent(@Param('id') id: string): Promise<IResponse> {
+    const data = await this.eventService.deleteEventsById(id);
+    return { statusCode: HttpStatus.OK, data: data, message: 'Success' };
+  }
+
+  @Delete('delete_events')
+  async deleteManyEvents(@Body() ids: string[]): Promise<IResponse> {
+    const data = await this.eventService.deleteManyEventsById(ids);
     return { statusCode: HttpStatus.OK, data: data, message: 'Success' };
   }
 }

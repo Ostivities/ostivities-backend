@@ -41,5 +41,21 @@ export class EventService {
     }
   }
 
-  async deleteEventsById(id: string): Promise<Events> {}
+  async deleteEventsById(id: string): Promise<any> {
+    try {
+      const event = await this.eventModel.deleteOne({ _id: id });
+      return event;
+    } catch (error) {
+      throw new ForbiddenException(FORBIDDEN_MESSAGE);
+    }
+  }
+
+  async deleteManyEventsById(ids: string[]): Promise<any> {
+    try {
+      const event = await this.eventModel.deleteMany({ _id: { $in: ids } });
+      return event;
+    } catch (error) {
+      throw new ForbiddenException(FORBIDDEN_MESSAGE);
+    }
+  }
 }
