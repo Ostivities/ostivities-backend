@@ -24,7 +24,6 @@ export class EventController {
     @Body() dto: CreateEventDto,
     @GetCurrentUser('id') id: string,
   ): Promise<IResponse> {
-    console.log(id, 'idd');
     const data = await this.eventService.createEvent({ ...dto, user: id });
     return { statusCode: HttpStatus.CREATED, data: data, message: 'Success' };
   }
