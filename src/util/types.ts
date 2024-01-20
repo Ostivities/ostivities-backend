@@ -57,3 +57,13 @@ export interface ICollectiveEvents {
   ticketPrice: string | any;
   ticketDescription: string | any;
 }
+
+export const enumValues = [
+  'Wedding',
+  'Birthday party',
+  'Hangout',
+  'Paint & Sip',
+  'Music Show',
+  'Hangouts',
+  'Others',
+];

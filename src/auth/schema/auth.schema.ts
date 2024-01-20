@@ -1,17 +1,12 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose, { HydratedDocument } from 'mongoose';
+import { HydratedDocument } from 'mongoose';
+import { schemaConfig } from 'src/util/schema.config';
 import { ACCOUNT_TYPE } from 'src/util/types';
 
 export type UserDocument = HydratedDocument<User>;
 
-@Schema()
+@Schema(schemaConfig)
 export class User {
-  @Prop({ default: () => new mongoose.Types.ObjectId().toString() })
-  _id: string;
-
-  @Prop({ default: Date.now })
-  createdAt: Date;
-
   @Prop({
     unique: true,
     required: [true, 'email is required'],

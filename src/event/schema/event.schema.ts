@@ -1,17 +1,12 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
 import { User } from 'src/auth/schema/auth.schema';
-import {
-  EVENT_TYPES,
-  ICollectiveEvents,
-  ISingleEvents,
-  ISocials,
-  ISupportDocuments,
-} from 'src/util/types';
+import { schemaConfig } from 'src/util/schema.config';
+import { EVENT_TYPES, ISupportDocuments } from 'src/util/types';
 
 export type EventDocument = HydratedDocument<Events>;
 
-@Schema({ _id: false })
+@Schema(schemaConfig)
 class Socials {
   @Prop()
   name: string;
@@ -20,7 +15,7 @@ class Socials {
   url: string;
 }
 
-@Schema({ _id: false })
+@Schema(schemaConfig)
 class SupportingDocs {
   @Prop()
   fileName: string;
@@ -29,14 +24,53 @@ class SupportingDocs {
   fileUrl: string;
 }
 
-@Schema()
+@Schema(schemaConfig)
+class SingleEvents {
+  @Prop()
+  ticketType: string;
+
+  @Prop()
+  ticketName: string;
+
+  @Prop()
+  ticketStock: string;
+
+  @Prop()
+  ticketPrice: string;
+
+  @Prop()
+  purchaseLimit: number;
+
+  @Prop()
+  ticketDescription: string;
+}
+
+@Schema(schemaConfig)
+class CollectiveEvents {
+  @Prop()
+  ticketType: string;
+
+  @Prop()
+  ticketName: string;
+
+  @Prop()
+  ticketStock: string;
+
+  @Prop()
+  groupPrice: string;
+
+  @Prop()
+  groupSize: string;
+
+  @Prop()
+  ticketPrice: string;
+
+  @Prop()
+  ticketDescription: string;
+}
+
+@Schema(schemaConfig)
 export class Events {
-  @Prop({ default: () => new mongoose.Types.ObjectId().toString() })
-  _id: string;
-
-  @Prop({ default: Date.now })
-  createdAt: Date;
-
   @Prop({
     required: [true, 'event name is required'],
     type: String,
@@ -59,67 +93,56 @@ export class Events {
     required: [false, 'event url is required'],
     type: String,
   })
-  eventURL?: string;
+  eventURL: string;
 
   @Prop({
-    required: [false, 'event url is required'],
+    required: false,
     type: SupportingDocs,
   })
-  supportingDocument?: ISupportDocuments;
+  supportingDocument: ISupportDocuments;
 
   @Prop({
     required: false,
-    enum: {
-      values: [
-        'Wedding',
-        'Birthday party',
-        'Hangout',
-        'Paint & Sip',
-        'Music Show',
-        'Hangouts',
-        'Others',
-      ],
-    },
-    type: String,
+    enum: EVENT_TYPES,
   })
-  eventType?: EVENT_TYPES;
+  eventType: EVENT_TYPES;
 
   @Prop({ required: false, type: String })
-  timeZone?: string;
+  timeZone: string;
 
   @Prop({ required: false, type: String })
-  frequency?: string;
+  frequency: string;
 
   @Prop({ required: false, type: String })
-  startDate?: string;
+  startDate: string;
 
   @Prop({ required: false, type: String })
-  endDate?: string;
+  endDate: string;
 
   @Prop({ required: false, type: [Socials], default: [] })
-  socials?: ISocials[];
+  socials: Socials[];
 
   @Prop({
     required: false,
     type: String,
   })
-  eventImage?: string;
+  eventImage: string;
 
   @Prop({
     required: false,
-    type: {},
+    type: SingleEvents,
     default: {},
   })
-  evenTicket?: {
-    singleTicket?: ISingleEvents;
-    collectiveTicket?: ICollectiveEvents;
-  };
+  singleTicket: SingleEvents;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: () => User })
-  user: User;
+  @Prop({ required: false, type: CollectiveEvents, default: {} })
+  collectiveTicket: CollectiveEvents;
 
-  @Prop({ type: String })
-  ticketSold?: string;
+  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: User.name })
+  user: mongoose.Schema.Types.ObjectId;
+
+  @Prop({ type: Number, default: 0 })
+  ticketSold: number;
 }
 
 export const EventSchema = SchemaFactory.createForClass(Events);

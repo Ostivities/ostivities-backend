@@ -1,8 +1,9 @@
-import { PartialType } from '@nestjs/swagger';
+import { OmitType, PartialType } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
   IsArray,
   IsEnum,
+  IsMongoId,
   IsNotEmpty,
   IsNumber,
   IsObject,
@@ -11,7 +12,7 @@ import {
   IsUrl,
   ValidateNested,
 } from 'class-validator';
-import { EVENT_TYPES, ISupportDocuments } from 'src/util/types';
+import { EVENT_TYPES } from 'src/util/types';
 
 class ValidateSocials {
   @IsOptional()
@@ -79,21 +80,17 @@ class CollectiveEvents {
   ticketDescription: string;
 }
 
-class EventTicket {
+class SupportDocuments {
   @IsOptional()
-  @IsObject()
-  @ValidateNested()
-  @Type(() => SingleEvents)
-  singleTicket?: SingleEvents;
+  @IsString()
+  fileName: string;
 
   @IsOptional()
-  @IsObject()
-  @ValidateNested()
-  @Type(() => CollectiveEvents)
-  collectiveTicket?: CollectiveEvents;
+  @IsString()
+  fileUrl: string;
 }
 
-export class CreateEventDto {
+export class EventDto {
   @IsNotEmpty()
   @IsString()
   eventName: string;
@@ -117,7 +114,9 @@ export class CreateEventDto {
 
   @IsOptional()
   @IsObject()
-  supportingDocument: ISupportDocuments;
+  @ValidateNested()
+  @Type(() => SupportDocuments)
+  supportingDocument: SupportDocuments;
 
   @IsEnum(EVENT_TYPES)
   @IsOptional()
@@ -151,7 +150,16 @@ export class CreateEventDto {
   eventImage: string;
 
   @IsOptional()
-  evenTicket: EventTicket;
+  singleTicket: SingleEvents;
+
+  @IsOptional()
+  collectiveTicket: CollectiveEvents;
+
+  @IsNotEmpty()
+  @IsMongoId()
+  user: string;
 }
+
+export class CreateEventDto extends OmitType(EventDto, ['user']) {}
 
 export class UpdateEventDto extends PartialType(CreateEventDto) {}
