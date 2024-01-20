@@ -3,6 +3,7 @@ import {
   Controller,
   Get,
   HttpStatus,
+  Param,
   Post,
   UseGuards,
 } from '@nestjs/common';
@@ -31,6 +32,12 @@ export class EventController {
   @Get('retrieve_events')
   async getAllEvents(): Promise<IResponse> {
     const data = await this.eventService.getEvents();
+    return { statusCode: HttpStatus.OK, data: data, message: 'Success' };
+  }
+
+  @Get('retrieve_event/:id')
+  async getEvent(@Param('id') id: string): Promise<IResponse> {
+    const data = await this.eventService.getEventsById(id);
     return { statusCode: HttpStatus.OK, data: data, message: 'Success' };
   }
 }

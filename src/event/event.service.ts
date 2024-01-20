@@ -30,4 +30,16 @@ export class EventService {
       throw new ForbiddenException(FORBIDDEN_MESSAGE);
     }
   }
+
+  async getEventsById(id: string): Promise<Events> {
+    try {
+      const event = await this.eventModel.findOne({ _id: id }).lean();
+      console.log(event, 'event');
+      return event;
+    } catch (error) {
+      throw new ForbiddenException(FORBIDDEN_MESSAGE);
+    }
+  }
+
+  async deleteEventsById(id: string): Promise<Events> {}
 }
