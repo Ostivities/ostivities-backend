@@ -52,7 +52,9 @@ export class EventService {
 
   async deleteManyEventsById(ids: string[]): Promise<any> {
     try {
-      const event = await this.eventModel.deleteMany({ _id: { $in: ids } });
+      const event = await this.eventModel.deleteMany({
+        id: { $in: ids['ids'] },
+      });
       return event;
     } catch (error) {
       throw new ForbiddenException(FORBIDDEN_MESSAGE);
