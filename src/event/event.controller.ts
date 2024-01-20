@@ -6,13 +6,14 @@ import {
   HttpStatus,
   Param,
   Post,
+  Put,
   UseGuards,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import { GetCurrentUser } from 'src/auth/decorator/user.decorator';
 import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
 import { IResponse } from 'src/util/types';
-import { CreateEventDto } from './dto/event.dto';
+import { CreateEventDto, UpdateEventDto } from './dto/event.dto';
 import { EventService } from './event.service';
 
 @UseGuards(JwtAuthGuard)
@@ -39,6 +40,15 @@ export class EventController {
   @Get('retrieve_event/:id')
   async getEvent(@Param('id') id: string): Promise<IResponse> {
     const data = await this.eventService.getEventsById(id);
+    return { statusCode: HttpStatus.OK, data: data, message: 'Success' };
+  }
+
+  @Put('update_event/:id')
+  async updateEvent(
+    @Param('id') id: string,
+    @Body() dto: UpdateEventDto,
+  ): Promise<IResponse> {
+    const data = await this.eventService.updateEventById(id, dto);
     return { statusCode: HttpStatus.OK, data: data, message: 'Success' };
   }
 
