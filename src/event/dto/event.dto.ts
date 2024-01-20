@@ -1,20 +1,97 @@
 import { PartialType } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import {
   IsArray,
   IsEnum,
   IsNotEmpty,
+  IsNumber,
   IsObject,
   IsOptional,
   IsString,
   IsUrl,
+  ValidateNested,
 } from 'class-validator';
-import {
-  EVENT_TYPES,
-  ICollectiveEvents,
-  ISingleEvents,
-  ISocials,
-  ISupportDocuments,
-} from 'src/util/types';
+import { EVENT_TYPES, ISupportDocuments } from 'src/util/types';
+
+class ValidateSocials {
+  @IsOptional()
+  @IsString()
+  name: string;
+
+  @IsOptional()
+  @IsUrl()
+  url: string;
+}
+
+class SingleEvents {
+  @IsOptional()
+  @IsString()
+  ticketType?: string;
+
+  @IsOptional()
+  @IsString()
+  ticketName?: string;
+
+  @IsOptional()
+  @IsString()
+  ticketStock?: string;
+
+  @IsOptional()
+  @IsString()
+  ticketPrice?: string;
+
+  @IsOptional()
+  @IsNumber()
+  purchaseLimit?: number;
+
+  @IsOptional()
+  @IsString()
+  ticketDescription?: string;
+}
+
+class CollectiveEvents {
+  @IsOptional()
+  @IsString()
+  ticketType: string;
+
+  @IsOptional()
+  @IsString()
+  ticketName: string;
+
+  @IsOptional()
+  @IsString()
+  ticketStock: string;
+
+  @IsOptional()
+  @IsString()
+  groupPrice: string;
+
+  @IsOptional()
+  @IsString()
+  groupSize: string;
+
+  @IsOptional()
+  @IsString()
+  ticketPrice: string;
+
+  @IsOptional()
+  @IsString()
+  ticketDescription: string;
+}
+
+class EventTicket {
+  @IsOptional()
+  @IsObject()
+  @ValidateNested()
+  @Type(() => SingleEvents)
+  singleTicket?: SingleEvents;
+
+  @IsOptional()
+  @IsObject()
+  @ValidateNested()
+  @Type(() => CollectiveEvents)
+  collectiveTicket?: CollectiveEvents;
+}
 
 export class CreateEventDto {
   @IsNotEmpty()
@@ -64,7 +141,9 @@ export class CreateEventDto {
 
   @IsOptional()
   @IsArray()
-  socials: ISocials[];
+  @ValidateNested({ each: true })
+  @Type(() => ValidateSocials)
+  socials: ValidateSocials[];
 
   @IsOptional()
   @IsString()
@@ -72,11 +151,7 @@ export class CreateEventDto {
   eventImage: string;
 
   @IsOptional()
-  @IsObject()
-  evenTicket: {
-    singleTicket?: ISingleEvents;
-    collectiveTicket?: ICollectiveEvents;
-  };
+  evenTicket: EventTicket;
 }
 
 export class UpdateEventDto extends PartialType(CreateEventDto) {}

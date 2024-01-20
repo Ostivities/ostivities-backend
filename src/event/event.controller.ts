@@ -28,6 +28,6 @@ export class EventController {
   async getAllEvents(): Promise<IResponse> {
     const data = await this.eventService.getEvents();
     console.log(data, 'data');
-    return { statusCode: HttpStatus.CREATED, data: data, message: 'Success' };
+    return { statusCode: HttpStatus.OK, data: data, message: 'Success' };
   }
 }

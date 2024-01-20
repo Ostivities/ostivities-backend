@@ -116,7 +116,10 @@ export class Events {
   };
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: () => User })
-  user: mongoose.Types.ObjectId;
+  user: User;
+
+  @Prop({ type: String })
+  ticketSold?: string;
 }
 
 export const EventSchema = SchemaFactory.createForClass(Events);
