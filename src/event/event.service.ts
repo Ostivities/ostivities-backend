@@ -2,7 +2,7 @@ import { ForbiddenException, Injectable } from '@nestjs/common';
 import { FORBIDDEN_MESSAGE } from '@nestjs/core/guards';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { EVENT_MODE } from 'src/util/types';
+import { EVENT_MODE, EVENT_STATUS } from 'src/util/types';
 import { EventDto, StringArrayDto, UpdateEventDto } from './dto/event.dto';
 import { Events } from './schema/event.schema';
 
@@ -63,18 +63,29 @@ export class EventService {
         dto,
         { new: true, upsert: false },
       );
-      console.log(publishedEvent, 'er');
+
       return publishedEvent;
     } catch (error) {
       throw new ForbiddenException(FORBIDDEN_MESSAGE);
     }
   }
 
-  async changeEventStatusByID(
-    eventId: string,
-    status: string,
-  ): Promise<Events> {
-    const dto = { mode: EVENT_MODE[status] };
+  async unpublishEventById(eventId: string): Promise<Events> {
+    const dto = { mode: EVENT_MODE.PRIVATE };
+    try {
+      const unpublishedEvent = await this.eventModel.findOneAndUpdate(
+        { _id: eventId },
+        dto,
+        { new: true, upsert: false },
+      );
+      return unpublishedEvent;
+    } catch (error) {
+      throw new ForbiddenException(FORBIDDEN_MESSAGE);
+    }
+  }
+
+  async deactivateEventByID(eventId: string): Promise<Events> {
+    const dto = { mode: EVENT_STATUS.DEACTIVATED };
     try {
       const deactivatedEvent = await this.eventModel.findOneAndUpdate(
         { _id: eventId },

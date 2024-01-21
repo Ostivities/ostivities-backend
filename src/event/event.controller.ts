@@ -101,12 +101,27 @@ export class EventController {
   @ApiBody({ type: UpdateEventDto })
   @ApiResponse({
     status: 200,
-    description: 'Event updated successfully.',
+    description: 'Event published successfully.',
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   @Put('publish_event/:id')
   async publishEvent(@Param('id') id: string): Promise<IResponse> {
     const data = await this.eventService.publishEventById(id);
+    return { statusCode: HttpStatus.OK, data: data, message: 'Success' };
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Unpublish event' })
+  @ApiParam({ name: 'id', description: 'Event ID' })
+  @ApiBody({ type: UpdateEventDto })
+  @ApiResponse({
+    status: 200,
+    description: 'success.',
+  })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @Put('unpublish_event/:id')
+  async unpublishEvent(@Param('id') id: string): Promise<IResponse> {
+    const data = await this.eventService.unpublishEventById(id);
     return { statusCode: HttpStatus.OK, data: data, message: 'Success' };
   }
 
