@@ -146,6 +146,9 @@ export class Events {
 
   @Prop({ enum: EVENT_MODE, required: false })
   mode: EVENT_MODE;
+
+  @Prop({ enum: EVENT_MODE, required: false })
+  status: EVENT_MODE;
 }
 
 export const EventSchema = SchemaFactory.createForClass(Events);

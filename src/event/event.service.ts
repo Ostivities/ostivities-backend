@@ -57,12 +57,14 @@ export class EventService {
 
   async publishEventById(eventId: string): Promise<Events> {
     const dto = { mode: EVENT_MODE.PUBLIC };
+    console.log({ eventId, dto }, 'dd');
     try {
       const publishedEvent = await this.eventModel.findOneAndUpdate(
         { _id: eventId },
         dto,
-        { new: true },
+        { new: true, upsert: false },
       );
+      console.log(publishedEvent, 'er');
       return publishedEvent;
     } catch (error) {
       throw new ForbiddenException(FORBIDDEN_MESSAGE);
