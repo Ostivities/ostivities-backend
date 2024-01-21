@@ -98,7 +98,6 @@ export class EventController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Publish event' })
   @ApiParam({ name: 'id', description: 'Event ID' })
-  @ApiBody({ type: UpdateEventDto })
   @ApiResponse({
     status: 200,
     description: 'Event published successfully.',
@@ -113,7 +112,6 @@ export class EventController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Unpublish event' })
   @ApiParam({ name: 'id', description: 'Event ID' })
-  @ApiBody({ type: UpdateEventDto })
   @ApiResponse({
     status: 200,
     description: 'success.',
@@ -128,7 +126,6 @@ export class EventController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Add event to discovery' })
   @ApiParam({ name: 'id', description: 'Event ID' })
-  @ApiBody({ type: UpdateEventDto })
   @ApiResponse({
     status: 200,
     description: 'success.',
@@ -137,6 +134,20 @@ export class EventController {
   @Put('add_to_discovery/:id')
   async addEventToDiscovery(@Param('id') id: string): Promise<IResponse> {
     const data = await this.eventService.addToDiscovery(id);
+    return { statusCode: HttpStatus.OK, data: data, message: 'Success' };
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Remove event to discovery' })
+  @ApiParam({ name: 'id', description: 'Event ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'success.',
+  })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @Put('remove_from_discovery/:id')
+  async removeEventFromDiscovery(@Param('id') id: string): Promise<IResponse> {
+    const data = await this.eventService.removeFromDiscovery(id);
     return { statusCode: HttpStatus.OK, data: data, message: 'Success' };
   }
 

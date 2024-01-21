@@ -98,6 +98,20 @@ export class EventService {
     }
   }
 
+  async removeFromDiscovery(eventId: string): Promise<Events> {
+    const dto = { discover: false };
+    try {
+      const removeEvent = await this.eventModel.findOneAndUpdate(
+        { _id: eventId },
+        dto,
+        { new: true, upsert: false },
+      );
+      return removeEvent;
+    } catch (error) {
+      throw new ForbiddenException(FORBIDDEN_MESSAGE);
+    }
+  }
+
   async deactivateEventByID(eventId: string): Promise<Events> {
     const dto = { mode: EVENT_STATUS.DEACTIVATED };
     try {
