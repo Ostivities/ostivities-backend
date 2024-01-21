@@ -3,13 +3,14 @@ import {
   Controller,
   Delete,
   Get,
+  HttpCode,
   HttpStatus,
   Param,
   Post,
   Put,
   UseGuards,
 } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { GetCurrentUser } from 'src/auth/decorator/user.decorator';
 import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
 import { IResponse } from 'src/util/types';
@@ -22,6 +23,14 @@ import { EventService } from './event.service';
 export class EventController {
   constructor(private eventService: EventService) {}
 
+  @HttpCode(HttpStatus.CREATED)
+  @ApiBody({ type: CreateEventDto })
+  @ApiOperation({ summary: 'Create Event' })
+  @ApiResponse({
+    status: 201,
+    description: 'Event created successfully.',
+  })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
   @Post('create')
   async createEvents(
     @Body() dto: CreateEventDto,
@@ -31,12 +40,26 @@ export class EventController {
     return { statusCode: HttpStatus.CREATED, data: data, message: 'Success' };
   }
 
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'List all events' })
+  @ApiResponse({
+    status: 200,
+    description: 'Events retrieved successfully.',
+  })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
   @Get('retrieve_events')
   async getAllEvents(): Promise<IResponse> {
     const data = await this.eventService.getEvents();
     return { statusCode: HttpStatus.OK, data: data, message: 'Success' };
   }
 
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Get event' })
+  @ApiResponse({
+    status: 200,
+    description: 'Event retrieved successfully.',
+  })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
   @Get('retrieve_event/:id')
   async getEvent(@Param('id') id: string): Promise<IResponse> {
     const data = await this.eventService.getEventsById(id);

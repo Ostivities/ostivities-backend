@@ -31,7 +31,6 @@ export const GetCurrentUser = createParamDecorator(
       }
 
       let decoded: any;
-      console.log('auth', authorization);
       try {
         decoded = jwt.verify(authorization, {
           secret: process.env.JWT_SECRET,
