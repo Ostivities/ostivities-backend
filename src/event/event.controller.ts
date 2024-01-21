@@ -138,15 +138,15 @@ export class EventController {
   }
 
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Remove event to discovery' })
+  @ApiOperation({ summary: 'Remove event from discovery' })
   @ApiParam({ name: 'id', description: 'Event ID' })
   @ApiResponse({
     status: 200,
     description: 'success.',
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
-  @Put('remove_from_discovery/:id')
-  async removeEventFromDiscovery(@Param('id') id: string): Promise<IResponse> {
+  @Put('remove_discovery/:id')
+  async removeEventFromDiscovery(@Param('id') id: string): Promise<any> {
     const data = await this.eventService.removeFromDiscovery(id);
     return { statusCode: HttpStatus.OK, data: data, message: 'Success' };
   }
@@ -175,7 +175,6 @@ export class EventController {
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   @Delete('delete_events')
   async deleteManyEvents(@Body() ids: StringArrayDto): Promise<IResponse> {
-    console.log(ids, 'kk');
     const data = await this.eventService.deleteManyEventsById(ids);
     return { statusCode: HttpStatus.OK, data: data, message: 'Success' };
   }

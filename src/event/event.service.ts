@@ -101,12 +101,12 @@ export class EventService {
   async removeFromDiscovery(eventId: string): Promise<Events> {
     const dto = { discover: false };
     try {
-      const removeEvent = await this.eventModel.findOneAndUpdate(
+      const removedEvent = await this.eventModel.findOneAndUpdate(
         { _id: eventId },
         dto,
         { new: true, upsert: false },
       );
-      return removeEvent;
+      return removedEvent;
     } catch (error) {
       throw new ForbiddenException(FORBIDDEN_MESSAGE);
     }
@@ -140,9 +140,12 @@ export class EventService {
 
   async deleteManyEventsById(ids: StringArrayDto): Promise<any> {
     try {
-      const event = await this.eventModel.deleteMany({
-        _id: { $in: ids['ids'] },
-      });
+      const event = await this.eventModel.deleteMany(
+        {
+          _id: { $in: ids['ids'] },
+        },
+        { new: true, upsert: false },
+      );
       return event;
     } catch (error) {
       throw new ForbiddenException(FORBIDDEN_MESSAGE);
