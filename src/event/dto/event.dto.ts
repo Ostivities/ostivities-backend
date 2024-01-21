@@ -1,4 +1,4 @@
-import { OmitType, PartialType } from '@nestjs/swagger';
+import { ApiProperty, OmitType, PartialType } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
   IsArray,
@@ -163,3 +163,10 @@ export class EventDto {
 export class CreateEventDto extends OmitType(EventDto, ['user']) {}
 
 export class UpdateEventDto extends PartialType(CreateEventDto) {}
+
+export class StringArrayDto {
+  @ApiProperty({ type: [String] })
+  @IsArray()
+  @IsNotEmpty()
+  ids: string[];
+}
