@@ -2,6 +2,7 @@ import { ForbiddenException, Injectable } from '@nestjs/common';
 import { FORBIDDEN_MESSAGE } from '@nestjs/core/guards';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { EVENT_MODE } from 'src/util/types';
 import { EventDto, StringArrayDto, UpdateEventDto } from './dto/event.dto';
 import { Events } from './schema/event.schema';
 
@@ -34,7 +35,6 @@ export class EventService {
   async getEventsById(id: string): Promise<Events> {
     try {
       const event = await this.eventModel.findOne({ _id: id }).lean();
-      console.log(event, 'event');
       return event;
     } catch (error) {
       throw new ForbiddenException(FORBIDDEN_MESSAGE);
@@ -50,6 +50,20 @@ export class EventService {
       );
 
       return updatedEvent;
+    } catch (error) {
+      throw new ForbiddenException(FORBIDDEN_MESSAGE);
+    }
+  }
+
+  async publishEventById(eventId: string): Promise<Events> {
+    const dto = { mode: EVENT_MODE.PUBLIC };
+    try {
+      const publishedEvent = await this.eventModel.findOneAndUpdate(
+        { _id: eventId },
+        dto,
+        { new: true },
+      );
+      return publishedEvent;
     } catch (error) {
       throw new ForbiddenException(FORBIDDEN_MESSAGE);
     }

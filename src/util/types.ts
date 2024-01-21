@@ -67,3 +67,8 @@ export const enumValues = [
   'Hangouts',
   'Others',
 ];
+
+export enum EVENT_MODE {
+  PRIVATE = 'PRIVATE',
+  PUBLIC = 'PUBLIC',
+}

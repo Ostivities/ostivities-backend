@@ -58,7 +58,7 @@ export class AuthController {
     description: 'Token sent successfully',
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
-  @Post('resetToken')
+  @Post('reset_token')
   async resetToken(@Body() dto: ForgotPasswordDto): Promise<IResponse> {
     const data = await this.authService.resetToken(dto);
     return {
@@ -77,7 +77,7 @@ export class AuthController {
     description: 'Password reset successfully',
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
-  @Post('resetPassword')
+  @Post('reset_password')
   async resetPassword(@Body() dto: ResetPasswordDto): Promise<IResponse> {
     const data = await this.authService.resetPassword(dto);
     return {

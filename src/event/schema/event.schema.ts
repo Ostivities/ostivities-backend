@@ -2,7 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
 import { User } from 'src/auth/schema/auth.schema';
 import { schemaConfig } from 'src/util/schema.config';
-import { EVENT_TYPES, ISupportDocuments } from 'src/util/types';
+import { EVENT_MODE, EVENT_TYPES, ISupportDocuments } from 'src/util/types';
 
 export type EventDocument = HydratedDocument<Events>;
 
@@ -90,7 +90,7 @@ export class Events {
   address: string;
 
   @Prop({
-    required: [false, 'event url is required'],
+    required: false,
     type: String,
   })
   eventURL: string;
@@ -143,6 +143,9 @@ export class Events {
 
   @Prop({ type: Number, default: 0 })
   ticketSold: number;
+
+  @Prop({ enum: EVENT_MODE, required: false })
+  mode: EVENT_MODE;
 }
 
 export const EventSchema = SchemaFactory.createForClass(Events);
