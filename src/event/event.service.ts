@@ -84,6 +84,20 @@ export class EventService {
     }
   }
 
+  async addToDiscovery(eventId: string): Promise<Events> {
+    const dto = { discover: true };
+    try {
+      const addedEvent = await this.eventModel.findOneAndUpdate(
+        { _id: eventId },
+        dto,
+        { new: true, upsert: false },
+      );
+      return addedEvent;
+    } catch (error) {
+      throw new ForbiddenException(FORBIDDEN_MESSAGE);
+    }
+  }
+
   async deactivateEventByID(eventId: string): Promise<Events> {
     const dto = { mode: EVENT_STATUS.DEACTIVATED };
     try {

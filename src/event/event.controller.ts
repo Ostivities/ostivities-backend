@@ -126,6 +126,21 @@ export class EventController {
   }
 
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Add event to discovery' })
+  @ApiParam({ name: 'id', description: 'Event ID' })
+  @ApiBody({ type: UpdateEventDto })
+  @ApiResponse({
+    status: 200,
+    description: 'success.',
+  })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @Put('add_to_discovery/:id')
+  async addEventToDiscovery(@Param('id') id: string): Promise<IResponse> {
+    const data = await this.eventService.addToDiscovery(id);
+    return { statusCode: HttpStatus.OK, data: data, message: 'Success' };
+  }
+
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Delevent event by id' })
   @ApiParam({ name: 'id', description: 'Event ID' })
   @ApiResponse({

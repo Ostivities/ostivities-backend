@@ -69,8 +69,8 @@ export const enumValues = [
 ];
 
 export enum EVENT_MODE {
-  PRIVATE = 'PRIVATE',
-  PUBLIC = 'PUBLIC',
+  PRIVATE = 'INACTIVE',
+  PUBLIC = 'ACTIVE',
 }
 
 export enum EVENT_STATUS {

@@ -2,12 +2,7 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
 import { User } from 'src/auth/schema/auth.schema';
 import { schemaConfig } from 'src/util/schema.config';
-import {
-  EVENT_MODE,
-  EVENT_STATUS,
-  EVENT_TYPES,
-  ISupportDocuments,
-} from 'src/util/types';
+import { EVENT_MODE, EVENT_TYPES, ISupportDocuments } from 'src/util/types';
 
 export type EventDocument = HydratedDocument<Events>;
 
@@ -152,8 +147,8 @@ export class Events {
   @Prop({ enum: EVENT_MODE, required: false })
   mode: EVENT_MODE;
 
-  @Prop({ enum: EVENT_STATUS, required: false, default: EVENT_STATUS.ACTIVE })
-  status: EVENT_STATUS;
+  @Prop({ required: false, default: false })
+  discover: boolean;
 }
 
 export const EventSchema = SchemaFactory.createForClass(Events);
