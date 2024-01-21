@@ -72,3 +72,8 @@ export enum EVENT_MODE {
   PRIVATE = 'PRIVATE',
   PUBLIC = 'PUBLIC',
 }
+
+export enum EVENT_STATUS {
+  ACTIVE = 'ACTIVE',
+  DEACTIVATED = 'DEACTIVATED',
+}

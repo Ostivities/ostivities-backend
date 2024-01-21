@@ -57,7 +57,6 @@ export class EventService {
 
   async publishEventById(eventId: string): Promise<Events> {
     const dto = { mode: EVENT_MODE.PUBLIC };
-    console.log({ eventId, dto }, 'dd');
     try {
       const publishedEvent = await this.eventModel.findOneAndUpdate(
         { _id: eventId },
@@ -71,9 +70,29 @@ export class EventService {
     }
   }
 
+  async changeEventStatusByID(
+    eventId: string,
+    status: string,
+  ): Promise<Events> {
+    const dto = { mode: EVENT_MODE[status] };
+    try {
+      const deactivatedEvent = await this.eventModel.findOneAndUpdate(
+        { _id: eventId },
+        dto,
+        { new: true, upsert: false },
+      );
+      return deactivatedEvent;
+    } catch (error) {
+      throw new ForbiddenException(FORBIDDEN_MESSAGE);
+    }
+  }
+
   async deleteEventsById(id: string): Promise<any> {
     try {
-      const event = await this.eventModel.deleteOne({ _id: id });
+      const event = await this.eventModel.deleteOne(
+        { _id: id },
+        { upsert: false },
+      );
       return event;
     } catch (error) {
       throw new ForbiddenException(FORBIDDEN_MESSAGE);
