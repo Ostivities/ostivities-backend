@@ -92,6 +92,13 @@ export class EventService {
         dto,
         { new: true, upsert: false },
       );
+      if (addedEvent.mode !== 'INACTIVE' || !addedEvent.mode) {
+        const updateDto = { mode: EVENT_MODE.PUBLIC };
+        await this.eventModel.findOneAndUpdate({ _id: eventId }, updateDto, {
+          new: true,
+          upsert: false,
+        });
+      }
       return addedEvent;
     } catch (error) {
       throw new ForbiddenException(FORBIDDEN_MESSAGE);
