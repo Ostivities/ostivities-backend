@@ -98,6 +98,7 @@ export class EventService {
           new: true,
           upsert: false,
         });
+        console.log(updateDto, 'update');
       }
       return addedEvent;
     } catch (error) {
