@@ -112,6 +112,15 @@ export class EventService {
     }
   }
 
+  async discoverEvents(): Promise<Events[]> {
+    try {
+      const discoveries = await this.eventModel.find({ discover: true }).exec();
+      return discoveries;
+    } catch (error) {
+      throw new ForbiddenException(FORBIDDEN_MESSAGE);
+    }
+  }
+
   async deactivateEventByID(eventId: string): Promise<Events> {
     const dto = { mode: EVENT_STATUS.DEACTIVATED };
     try {

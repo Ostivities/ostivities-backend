@@ -152,6 +152,19 @@ export class EventController {
   }
 
   @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Discover events' })
+  @ApiResponse({
+    status: 200,
+    description: 'Events listed successfully.',
+  })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @Get('discovery')
+  async discoverEvents(): Promise<IResponse> {
+    const data = await this.eventService.discoverEvents();
+    return { statusCode: HttpStatus.OK, data: data, message: 'Success' };
+  }
+
+  @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Delevent event by id' })
   @ApiParam({ name: 'id', description: 'Event ID' })
   @ApiResponse({
