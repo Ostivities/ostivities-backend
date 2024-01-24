@@ -15,6 +15,7 @@ import {
   ApiBody,
   ApiOperation,
   ApiParam,
+  ApiQuery,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
@@ -154,6 +155,10 @@ export class EventController {
 
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Discover events' })
+  @ApiQuery({ name: 'eventName', required: false, type: String })
+  @ApiQuery({ name: 'state', required: false, type: String })
+  @ApiQuery({ name: 'page', required: false, type: Number, example: 1 })
+  @ApiQuery({ name: 'pageSize', required: false, type: Number, example: 10 })
   @ApiResponse({
     status: 200,
     description: 'Events listed successfully.',
@@ -163,8 +168,15 @@ export class EventController {
   async discoverEvents(
     @Query('eventName') eventName?: string,
     @Query('state') state?: string,
+    @Query('page') page?: number,
+    @Query('pageSize') pageSize?: number,
   ): Promise<IResponse> {
-    const data = await this.eventService.discoverEvents(eventName, state);
+    const data = await this.eventService.discoverEvents(
+      eventName,
+      state,
+      page,
+      pageSize,
+    );
     return { statusCode: HttpStatus.OK, data: data, message: 'Success' };
   }
 
