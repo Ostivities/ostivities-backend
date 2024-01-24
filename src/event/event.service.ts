@@ -119,10 +119,21 @@ export class EventService {
     }
   }
 
-  async discoverEvents(): Promise<Events[]> {
+  async discoverEvents(eventName?: string, state?: string): Promise<Events[]> {
+    const filter: any = {};
     try {
-      const discoveries = await this.eventModel.find({ discover: true }).exec();
-      return discoveries;
+      if (eventName !== undefined) {
+        filter.eventName = eventName;
+        const filterByEventName = await this.eventModel.find(filter).exec();
+        return filterByEventName;
+      } else if (state !== undefined) {
+        filter.state = state;
+        const filterByEventState = await this.eventModel.find(filter).exec();
+        return filterByEventState;
+      } else {
+        const discovery = await this.eventModel.find({ discover: true }).exec();
+        return discovery;
+      }
     } catch (error) {
       throw new ForbiddenException(FORBIDDEN_MESSAGE);
     }

@@ -144,4 +144,6 @@ export class AuthService {
       throw error;
     }
   }
+
+  // GET ALL USERS
 }

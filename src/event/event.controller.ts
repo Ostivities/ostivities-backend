@@ -8,6 +8,7 @@ import {
   Param,
   Post,
   Put,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -159,8 +160,11 @@ export class EventController {
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   @Get('discovery')
-  async discoverEvents(): Promise<IResponse> {
-    const data = await this.eventService.discoverEvents();
+  async discoverEvents(
+    @Query('eventName') eventName?: string,
+    @Query('state') state?: string,
+  ): Promise<IResponse> {
+    const data = await this.eventService.discoverEvents(eventName, state);
     return { statusCode: HttpStatus.OK, data: data, message: 'Success' };
   }
 

@@ -12,6 +12,7 @@ export const schemaConfig = {
       delete ret.hash;
       delete ret.visible;
       delete ret.updatedAt;
+      delete ret.events;
       // delete ret.addressCoordinates;
       delete ret.code;
       delete ret.secretQuestions;
@@ -25,6 +26,7 @@ export const schemaConfig = {
       delete ret.password;
       delete ret.hash;
       delete ret.visible;
+      delete ret.events;
       // delete ret.addressCoordinates;
       delete ret.updatedAt;
       delete ret.code;
