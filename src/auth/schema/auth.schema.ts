@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
+import mongoose, { HydratedDocument } from 'mongoose';
+import { Events } from 'src/event/schema/event.schema';
 import { schemaConfig } from 'src/util/schema.config';
 import { ACCOUNT_TYPE } from 'src/util/types';
 
@@ -24,16 +25,6 @@ export class User {
 
   @Prop({
     required: [true, 'password is required'],
-    // validate: {
-    //   validator: function (v: string) {
-    //     console.log(v, 'vv');
-    //     return /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/.test(
-    //       v,
-    //     );
-    //   },
-    //   message: (props: { value: any }) =>
-    //     `${props.value} must contain Min of eight characters, at least one uppercase letter, one lowercase letter, one number and one special character`,
-    // },
   })
   hash: string;
 
@@ -64,6 +55,12 @@ export class User {
     },
   })
   accountType: ACCOUNT_TYPE;
+
+  @Prop({
+    type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Events' }],
+    default: [],
+  })
+  events: Events[];
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

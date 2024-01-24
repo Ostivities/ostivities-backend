@@ -5,6 +5,7 @@ import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
 import { DatabaseModule } from './database/database.module';
 import { EventModule } from './event/event.module';
+import { SessionModule } from './session/session.module';
 
 @Module({
   imports: [
@@ -16,6 +17,7 @@ import { EventModule } from './event/event.module';
     }),
     DatabaseModule,
     EventModule,
+    SessionModule,
   ],
   controllers: [AppController],
   providers: [AppService],

@@ -98,7 +98,6 @@ export class EventService {
           new: true,
           upsert: false,
         });
-        console.log(updateDto, 'update');
       }
       return addedEvent;
     } catch (error) {
@@ -147,7 +146,7 @@ export class EventService {
     try {
       const event = await this.eventModel.deleteOne(
         { _id: id },
-        { upsert: false },
+        { upsert: false, new: true },
       );
       return event;
     } catch (error) {
