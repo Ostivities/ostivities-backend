@@ -6,6 +6,7 @@ import { AuthModule } from './auth/auth.module';
 import { DatabaseModule } from './database/database.module';
 import { EventModule } from './event/event.module';
 import { SessionModule } from './session/session.module';
+import { TicketModule } from './ticket/ticket.module';
 
 @Module({
   imports: [
@@ -18,6 +19,7 @@ import { SessionModule } from './session/session.module';
     DatabaseModule,
     EventModule,
     SessionModule,
+    TicketModule,
   ],
   controllers: [AppController],
   providers: [AppService],

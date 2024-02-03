@@ -57,10 +57,9 @@ export class User {
   accountType: ACCOUNT_TYPE;
 
   @Prop({
-    type: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Events' }],
-    default: [],
+    type: [{ type: mongoose.Schema.Types.ObjectId, ref: Events?.name }],
   })
-  events: Events[];
+  events: [Events];
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

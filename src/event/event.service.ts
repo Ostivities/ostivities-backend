@@ -16,7 +16,6 @@ export class EventService {
         ...dto,
       });
       const savedEvent = await createdEvent.save();
-
       return savedEvent;
     } catch (error) {
       throw new ForbiddenException(FORBIDDEN_MESSAGE);
@@ -48,7 +47,6 @@ export class EventService {
         dto,
         { new: true },
       );
-
       return updatedEvent;
     } catch (error) {
       throw new ForbiddenException(FORBIDDEN_MESSAGE);
@@ -63,7 +61,6 @@ export class EventService {
         dto,
         { new: true, upsert: false },
       );
-
       return publishedEvent;
     } catch (error) {
       throw new ForbiddenException(FORBIDDEN_MESSAGE);

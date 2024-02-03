@@ -1,4 +1,11 @@
-import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Post,
+} from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { IResponse } from 'src/util/types';
 import { AuthService } from './auth.service';
@@ -80,6 +87,16 @@ export class AuthController {
   @Post('reset_password')
   async resetPassword(@Body() dto: ResetPasswordDto): Promise<IResponse> {
     const data = await this.authService.resetPassword(dto);
+    return {
+      statusCode: HttpStatus.OK,
+      message: 'successful',
+      data,
+    };
+  }
+
+  @Get('users')
+  async allUsers(): Promise<IResponse> {
+    const data = await this.authService.getAllUsers();
     return {
       statusCode: HttpStatus.OK,
       message: 'successful',

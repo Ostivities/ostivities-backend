@@ -5,6 +5,7 @@ import {
   Injectable,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
+import { FORBIDDEN_MESSAGE } from '@nestjs/core/guards';
 import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
 import * as argon from 'argon2';
@@ -146,4 +147,12 @@ export class AuthService {
   }
 
   // GET ALL USERS
+  async getAllUsers(): Promise<User[]> {
+    try {
+      const users = await this.userModel.find().populate('events').exec();
+      return users;
+    } catch (error) {
+      throw new ForbiddenException(FORBIDDEN_MESSAGE);
+    }
+  }
 }
