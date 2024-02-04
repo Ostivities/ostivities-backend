@@ -10,6 +10,7 @@ export class TicketService {
   constructor(@InjectModel(Ticket.name) private ticketModel: Model<Ticket>) {}
 
   async createTicket(dto: CreateTicketDto): Promise<Ticket> {
+    console.log(dto, 'dtt');
     try {
       const createdTicket = new this.ticketModel({
         ...dto,

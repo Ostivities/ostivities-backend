@@ -1,5 +1,11 @@
 import { PartialType } from '@nestjs/swagger';
-import { IsNotEmpty, IsNumber, IsOptional, IsString } from 'class-validator';
+import {
+  IsMongoId,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+} from 'class-validator';
 
 class SingleEvents {
   @IsOptional()
@@ -57,13 +63,13 @@ class CollectiveEvents {
   ticketDescription: string;
 }
 
-export class CreateTicketDto {
+export class TicketDto {
   @IsNotEmpty()
-  @IsString()
+  @IsMongoId()
   userId: string;
 
   @IsNotEmpty()
-  @IsString()
+  @IsMongoId()
   eventId: string;
 
   @IsNotEmpty()
@@ -77,4 +83,6 @@ export class CreateTicketDto {
   collectiveTicket: CollectiveEvents;
 }
 
-export class UpdateTicketDto extends PartialType(CreateTicketDto) {}
+export class CreateTicketDto extends TicketDto {}
+
+export class UpdateTicketDto extends PartialType(TicketDto) {}
