@@ -3,14 +3,22 @@ import {
   Controller,
   HttpCode,
   HttpStatus,
+  Param,
   Post,
+  Put,
   UseGuards,
 } from '@nestjs/common';
-import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBody,
+  ApiOperation,
+  ApiParam,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { GetCurrentUser } from 'src/auth/decorator/user.decorator';
 import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
 import { IResponse } from 'src/util/types';
-import { CreateTicketDto } from './dto/ticket.dto';
+import { CreateTicketDto, UpdateTicketDto } from './dto/ticket.dto';
 import { TicketService } from './ticket.service';
 
 @UseGuards(JwtAuthGuard)
@@ -32,8 +40,25 @@ export class TicketController {
     @Body() dto: CreateTicketDto,
     @GetCurrentUser('id') id: string,
   ): Promise<IResponse> {
-    console.log(id, 'jj');
     const data = await this.ticketService.createTicket({ ...dto, userId: id });
     return { statusCode: HttpStatus.CREATED, data: data, message: 'Success' };
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Update ticket' })
+  @ApiParam({ name: 'id', description: 'Ticket ID' })
+  @ApiBody({ type: UpdateTicketDto })
+  @ApiResponse({
+    status: 200,
+    description: 'Ticket updated successfully.',
+  })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @Put('update_ticket/:id')
+  async updateTicket(
+    @Param('id') id: string,
+    @Body() dto: UpdateTicketDto,
+  ): Promise<IResponse> {
+    const data = await this.ticketService.updateTicketById(id, dto);
+    return { statusCode: HttpStatus.OK, data: data, message: 'Success' };
   }
 }
