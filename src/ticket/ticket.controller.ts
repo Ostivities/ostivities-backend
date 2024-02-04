@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   HttpCode,
   HttpStatus,
   Param,
@@ -59,6 +60,20 @@ export class TicketController {
     @Body() dto: UpdateTicketDto,
   ): Promise<IResponse> {
     const data = await this.ticketService.updateTicketById(id, dto);
+    return { statusCode: HttpStatus.OK, data: data, message: 'Success' };
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Ticket' })
+  @ApiParam({ name: 'id', description: 'Ticket id' })
+  @ApiResponse({
+    status: 200,
+    description: 'Ticket retrieved successfully.',
+  })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @Get('retrieve_ticket/:id')
+  async getTicket(@Param('id') id: string): Promise<IResponse> {
+    const data = await this.ticketService.getTicketById(id);
     return { statusCode: HttpStatus.OK, data: data, message: 'Success' };
   }
 }

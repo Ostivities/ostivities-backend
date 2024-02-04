@@ -36,4 +36,13 @@ export class TicketService {
       throw new ForbiddenException(FORBIDDEN_MESSAGE);
     }
   }
+
+  async getTicketById(id: string): Promise<Ticket> {
+    try {
+      const ticket = await this.ticketModel.findOne({ _id: id }).lean();
+      return ticket;
+    } catch (error) {
+      throw new ForbiddenException(FORBIDDEN_MESSAGE);
+    }
+  }
 }
