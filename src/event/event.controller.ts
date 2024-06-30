@@ -168,12 +168,14 @@ export class EventController {
   async discoverEvents(
     @Query('eventName') eventName?: string,
     @Query('state') state?: string,
+    @Query('eventType') eventType?: string,
     @Query('page') page?: number,
     @Query('pageSize') pageSize?: number,
   ): Promise<IResponse> {
     const data = await this.eventService.discoverEvents(
       eventName,
       state,
+      eventType,
       page,
       pageSize,
     );

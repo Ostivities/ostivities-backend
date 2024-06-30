@@ -119,36 +119,28 @@ export class EventService {
   async discoverEvents(
     eventName?: string,
     state?: string,
+    eventType?: string,
     page: number = 1,
     pageSize: number = 10,
   ): Promise<Events[]> {
     const filter: any = {};
     const skip = (page - 1) * pageSize;
+
+    if (eventName !== undefined) {
+      filter.eventName = eventName;
+    } else if (state !== undefined) {
+      filter.state = state;
+    } else {
+      filter.discover = true;
+    }
+
     try {
-      if (eventName !== undefined) {
-        filter.eventName = eventName;
-        const filterByEventName = await this.eventModel
-          .find(filter)
-          .skip(skip)
-          .limit(pageSize)
-          .exec();
-        return filterByEventName;
-      } else if (state !== undefined) {
-        filter.state = state;
-        const filterByEventState = await this.eventModel
-          .find(filter)
-          .skip(skip)
-          .limit(pageSize)
-          .exec();
-        return filterByEventState;
-      } else {
-        const discovery = await this.eventModel
-          .find({ discover: true })
-          .skip(skip)
-          .limit(pageSize)
-          .exec();
-        return discovery;
-      }
+      const events = await this.eventModel
+        .find(filter)
+        .skip(skip)
+        .limit(pageSize)
+        .exec();
+      return events;
     } catch (error) {
       throw new ForbiddenException(FORBIDDEN_MESSAGE);
     }
