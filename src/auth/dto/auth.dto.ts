@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
   IsAlpha,
+  IsBoolean,
   IsEmail,
   IsEnum,
   IsNotEmpty,
@@ -86,6 +87,15 @@ export class CreateUserDto {
     },
   )
   password: string;
+
+  @ApiProperty({
+    description: 'Terms and conditions',
+    type: Boolean,
+    required: true,
+  })
+  @IsNotEmpty()
+  @IsBoolean()
+  terms_and_condition: boolean;
 }
 
 export class LoginUserDto {

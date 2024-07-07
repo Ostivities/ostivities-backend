@@ -50,6 +50,7 @@ export class AuthService {
           hash: hash,
           email: dto.email,
           accountType: dto.accountType,
+          terms_and_condition: dto.terms_and_condition,
         };
       }
       if (dto.accountType === ACCOUNT_TYPE.PERSONAL) {
@@ -59,6 +60,7 @@ export class AuthService {
           hash: hash,
           email: dto.email,
           accountType: dto.accountType,
+          terms_and_condition: dto.terms_and_condition,
         };
       }
 

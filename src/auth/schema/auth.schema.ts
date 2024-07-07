@@ -78,6 +78,12 @@ export class User {
   accountType: ACCOUNT_TYPE;
 
   @Prop({
+    type: Boolean,
+    required: [true, 'terms and condition is required'],
+  })
+  terms_and_condition: boolean;
+
+  @Prop({
     type: [{ type: mongoose.Schema.Types.ObjectId, ref: Events?.name }],
   })
   events: [Events];
