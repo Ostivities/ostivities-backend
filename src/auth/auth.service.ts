@@ -10,6 +10,7 @@ import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
 import * as argon from 'argon2';
 import { Model } from 'mongoose';
+import { ACCOUNT_TYPE } from 'src/util/types';
 import {
   CreateUserDto,
   ForgotPasswordDto,
@@ -41,12 +42,28 @@ export class AuthService {
       }
       const hash = await argon.hash(dto.password);
 
+      let user: any;
+
+      if (dto.accountType === ACCOUNT_TYPE.ORGANISATION) {
+        user = {
+          businessName: dto.businessName,
+          hash: hash,
+          email: dto.email,
+          accountType: dto.accountType,
+        };
+      }
+      if (dto.accountType === ACCOUNT_TYPE.PERSONAL) {
+        user = {
+          firstName: dto.firstName,
+          lastName: dto.lastName,
+          hash: hash,
+          email: dto.email,
+          accountType: dto.accountType,
+        };
+      }
+
       const createdUser = new this.userModel({
-        firstName: dto.firstName,
-        lastName: dto.lastName,
-        hash: hash,
-        email: dto.email,
-        accountType: dto.accountType,
+        ...user,
       });
 
       const savedUser = await createdUser.save();

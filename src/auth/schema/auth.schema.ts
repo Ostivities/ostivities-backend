@@ -29,22 +29,43 @@ export class User {
   hash: string;
 
   @Prop({
-    required: [true, 'first name is required'],
+    // required: [
+    //   this.accountType === ACCOUNT_TYPE.PERSONAL,
+    //   'first name is required',
+    // ],
     validate: {
-      validator: (value: string) => /^[A-Za-z]+$/.test(value),
+      validator: function (value: string) {
+        return this.accountType === ACCOUNT_TYPE.PERSONAL
+          ? !!value && /^[A-Za-z]+$/.test(value)
+          : true;
+      },
       message: 'First name must only contain alphabetic characters',
     },
   })
   firstName: string;
 
   @Prop({
-    required: [true, 'last name is required'],
+    // required: [, 'last name is required'],
     validate: {
-      validator: (value: string) => /^[A-Za-z]+$/.test(value),
+      validator: function (value: string) {
+        return this.accountType === ACCOUNT_TYPE.PERSONAL
+          ? !!value && /^[A-Za-z]+$/.test(value)
+          : true;
+      },
       message: 'Last name must only contain alphabetic characters',
     },
   })
   lastName: string;
+
+  @Prop({
+    validate: {
+      validator: function (value: string) {
+        return this.accountType === ACCOUNT_TYPE.ORGANISATION ? !!value : true;
+      },
+      message: 'Business name is required for organisation accounts',
+    },
+  })
+  businessName: string;
 
   @Prop({
     type: String,

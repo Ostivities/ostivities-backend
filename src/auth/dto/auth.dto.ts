@@ -9,6 +9,7 @@ import {
   Matches,
   MaxLength,
   MinLength,
+  ValidateIf,
 } from 'class-validator';
 import { ACCOUNT_TYPE } from '../../util/types';
 
@@ -28,6 +29,7 @@ export class CreateUserDto {
   })
   @IsNotEmpty()
   @IsAlpha()
+  @ValidateIf((o) => o.accountType === ACCOUNT_TYPE.PERSONAL)
   firstName: string;
 
   @ApiProperty({
@@ -37,7 +39,20 @@ export class CreateUserDto {
   })
   @IsNotEmpty()
   @IsAlpha()
+  @ValidateIf((o) => o.accountType === ACCOUNT_TYPE.PERSONAL)
   lastName: string;
+
+  @ApiProperty({
+    description: 'Business name',
+    type: String,
+    required: true,
+  })
+  @ValidateIf((o) => o.accountType === ACCOUNT_TYPE.ORGANISATION)
+  @IsNotEmpty({
+    message: 'Business name is required for organisation accounts',
+  })
+  @IsString()
+  businessName: string;
 
   @ApiProperty({
     description: 'Email address',
