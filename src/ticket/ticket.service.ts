@@ -2,17 +2,37 @@ import { ForbiddenException, Injectable } from '@nestjs/common';
 import { FORBIDDEN_MESSAGE } from '@nestjs/core/guards';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
+import { User } from 'src/auth/schema/auth.schema';
+import { Events } from 'src/event/schema/event.schema';
 import { CreateTicketDto, UpdateTicketDto } from './dto/ticket.dto';
 import { Ticket } from './schema/ticket.schema';
 
 @Injectable()
 export class TicketService {
-  constructor(@InjectModel(Ticket.name) private ticketModel: Model<Ticket>) {}
+  constructor(
+    @InjectModel(Ticket.name) private ticketModel: Model<Ticket>,
+    @InjectModel(Events.name) private eventModel: Model<Events>,
+    @InjectModel(User.name) private userModel: Model<User>,
+  ) {}
 
   async createTicket(dto: CreateTicketDto): Promise<Ticket> {
+    const { userId, eventId } = dto;
+
+    const event = await this.eventModel.findById(eventId);
+    if (!event) {
+      throw new Error('Event not found');
+    }
+
+    const user = await this.userModel.findById(userId);
+    if (!user) {
+      throw new Error('User not found');
+    }
+
     try {
       const createdTicket = new this.ticketModel({
         ...dto,
+        user: user._id,
+        event: event.id,
       });
       const savedTicket = await createdTicket.save();
       return savedTicket;
