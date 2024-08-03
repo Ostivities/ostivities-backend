@@ -2,6 +2,18 @@ export enum ACCOUNT_TYPE {
   PERSONAL = 'PERSONAL',
   ORGANISATION = 'ORGANISATION',
 }
+export enum TICKET_ENTITY {
+  SINGLE = 'SINGLE',
+  COLLECTIVE = 'COLLECTIVE',
+}
+export enum TICKET_TYPE {
+  FREE = 'FREE',
+  PAID = 'PAID',
+}
+export enum TICKET_STOCK {
+  LIMITED = 'LIMITED',
+  UN_LIMITED = 'UN_LIMITED',
+}
 
 export enum EVENT_TYPES {
   WEDDING = 'Wedding',
@@ -46,6 +58,11 @@ export interface ISingleEvents {
   ticketPrice?: string | any;
   purchaseLimit?: number | any;
   ticketDescription?: string | any;
+}
+
+export interface ITicketQuestions {
+  question: string;
+  isCompulsory: boolean;
 }
 
 export interface ICollectiveEvents {

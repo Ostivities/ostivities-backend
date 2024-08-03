@@ -92,8 +92,11 @@ export class EventController {
   async updateEvent(
     @Param('id') id: string,
     @Body() dto: UpdateEventDto,
+    @GetCurrentUser('id') userId: string,
   ): Promise<IResponse> {
-    const data = await this.eventService.updateEventById(id, dto);
+    const data = await this.eventService.updateEventById(id, userId, {
+      ...dto,
+    });
     return { statusCode: HttpStatus.OK, data: data, message: 'Success' };
   }
 

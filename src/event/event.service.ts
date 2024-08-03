@@ -40,12 +40,16 @@ export class EventService {
     }
   }
 
-  async updateEventById(id: string, dto: UpdateEventDto): Promise<Events> {
+  async updateEventById(
+    id: string,
+    userId: string,
+    dto: UpdateEventDto,
+  ): Promise<Events> {
     try {
       const updatedEvent = await this.eventModel.findOneAndUpdate(
-        { _id: id },
+        { _id: id, user: userId },
         dto,
-        { new: true },
+        { new: true, runValidators: true },
       );
       return updatedEvent;
     } catch (error) {

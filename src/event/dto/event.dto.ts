@@ -5,13 +5,13 @@ import {
   IsEnum,
   IsMongoId,
   IsNotEmpty,
-  IsNumber,
   IsObject,
   IsOptional,
   IsString,
   IsUrl,
   ValidateNested,
 } from 'class-validator';
+import { CollectiveEvents, SingleEvents } from 'src/ticket/dto/ticket.dto';
 import { EVENT_TYPES } from 'src/util/types';
 
 class ValidateSocials {
@@ -22,62 +22,6 @@ class ValidateSocials {
   @IsOptional()
   @IsUrl()
   url: string;
-}
-
-class SingleEvents {
-  @IsOptional()
-  @IsString()
-  ticketType?: string;
-
-  @IsOptional()
-  @IsString()
-  ticketName?: string;
-
-  @IsOptional()
-  @IsString()
-  ticketStock?: string;
-
-  @IsOptional()
-  @IsString()
-  ticketPrice?: string;
-
-  @IsOptional()
-  @IsNumber()
-  purchaseLimit?: number;
-
-  @IsOptional()
-  @IsString()
-  ticketDescription?: string;
-}
-
-class CollectiveEvents {
-  @IsOptional()
-  @IsString()
-  ticketType: string;
-
-  @IsOptional()
-  @IsString()
-  ticketName: string;
-
-  @IsOptional()
-  @IsString()
-  ticketStock: string;
-
-  @IsOptional()
-  @IsString()
-  groupPrice: string;
-
-  @IsOptional()
-  @IsString()
-  groupSize: string;
-
-  @IsOptional()
-  @IsString()
-  ticketPrice: string;
-
-  @IsOptional()
-  @IsString()
-  ticketDescription: string;
 }
 
 class SupportDocuments {
@@ -162,7 +106,9 @@ export class EventDto {
 
 export class CreateEventDto extends OmitType(EventDto, ['user']) {}
 
-export class UpdateEventDto extends PartialType(CreateEventDto) {}
+export class UpdateEventDto extends PartialType(CreateEventDto) {
+  user?: string;
+}
 
 export class StringArrayDto {
   @ApiProperty({ type: [String] })

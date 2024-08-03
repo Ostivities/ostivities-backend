@@ -2,9 +2,30 @@ import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
 import { User } from 'src/auth/schema/auth.schema';
 import { schemaConfig } from 'src/util/schema.config';
-import { EVENT_MODE, EVENT_TYPES, ISupportDocuments } from 'src/util/types';
+import {
+  EVENT_MODE,
+  EVENT_TYPES,
+  ISupportDocuments,
+  TICKET_STOCK,
+  TICKET_TYPE,
+} from 'src/util/types';
 
 export type EventDocument = HydratedDocument<Events>;
+
+@Schema(schemaConfig)
+class TicketQuestionSchema {
+  @Prop({
+    type: String,
+    required: true,
+  })
+  question: string;
+
+  @Prop({
+    type: Boolean,
+    required: true,
+  })
+  isCompulsory: boolean;
+}
 
 @Schema(schemaConfig)
 class Socials {
@@ -26,47 +47,157 @@ class SupportingDocs {
 
 @Schema(schemaConfig)
 class SingleEvents {
-  @Prop()
+  @Prop({
+    type: String,
+    required: [true, 'ticket type is required'],
+    enum: {
+      values: ['FREE', 'PAID'],
+      message: '{VALUE} is not supported',
+    },
+  })
   ticketType: string;
 
-  @Prop()
+  @Prop({ type: String, required: [true, 'ticket name is required'] })
   ticketName: string;
 
-  @Prop()
+  @Prop({
+    type: String,
+    required: [true, 'ticket stock is required'],
+    enum: {
+      values: ['LIMITED', 'UN_LIMITED'],
+      message: '{VALUE} is not supported',
+    },
+  })
   ticketStock: string;
 
-  @Prop()
-  ticketPrice: string;
+  @Prop({
+    type: Number,
+    validate: {
+      validator: function (value: string) {
+        return this.ticketStock === TICKET_STOCK.LIMITED ? !!value : true;
+      },
+      message: 'ticket qty is required',
+    },
+  })
+  ticketQty: number;
 
-  @Prop()
+  @Prop({
+    type: Number,
+    validate: {
+      validator: function (value: string) {
+        return this.ticketPrice === TICKET_TYPE.PAID ? !!value : true;
+      },
+      message: 'ticket price is required',
+    },
+  })
+  ticketPrice: number;
+
+  @Prop({
+    type: Number,
+    validate: {
+      validator: function (value: string) {
+        return this.ticketStock === TICKET_STOCK.LIMITED ? !!value : true;
+      },
+      message: 'ticket price is required',
+    },
+  })
   purchaseLimit: number;
 
-  @Prop()
+  @Prop({
+    type: String,
+    required: [false, 'ticket description is required'],
+  })
   ticketDescription: string;
+
+  @Prop({
+    type: Boolean,
+    required: [false, 'charge bearer is required'],
+  })
+  guestAsChargeBearer: boolean;
+
+  @Prop({
+    type: [TicketQuestionSchema],
+    required: [false],
+  })
+  ticketQuestions: [TicketQuestionSchema];
 }
 
 @Schema(schemaConfig)
 class CollectiveEvents {
-  @Prop()
+  @Prop({
+    type: String,
+    required: [true, 'ticket type is required'],
+    enum: {
+      values: ['FREE', 'PAID'],
+      message: '{VALUE} is not supported',
+    },
+  })
   ticketType: string;
 
-  @Prop()
+  @Prop({ type: String, required: [true, 'ticket name is required'] })
   ticketName: string;
 
-  @Prop()
+  @Prop({
+    type: String,
+    required: [true, 'ticket stock is required'],
+    enum: {
+      values: ['LIMITED', 'UN_LIMITED'],
+      message: '{VALUE} is not supported',
+    },
+  })
   ticketStock: string;
 
-  @Prop()
-  groupPrice: string;
+  @Prop({
+    type: Number,
+    validate: {
+      validator: function (value: string) {
+        return this.ticketStock === TICKET_STOCK.LIMITED ? !!value : true;
+      },
+      message: 'ticket qty is required',
+    },
+  })
+  ticketQty: number;
 
-  @Prop()
-  groupSize: string;
+  @Prop({
+    type: Number,
+    validate: {
+      validator: function (value: string) {
+        return this.ticketPrice === TICKET_TYPE.PAID ? !!value : true;
+      },
+      message: 'ticket qty is required',
+    },
+  })
+  ticketPrice: number;
 
-  @Prop()
-  ticketPrice: string;
+  @Prop({
+    type: Number,
+    required: [true, 'group price is required'],
+  })
+  groupPrice: number;
 
-  @Prop()
+  @Prop({
+    type: Number,
+    required: [true, 'group size is required'],
+  })
+  groupSize: number;
+
+  @Prop({
+    type: String,
+    required: [false, 'ticket description is required'],
+  })
   ticketDescription: string;
+
+  @Prop({
+    type: Boolean,
+    required: [false, 'charge bearer is required'],
+  })
+  guestAsChargeBearer: boolean;
+
+  @Prop({
+    type: [TicketQuestionSchema],
+    required: [false],
+  })
+  ticketQuestions: [TicketQuestionSchema];
 }
 
 @Schema(schemaConfig)
@@ -130,13 +261,13 @@ export class Events {
 
   @Prop({
     required: false,
-    type: SingleEvents,
-    default: {},
+    type: [SingleEvents],
+    default: [],
   })
-  singleTicket: SingleEvents;
+  singleTicket: SingleEvents[];
 
-  @Prop({ required: false, type: CollectiveEvents, default: {} })
-  collectiveTicket: CollectiveEvents;
+  @Prop({ required: false, type: [CollectiveEvents], default: [] })
+  collectiveTicket: CollectiveEvents[];
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: User.name })
   user: mongoose.Schema.Types.ObjectId;
