@@ -36,12 +36,13 @@ export class TicketController {
     description: 'Ticket created successfully.',
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
-  @Post('create')
+  @Post('create_ticket')
   async createTicket(
     @Body() dto: CreateTicketDto,
     @GetCurrentUser('id') id: string,
   ): Promise<IResponse> {
     const data = await this.ticketService.createTicket({ ...dto, userId: id });
+    console.log(data, 'ddd');
     return { statusCode: HttpStatus.CREATED, data: data, message: 'Success' };
   }
 
@@ -58,8 +59,12 @@ export class TicketController {
   async updateTicket(
     @Param('id') id: string,
     @Body() dto: UpdateTicketDto,
+    @GetCurrentUser('id') userId: string,
   ): Promise<IResponse> {
-    const data = await this.ticketService.updateTicketById(id, dto);
+    const data = await this.ticketService.updateTicketById(id, {
+      ...dto,
+      userId,
+    });
     return { statusCode: HttpStatus.OK, data: data, message: 'Success' };
   }
 

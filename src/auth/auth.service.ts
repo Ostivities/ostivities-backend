@@ -9,7 +9,9 @@ import { FORBIDDEN_MESSAGE } from '@nestjs/core/guards';
 import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
 import * as argon from 'argon2';
+import * as crypto from 'crypto';
 import { Model } from 'mongoose';
+import { Security } from 'src/security/schema/security.schema';
 import { ACCOUNT_TYPE } from 'src/util/types';
 import {
   CreateUserDto,
@@ -28,10 +30,14 @@ export class AuthService {
     @InjectModel(User.name) private userModel: Model<User>,
     @InjectModel(ForgotPasswordModel.name)
     private forgotPasswordModel: Model<ForgotPasswordModel>,
+    @InjectModel(Security.name) private securityModel: Model<Security>,
   ) {}
 
   // REGISTER USER
   async register(dto: CreateUserDto): Promise<User> {
+    const publicKey = 'pub_' + crypto.randomBytes(16).toString('hex');
+    const secretKey = 'pk_' + crypto.randomBytes(32).toString('hex');
+
     try {
       const checkIfUserexist = await this.userModel.findOne({
         email: dto.email,
@@ -69,10 +75,24 @@ export class AuthService {
       });
 
       const savedUser = await createdUser.save();
+
+      if (savedUser) {
+        const newSecurityKey = new this.securityModel({
+          publicKey,
+          secretKey,
+        });
+
+        await newSecurityKey.save();
+      }
       return savedUser;
     } catch (error) {
       throw error;
     }
+  }
+
+  // ACTIVATE ACCONT
+  async activateAccount(dto: any) {
+    console.log(dto);
   }
 
   // LPGIN USER

@@ -121,15 +121,15 @@ export class SingleEvents {
   })
   ticketQuestions: [TicketQuestionSchema];
 
-  @Prop({
-    type: String,
-    required: [true, 'ticket stock is required'],
-    enum: {
-      values: ['SINGLE', 'COLLECTIVE'],
-      message: '{VALUE} is not supported',
-    },
-  })
-  ticketEntity: string;
+  // @Prop({
+  //   type: String,
+  //   required: [true, 'ticket stock is required'],
+  //   enum: {
+  //     values: ['SINGLE', 'COLLECTIVE'],
+  //     message: '{VALUE} is not supported',
+  //   },
+  // })
+  // ticketEntity: string;
 }
 
 @Schema(schemaConfig)
@@ -208,16 +208,6 @@ export class CollectiveEvents {
     required: [false],
   })
   ticketQuestions: [TicketQuestionSchema];
-
-  @Prop({
-    type: String,
-    required: [true, 'ticket stock is required'],
-    enum: {
-      values: ['SINGLE', 'COLLECTIVE'],
-      message: '{VALUE} is not supported',
-    },
-  })
-  ticketEntity: string;
 }
 
 @Schema(schemaConfig)

@@ -17,6 +17,7 @@ export class TicketService {
 
   async createTicket(dto: CreateTicketDto): Promise<Ticket> {
     const { userId, eventId } = dto;
+    console.log(eventId, 'eventid');
 
     const event = await this.eventModel.findById(eventId);
     if (!event) {
@@ -31,13 +32,13 @@ export class TicketService {
     try {
       const createdTicket = new this.ticketModel({
         ...dto,
-        user: user._id,
-        event: event.id,
       });
       const savedTicket = await createdTicket.save();
+      console.log(savedTicket, 'saved ticket');
       return savedTicket;
     } catch (error) {
-      throw new ForbiddenException(FORBIDDEN_MESSAGE);
+      return error;
+      // throw new ForbiddenException(FORBIDDEN_MESSAGE);
     }
   }
 
@@ -45,11 +46,23 @@ export class TicketService {
     ticketId: string,
     dto: UpdateTicketDto,
   ): Promise<Ticket> {
+    const { userId, eventId } = dto;
+
+    const event = await this.eventModel.findById(eventId);
+    if (!event) {
+      throw new Error('Event not found');
+    }
+
+    const user = await this.userModel.findById(userId);
+    if (!user) {
+      throw new Error('User not found');
+    }
+
     try {
       const updatedTicket = await this.ticketModel.findOneAndUpdate(
         { _id: ticketId },
         dto,
-        { new: true, upsert: false },
+        { new: true, upsert: false, runValidators: true },
       );
       return updatedTicket;
     } catch (error) {

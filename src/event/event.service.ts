@@ -21,13 +21,12 @@ export class EventService {
     if (!userData) {
       throw new Error('User not found');
     }
-
     try {
       const createdEvent = new this.eventModel({
         ...dto,
-        user: userData.id,
       });
       const savedEvent = await createdEvent.save();
+      console.log(savedEvent, 'saved event');
       return savedEvent;
     } catch (error) {
       throw new ForbiddenException(FORBIDDEN_MESSAGE);
@@ -61,7 +60,7 @@ export class EventService {
       const updatedEvent = await this.eventModel.findOneAndUpdate(
         { _id: id, user: userId },
         dto,
-        { new: true, runValidators: true },
+        { new: true, runValidators: true, upsert: false },
       );
       return updatedEvent;
     } catch (error) {

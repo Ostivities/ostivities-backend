@@ -32,8 +32,8 @@ export class SingleEvents {
   ticketName: string;
 
   @IsNotEmpty()
-  @IsString()
   @IsEnum(TICKET_STOCK)
+  @IsString()
   ticketStock: string;
 
   @ValidateIf((o) => o.ticketStock === TICKET_STOCK.LIMITED)
@@ -76,8 +76,8 @@ export class CollectiveEvents {
   ticketName: string;
 
   @IsNotEmpty()
-  @IsString()
   @IsEnum(TICKET_STOCK)
+  @IsString()
   ticketStock: string;
 
   @IsNotEmpty()
@@ -115,10 +115,6 @@ export class TicketDto {
   @IsNotEmpty()
   @IsMongoId()
   eventId: string;
-
-  @IsNotEmpty()
-  @IsString()
-  eventName: string;
 
   @IsOptional()
   singleTicket: SingleEvents;
