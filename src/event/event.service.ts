@@ -21,6 +21,7 @@ export class EventService {
     if (!userData) {
       throw new Error('User not found');
     }
+
     try {
       const createdEvent = new this.eventModel({
         ...dto,

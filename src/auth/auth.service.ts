@@ -80,9 +80,11 @@ export class AuthService {
         const newSecurityKey = new this.securityModel({
           publicKey,
           secretKey,
+          user: savedUser?._id,
         });
 
-        await newSecurityKey.save();
+        const x = await newSecurityKey.save();
+        console.log(x, 'keysgg');
       }
       return savedUser;
     } catch (error) {

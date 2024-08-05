@@ -13,7 +13,12 @@ export class Security {
   @Prop({ required: true })
   secretKey: string;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: User.name })
+  @Prop({
+    type: mongoose.Schema.Types.ObjectId,
+    ref: User.name,
+    required: true,
+    unique: true,
+  })
   user: mongoose.Schema.Types.ObjectId;
 }
 
