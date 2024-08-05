@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
+import mongoose, { HydratedDocument } from 'mongoose';
+import { User } from 'src/auth/schema/auth.schema';
 import { schemaConfig } from 'src/util/schema.config';
 
 export type UserDocument = HydratedDocument<SettlementAccount>;
@@ -33,6 +34,14 @@ export class SettlementAccount {
     default: '',
   })
   bank_name: string;
+
+  @Prop({
+    type: mongoose.Schema.Types.ObjectId,
+    ref: User.name,
+    required: true,
+    unique: true,
+  })
+  user: mongoose.Schema.Types.ObjectId;
 }
 
 export const SettlementAccountSchema =

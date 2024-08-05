@@ -11,6 +11,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import * as argon from 'argon2';
 import * as crypto from 'crypto';
 import { Model } from 'mongoose';
+import { SecurityDto } from 'src/security/dto/security.dto';
 import { Security } from 'src/security/schema/security.schema';
 import { ACCOUNT_TYPE } from 'src/util/types';
 import {
@@ -36,7 +37,7 @@ export class AuthService {
   // REGISTER USER
   async register(dto: CreateUserDto): Promise<User> {
     const publicKey = 'pub_' + crypto.randomBytes(16).toString('hex');
-    const secretKey = 'pk_' + crypto.randomBytes(32).toString('hex');
+    const secretKey = 'pk_' + crypto.randomBytes(16).toString('hex');
 
     try {
       const checkIfUserexist = await this.userModel.findOne({
@@ -77,14 +78,15 @@ export class AuthService {
       const savedUser = await createdUser.save();
 
       if (savedUser) {
-        const newSecurityKey = new this.securityModel({
+        const security: SecurityDto = {
           publicKey,
           secretKey,
-          user: savedUser?._id,
+          user: savedUser?.id,
+        };
+        const newSecurityKey = new this.securityModel({
+          ...security,
         });
-
-        const x = await newSecurityKey.save();
-        console.log(x, 'keysgg');
+        await newSecurityKey.save();
       }
       return savedUser;
     } catch (error) {

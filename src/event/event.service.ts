@@ -27,7 +27,6 @@ export class EventService {
         ...dto,
       });
       const savedEvent = await createdEvent.save();
-      console.log(savedEvent, 'saved event');
       return savedEvent;
     } catch (error) {
       throw new ForbiddenException(FORBIDDEN_MESSAGE);

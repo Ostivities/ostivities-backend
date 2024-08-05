@@ -4,6 +4,10 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { DatabaseModule } from 'src/database/database.module';
 import { EventSchema, Events } from 'src/event/schema/event.schema';
 import { Security, SecuritySchema } from 'src/security/schema/security.schema';
+import {
+  SettlementAccount,
+  SettlementAccountSchema,
+} from 'src/settle_accounts/schema/settlement.schema';
 import { AuthController } from './auth.controller';
 import { authProviders } from './auth.providers';
 import { AuthService } from './auth.service';
@@ -25,6 +29,7 @@ import { JwtStrategy } from './strategy/jwt.strategy';
       { name: ForgotPasswordModel.name, schema: ForgotPasswordSchema },
       { name: Events.name, schema: EventSchema },
       { name: Security.name, schema: SecuritySchema },
+      { name: SettlementAccount.name, schema: SettlementAccountSchema },
     ]),
     DatabaseModule,
   ],
