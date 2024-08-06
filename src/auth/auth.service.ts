@@ -13,13 +13,17 @@ import * as crypto from 'crypto';
 import { Model } from 'mongoose';
 import { SecurityDto } from 'src/security/dto/security.dto';
 import { Security } from 'src/security/schema/security.schema';
+import { otpGenerator } from 'src/util/helper';
 import { ACCOUNT_TYPE } from 'src/util/types';
 import {
+  ActivateAccountDto,
   CreateUserDto,
   ForgotPasswordDto,
   LoginUserDto,
   ResetPasswordDto,
+  VerifyAccountDto,
 } from './dto/auth.dto';
+import { ActivateUser } from './schema/activation.schema';
 import { User } from './schema/auth.schema';
 import { ForgotPasswordModel } from './schema/forgotpassword.schema';
 
@@ -32,6 +36,8 @@ export class AuthService {
     @InjectModel(ForgotPasswordModel.name)
     private forgotPasswordModel: Model<ForgotPasswordModel>,
     @InjectModel(Security.name) private securityModel: Model<Security>,
+    @InjectModel(ActivateUser.name)
+    private activateAccountModel: Model<ActivateUser>,
   ) {}
 
   // REGISTER USER
@@ -88,15 +94,88 @@ export class AuthService {
         });
         await newSecurityKey.save();
       }
+      await this.generateOtp({ email: dto.email });
       return savedUser;
     } catch (error) {
       throw error;
     }
   }
 
+  // GENERATE OTP
+  async generateOtp(dto: ActivateAccountDto): Promise<ActivateUser> {
+    try {
+      const userActive: any = await this.activateAccountModel.findOne({
+        email: dto.email,
+      });
+
+      if (userActive) {
+        const currentTime = new Date().getTime();
+        const activateAccountTimestamp = new Date(
+          userActive?.timeStamp,
+        ).getTime();
+
+        const timeDifference = Math.abs(currentTime - activateAccountTimestamp);
+        const fiveMinutesInMilliseconds = 5 * 60 * 1000;
+
+        if (timeDifference <= fiveMinutesInMilliseconds) {
+          throw new ForbiddenException('token already sent');
+        }
+
+        if (timeDifference > fiveMinutesInMilliseconds) {
+          throw new ForbiddenException('token expired');
+        }
+      } else {
+        const otp = otpGenerator();
+        const activateAccountModelUpdate =
+          await this.activateAccountModel.findOneAndUpdate(
+            { email: dto.email },
+            {
+              $set: {
+                email: dto.email,
+                otp,
+              },
+            },
+            { upsert: true, new: true },
+          );
+
+        if (activateAccountModelUpdate) {
+          return activateAccountModelUpdate;
+        }
+      }
+    } catch (error) {}
+  }
+
   // ACTIVATE ACCONT
-  async activateAccount(dto: any) {
-    console.log(dto);
+  async activateAccount(dto: VerifyAccountDto): Promise<any> {
+    try {
+      const userActive: any = await this.activateAccountModel.findOne({
+        email: dto.email,
+      });
+      const currentTime = new Date().getTime();
+      const userActiveTimeStamp = new Date(userActive?.timeStamp).getTime();
+
+      const fiveMinutesInMilliseconds = 5 * 60 * 1000;
+      const timeDifference = Math.abs(currentTime - userActiveTimeStamp);
+
+      if (
+        timeDifference <= fiveMinutesInMilliseconds &&
+        dto.otp === userActive?.otp
+      ) {
+        await this.userModel.findOneAndUpdate(
+          { email: dto.email },
+          {
+            $set: {
+              is_active: true,
+            },
+          },
+          { upsert: false, new: true, runValidators: true },
+        );
+
+        return 'Account activated successfully';
+      }
+    } catch (error) {
+      throw error;
+    }
   }
 
   // LPGIN USER

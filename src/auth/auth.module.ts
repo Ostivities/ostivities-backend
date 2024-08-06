@@ -11,6 +11,7 @@ import {
 import { AuthController } from './auth.controller';
 import { authProviders } from './auth.providers';
 import { AuthService } from './auth.service';
+import { ActivateUser, ActivateUserSchema } from './schema/activation.schema';
 import { User, UserSchema } from './schema/auth.schema';
 import {
   ForgotPasswordModel,
@@ -30,6 +31,7 @@ import { JwtStrategy } from './strategy/jwt.strategy';
       { name: Events.name, schema: EventSchema },
       { name: Security.name, schema: SecuritySchema },
       { name: SettlementAccount.name, schema: SettlementAccountSchema },
+      { name: ActivateUser.name, schema: ActivateUserSchema },
     ]),
     DatabaseModule,
   ],
