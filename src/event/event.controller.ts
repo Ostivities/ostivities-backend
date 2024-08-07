@@ -54,14 +54,14 @@ export class EventController {
   }
 
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'List all events' })
+  @ApiOperation({ summary: 'List all user events' })
   @ApiResponse({
     status: 200,
     description: 'Events retrieved successfully.',
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
-  @Get('retrieve_events')
-  async getAllEvents(
+  @Get('get_user_events')
+  async getAllUserEvents(
     @Query() paginationDto: PaginationDto,
     @GetCurrentUser('id') id: string,
   ): Promise<IResponse> {
@@ -79,14 +79,14 @@ export class EventController {
   }
 
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Get event' })
+  @ApiOperation({ summary: 'Get an event' })
   @ApiParam({ name: 'id', description: 'Event ID' })
   @ApiResponse({
     status: 200,
     description: 'Event retrieved successfully.',
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
-  @Get('retrieve_event/:id')
+  @Get('get_user_event/:id')
   async getEvent(@Param('id') id: string): Promise<IResponse> {
     const data = await this.eventService.getEventsById(id);
     return { statusCode: HttpStatus.OK, data: data, message: 'Success' };
