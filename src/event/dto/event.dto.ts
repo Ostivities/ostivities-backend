@@ -9,10 +9,10 @@ import {
   IsOptional,
   IsString,
   IsUrl,
+  ValidateIf,
   ValidateNested,
 } from 'class-validator';
-import { CollectiveEvents, SingleEvents } from 'src/ticket/dto/ticket.dto';
-import { EVENT_TYPES } from 'src/util/types';
+import { EVENT_INFO, EVENT_TYPES } from 'src/util/types';
 
 class ValidateSocials {
   @IsOptional()
@@ -63,23 +63,30 @@ export class EventDto {
   supportingDocument: SupportDocuments;
 
   @IsEnum(EVENT_TYPES)
-  @IsOptional()
+  @IsNotEmpty()
   eventType: string;
 
-  @IsOptional()
+  @IsEnum(EVENT_INFO)
+  @IsNotEmpty()
+  eventInfo: string;
+
+  @IsNotEmpty()
   @IsString()
   timeZone: string;
 
-  @IsOptional()
+  @IsNotEmpty()
   @IsString()
+  @ValidateIf((o) => o.ventInfo === EVENT_INFO.RECURRING)
   frequency: string;
 
-  @IsOptional()
+  @IsNotEmpty()
   @IsString()
+  @ValidateIf((o) => o.ventInfo === EVENT_INFO.SINGLE)
   startDate: string;
 
-  @IsOptional()
+  @IsNotEmpty()
   @IsString()
+  @ValidateIf((o) => o.ventInfo === EVENT_INFO.SINGLE)
   endDate: string;
 
   @IsOptional()
@@ -93,11 +100,11 @@ export class EventDto {
   @IsUrl()
   eventImage: string;
 
-  @IsOptional()
-  singleTicket: SingleEvents;
+  // @IsOptional()
+  // singleTicket: SingleEvents;
 
-  @IsOptional()
-  collectiveTicket: CollectiveEvents;
+  // @IsOptional()
+  // collectiveTicket: CollectiveEvents;
 
   @IsNotEmpty()
   @IsMongoId()

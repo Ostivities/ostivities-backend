@@ -68,11 +68,17 @@ export class AuthController {
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   @Post('verify_otp')
   async activateAccount(@Body() dto: VerifyAccountDto) {
-    await this.authService.activateAccount(dto);
-    return {
-      statusCode: HttpStatus.OK,
-      message: `${dto.email} verified successfully`,
-    };
+    try {
+      const data = await this.authService.activateAccount(dto);
+
+      return {
+        statusCode: HttpStatus.OK,
+        message: `${dto.email} verified successfully`,
+        data,
+      };
+    } catch (error) {
+      return error;
+    }
   }
 
   @Public()
@@ -90,7 +96,7 @@ export class AuthController {
     return {
       statusCode: HttpStatus.OK,
       data,
-      message: 'successfully logged in',
+      message: 'Login successful',
     };
   }
 

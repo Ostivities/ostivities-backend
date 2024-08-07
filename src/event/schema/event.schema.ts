@@ -3,6 +3,7 @@ import mongoose, { HydratedDocument } from 'mongoose';
 import { User } from 'src/auth/schema/auth.schema';
 import { schemaConfig } from 'src/util/schema.config';
 import {
+  EVENT_INFO,
   EVENT_MODE,
   EVENT_TYPES,
   ISupportDocuments,
@@ -29,19 +30,19 @@ class TicketQuestionSchema {
 
 @Schema(schemaConfig)
 class Socials {
-  @Prop()
+  @Prop({ type: String, required: false })
   name: string;
 
-  @Prop()
+  @Prop({ type: String, required: false })
   url: string;
 }
 
 @Schema(schemaConfig)
 class SupportingDocs {
-  @Prop()
+  @Prop({ type: String, required: false })
   fileName: string;
 
-  @Prop()
+  @Prop({ type: String, required: false })
   fileUrl: string;
 }
 
@@ -219,6 +220,12 @@ export class Events {
   eventName: string;
 
   @Prop({
+    required: [true, 'event description is required'],
+    type: String,
+  })
+  eventDetails: string;
+
+  @Prop({
     required: [true, 'state is required'],
     type: String,
   })
@@ -243,12 +250,12 @@ export class Events {
   supportingDocument: ISupportDocuments;
 
   @Prop({
-    required: false,
+    required: true,
     enum: EVENT_TYPES,
   })
   eventType: EVENT_TYPES;
 
-  @Prop({ required: false, type: String })
+  @Prop({ required: true, type: String })
   timeZone: string;
 
   @Prop({ required: false, type: String })
@@ -269,15 +276,15 @@ export class Events {
   })
   eventImage: string;
 
-  @Prop({
-    required: false,
-    type: [SingleEvents],
-    default: [],
-  })
-  singleTicket: SingleEvents[];
+  // @Prop({
+  //   required: false,
+  //   type: [SingleEvents],
+  //   default: [],
+  // })
+  // singleTicket: SingleEvents[];
 
-  @Prop({ required: false, type: [CollectiveEvents], default: [] })
-  collectiveTicket: CollectiveEvents[];
+  // @Prop({ required: false, type: [CollectiveEvents], default: [] })
+  // collectiveTicket: CollectiveEvents[];
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: User.name })
   user: mongoose.Schema.Types.ObjectId;
@@ -287,6 +294,9 @@ export class Events {
 
   @Prop({ enum: EVENT_MODE, required: false })
   mode: EVENT_MODE;
+
+  @Prop({ enum: EVENT_INFO, required: true })
+  eventInfo: EVENT_INFO;
 
   @Prop({ required: false, default: false })
   discover: boolean;

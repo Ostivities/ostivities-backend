@@ -21,6 +21,7 @@ import {
 } from '@nestjs/swagger';
 import { GetCurrentUser } from 'src/auth/decorator/user.decorator';
 import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
+import { PaginationDto } from 'src/util/dto.utils';
 import { IResponse } from 'src/util/types';
 import {
   CreateEventDto,
@@ -60,9 +61,21 @@ export class EventController {
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   @Get('retrieve_events')
-  async getAllEvents(): Promise<IResponse> {
-    const data = await this.eventService.getEvents();
-    return { statusCode: HttpStatus.OK, data: data, message: 'Success' };
+  async getAllEvents(
+    @Query() paginationDto: PaginationDto,
+    @GetCurrentUser('id') id: string,
+  ): Promise<IResponse> {
+    try {
+      const { page, limit } = paginationDto;
+      const data = await this.eventService.getAllUserEventsById(
+        page,
+        limit,
+        id,
+      );
+      return { statusCode: HttpStatus.OK, data: data, message: 'Success' };
+    } catch (error) {
+      return error;
+    }
   }
 
   @HttpCode(HttpStatus.OK)
@@ -94,10 +107,14 @@ export class EventController {
     @Body() dto: UpdateEventDto,
     @GetCurrentUser('id') userId: string,
   ): Promise<IResponse> {
-    const data = await this.eventService.updateEventById(id, userId, {
-      ...dto,
-    });
-    return { statusCode: HttpStatus.OK, data: data, message: 'Success' };
+    try {
+      const data = await this.eventService.updateEventById(id, userId, {
+        ...dto,
+      });
+      return { statusCode: HttpStatus.OK, data, message: 'Success' };
+    } catch (error) {
+      return error;
+    }
   }
 
   @HttpCode(HttpStatus.OK)

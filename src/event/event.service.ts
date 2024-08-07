@@ -33,10 +33,54 @@ export class EventService {
     }
   }
 
-  async getEvents(): Promise<Events[]> {
+  async updateEventById(
+    id: string,
+    userId: string,
+    dto: UpdateEventDto,
+  ): Promise<Events> {
+    const userData = await this.userModel.findById(userId);
+    if (!userData) {
+      throw new Error('User not found');
+    }
+
+    const eventData = await this.eventModel.findById(id);
+    if (!eventData) {
+      throw new Error('Event not found');
+    }
+
     try {
-      const events = await this.eventModel.find().populate('user').exec();
-      return events;
+      const updatedEvent = await this.eventModel.findByIdAndUpdate(
+        { _id: id },
+        dto,
+        { new: true, runValidators: true, upsert: true },
+      );
+      return updatedEvent;
+    } catch (error) {
+      console.log(error);
+      throw new ForbiddenException(FORBIDDEN_MESSAGE);
+    }
+  }
+
+  async getAllUserEventsById(
+    page: number,
+    limit: number,
+    id: string,
+  ): Promise<Events[] | any> {
+    const skip = (page - 1) * limit;
+    try {
+      const userData = await this.userModel.findById(id);
+      if (!userData) {
+        throw new Error('User not found');
+      }
+
+      const events = await this.eventModel
+        .find({ user: id })
+        .skip(skip)
+        .limit(limit)
+        .exec();
+
+      const total = await this.eventModel.countDocuments({ user: id });
+      return { data: events, page, limit, total };
     } catch (error) {
       throw new ForbiddenException(FORBIDDEN_MESSAGE);
     }
@@ -46,23 +90,6 @@ export class EventService {
     try {
       const event = await this.eventModel.findOne({ _id: id }).lean();
       return event;
-    } catch (error) {
-      throw new ForbiddenException(FORBIDDEN_MESSAGE);
-    }
-  }
-
-  async updateEventById(
-    id: string,
-    userId: string,
-    dto: UpdateEventDto,
-  ): Promise<Events> {
-    try {
-      const updatedEvent = await this.eventModel.findOneAndUpdate(
-        { _id: id, user: userId },
-        dto,
-        { new: true, runValidators: true, upsert: false },
-      );
-      return updatedEvent;
     } catch (error) {
       throw new ForbiddenException(FORBIDDEN_MESSAGE);
     }

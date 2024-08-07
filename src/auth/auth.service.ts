@@ -38,6 +38,7 @@ export class AuthService {
     @InjectModel(Security.name) private securityModel: Model<Security>,
     @InjectModel(ActivateUser.name)
     private activateAccountModel: Model<ActivateUser>,
+    // private readonly logger = new Logger(AuthService.name),
   ) {}
 
   // REGISTER USER
@@ -80,7 +81,7 @@ export class AuthService {
       const createdUser = new this.userModel({
         ...user,
       });
-
+      // 906767
       const savedUser = await createdUser.save();
 
       if (savedUser) {
@@ -126,6 +127,7 @@ export class AuthService {
         }
       } else {
         const otp = otpGenerator();
+        console.log(otp, 'otp generated');
         const activateAccountModelUpdate =
           await this.activateAccountModel.findOneAndUpdate(
             { email: dto.email },
@@ -151,10 +153,13 @@ export class AuthService {
       const userActive: any = await this.activateAccountModel.findOne({
         email: dto.email,
       });
-      const currentTime = new Date().getTime();
-      const userActiveTimeStamp = new Date(userActive?.timeStamp).getTime();
 
-      const fiveMinutesInMilliseconds = 5 * 60 * 1000;
+      // console.log(userActive, 'user active');
+
+      const currentTime = new Date().getMinutes();
+      const userActiveTimeStamp = new Date(userActive?.timeStamp).getMinutes();
+
+      const fiveMinutesInMilliseconds = 1 * 60 * 1000;
       const timeDifference = Math.abs(currentTime - userActiveTimeStamp);
 
       if (
@@ -168,10 +173,11 @@ export class AuthService {
               is_active: true,
             },
           },
-          { upsert: false, new: true, runValidators: true },
+          { upsert: true, new: true, runValidators: true },
         );
-
         return 'Account activated successfully';
+      } else {
+        return { message: 'OTP expired' };
       }
     } catch (error) {
       throw error;
@@ -188,6 +194,10 @@ export class AuthService {
       throw new ConflictException('User not found');
     }
 
+    // if (user.is_active === false) {
+    //   throw new Error('User not found');
+    // }
+
     const pwdMatch = await argon.verify(user.hash, dto.password);
     if (!pwdMatch) {
       // throw new ForbiddenException(`User with this credentials doesn't exist`);
@@ -199,7 +209,11 @@ export class AuthService {
         expiresIn: '24h',
         secret: secret,
       });
-      return { accessToken: token };
+      if (user.is_active === false) {
+        return { message: 'kindly verify account', is_active: false };
+      } else {
+        return { accessToken: token };
+      }
     }
   }
 
