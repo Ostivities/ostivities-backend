@@ -39,11 +39,22 @@ export class TicketController {
   @Post('create_ticket')
   async createTicket(
     @Body() dto: CreateTicketDto,
-    @GetCurrentUser('id') id: string,
+    @GetCurrentUser('id') id: string | any,
   ): Promise<IResponse> {
-    const data = await this.ticketService.createTicket({ ...dto, userId: id });
-    console.log(data, 'ddd');
-    return { statusCode: HttpStatus.CREATED, data: data, message: 'Success' };
+    try {
+      const data = await this.ticketService.createTicket({
+        ...dto,
+        userId: id?._id,
+      });
+      console.log(data, 'ddd');
+      return {
+        statusCode: HttpStatus.CREATED,
+        data: data,
+        message: 'Success',
+      };
+    } catch (error) {
+      return error;
+    }
   }
 
   @HttpCode(HttpStatus.OK)

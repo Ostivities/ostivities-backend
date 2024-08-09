@@ -17,12 +17,16 @@ export class TicketService {
 
   async createTicket(dto: CreateTicketDto): Promise<Ticket> {
     const { userId, eventId } = dto;
-    console.log(eventId, 'eventid');
+    console.log(userId, 'user id');
+    console.log(eventId, 'user id');
 
     const event = await this.eventModel.findById(eventId);
     if (!event) {
       throw new Error('Event not found');
     }
+
+    console.log(event, 'event');
+    console.log(userId, 'user');
 
     const user = await this.userModel.findById(userId);
     if (!user) {
@@ -32,13 +36,14 @@ export class TicketService {
     try {
       const createdTicket = new this.ticketModel({
         ...dto,
+        eventId: event._id,
+        userId: user._id,
       });
       const savedTicket = await createdTicket.save();
       console.log(savedTicket, 'saved ticket');
       return savedTicket;
     } catch (error) {
       return error;
-      // throw new ForbiddenException(FORBIDDEN_MESSAGE);
     }
   }
 

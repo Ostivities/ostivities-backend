@@ -207,7 +207,7 @@ export class EventController {
   @ApiParam({ name: 'id', description: 'Event ID' })
   @ApiResponse({
     status: 200,
-    description: 'Event updated successfully.',
+    description: 'Event deleted successfully.',
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   @Delete('delete_event/:id')
