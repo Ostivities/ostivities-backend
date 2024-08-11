@@ -99,4 +99,19 @@ export class TicketService {
       throw new ForbiddenException(FORBIDDEN_MESSAGE);
     }
   }
+
+  async deleteTicketById(id: string): Promise<Ticket | any> {
+    const ticket = await this.ticketModel.findOne({ _id: id }).lean();
+    if (!ticket) {
+      throw new Error('Ticket not found');
+    }
+    try {
+      const deletedEvent = await this.ticketModel.findByIdAndDelete({
+        _id: id,
+      });
+      return deletedEvent;
+    } catch (error) {
+      throw new ForbiddenException(FORBIDDEN_MESSAGE);
+    }
+  }
 }

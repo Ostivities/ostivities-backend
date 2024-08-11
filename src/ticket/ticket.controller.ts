@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
@@ -83,7 +84,7 @@ export class TicketController {
   }
 
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Ticket' })
+  @ApiOperation({ summary: 'Get ticket by id' })
   @ApiParam({ name: 'id', description: 'Ticket id' })
   @ApiResponse({
     status: 200,
@@ -101,7 +102,7 @@ export class TicketController {
   }
 
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Ticket' })
+  @ApiOperation({ summary: 'List tickets of an event' })
   @ApiParam({ name: 'id', description: 'Event id' })
   @ApiResponse({
     status: 200,
@@ -116,6 +117,28 @@ export class TicketController {
         statusCode: HttpStatus.OK,
         data: data,
         message: 'Tickets fetched successfully',
+      };
+    } catch (error) {
+      return error;
+    }
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Delete ticket by an id' })
+  @ApiParam({ name: 'id', description: 'Ticket id' })
+  @ApiResponse({
+    status: 200,
+    description: 'Ticket deleted successfully.',
+  })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @Delete('delete_ticket/:id')
+  async deleteTicketById(@Param('id') id: string): Promise<IResponse> {
+    try {
+      const data = await this.ticketService.deleteTicketById(id);
+      return {
+        statusCode: HttpStatus.OK,
+        data: data,
+        message: 'Tickets deleted successfully',
       };
     } catch (error) {
       return error;
