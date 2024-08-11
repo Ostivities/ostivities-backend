@@ -25,6 +25,16 @@ export enum EVENT_TYPES {
   OTHERS = 'Others',
 }
 
+export enum DISCOUNT_TYPES {
+  PERCENTAGE = 'PERCENTAGE',
+  FIXED = 'FIXED',
+}
+
+export enum APPLICABLE_TICKETS {
+  ALL_TICKETS = 'ALL_TICKETS',
+  SPECIFIC = 'SPECIFIC_TICKET',
+}
+
 export interface IResponse {
   statusCode: string | any;
   message: string | any;

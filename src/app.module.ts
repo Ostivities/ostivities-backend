@@ -11,6 +11,7 @@ import { SessionModule } from './session/session.module';
 import { TicketModule } from './ticket/ticket.module';
 import { SettleAccountsModule } from './settle_accounts/settle_accounts.module';
 import { SecurityModule } from './security/security.module';
+import { DiscountModule } from './discount/discount.module';
 
 @Module({
   imports: [
@@ -28,6 +29,7 @@ import { SecurityModule } from './security/security.module';
     MulterModule.register({ dest: './upload' }),
     SettleAccountsModule,
     SecurityModule,
+    DiscountModule,
   ],
   controllers: [AppController],
   providers: [AppService],
