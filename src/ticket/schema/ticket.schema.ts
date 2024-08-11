@@ -116,12 +116,14 @@ export class Ticket {
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
     ref: User.name,
+    required: true,
   })
   user: mongoose.Schema.Types.ObjectId;
 
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
     ref: Events.name,
+    required: true,
   })
   event: mongoose.Schema.Types.ObjectId;
 }

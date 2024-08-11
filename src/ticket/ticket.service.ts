@@ -16,28 +16,25 @@ export class TicketService {
   ) {}
 
   async createTicket(dto: CreateTicketDto): Promise<Ticket> {
-    const { userId, eventId } = dto;
-    console.log(userId, 'user id');
-    console.log(eventId, 'user id');
+    const { user, event } = dto;
+    console.log(user, 'user id');
+    console.log(event, 'user id');
 
-    const event = await this.eventModel.findById(eventId);
-    if (!event) {
+    const eventData = await this.eventModel.findById(event);
+    if (!eventData) {
       throw new Error('Event not found');
     }
 
-    console.log(event, 'event');
-    console.log(userId, 'user');
-
-    const user = await this.userModel.findById(userId);
-    if (!user) {
+    const userData = await this.userModel.findById(user);
+    if (!userData) {
       throw new Error('User not found');
     }
 
     try {
       const createdTicket = new this.ticketModel({
         ...dto,
-        eventId: event._id,
-        userId: user._id,
+        event: eventData?._id,
+        user: userData?._id,
       });
       const savedTicket = await createdTicket.save();
       console.log(savedTicket, 'saved ticket');
@@ -51,22 +48,28 @@ export class TicketService {
     ticketId: string,
     dto: UpdateTicketDto,
   ): Promise<Ticket> {
-    const { userId, eventId } = dto;
+    const { user, event } = dto;
 
-    const event = await this.eventModel.findById(eventId);
-    if (!event) {
+    const eventData = await this.eventModel.findById(event);
+    if (!eventData) {
       throw new Error('Event not found');
     }
 
-    const user = await this.userModel.findById(userId);
-    if (!user) {
+    const userData = await this.userModel.findById(user);
+    if (!userData) {
+      throw new Error('User not found');
+    }
+
+    const ticket = await this.ticketModel.findById({ _id: ticketId }).lean();
+
+    if (!ticket) {
       throw new Error('User not found');
     }
 
     try {
       const updatedTicket = await this.ticketModel.findOneAndUpdate(
         { _id: ticketId },
-        dto,
+        { ...dto, event: eventData?._id, user: userData?._id },
         { new: true, upsert: false, runValidators: true },
       );
       return updatedTicket;
@@ -79,6 +82,19 @@ export class TicketService {
     try {
       const ticket = await this.ticketModel.findOne({ _id: id }).lean();
       return ticket;
+    } catch (error) {
+      throw new ForbiddenException(FORBIDDEN_MESSAGE);
+    }
+  }
+
+  async getTicketsByEventId(eventId: string): Promise<Ticket[]> {
+    const eventData = await this.eventModel.findById(eventId);
+    if (!eventData) {
+      throw new Error('Event not found');
+    }
+    try {
+      const tickets = await this.ticketModel.find({ event: eventData?._id });
+      return tickets;
     } catch (error) {
       throw new ForbiddenException(FORBIDDEN_MESSAGE);
     }

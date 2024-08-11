@@ -29,11 +29,11 @@ class TicketQuestion implements ITicketQuestions {
 export class TicketDto {
   @IsNotEmpty()
   @IsMongoId()
-  userId: string;
+  user: string;
 
   @IsNotEmpty()
   @IsMongoId()
-  eventId: string;
+  event: string;
 
   @IsNotEmpty()
   @IsEnum(TICKET_ENTITY)

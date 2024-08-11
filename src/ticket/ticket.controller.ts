@@ -44,13 +44,12 @@ export class TicketController {
     try {
       const data = await this.ticketService.createTicket({
         ...dto,
-        userId: id?._id,
+        user: id?._id,
       });
-      console.log(data, 'ddd');
       return {
         statusCode: HttpStatus.CREATED,
         data: data,
-        message: 'Success',
+        message: 'ticket created successfully',
       };
     } catch (error) {
       return error;
@@ -70,13 +69,17 @@ export class TicketController {
   async updateTicket(
     @Param('id') id: string,
     @Body() dto: UpdateTicketDto,
-    @GetCurrentUser('id') userId: string,
+    @GetCurrentUser('id') userId: string | any,
   ): Promise<IResponse> {
-    const data = await this.ticketService.updateTicketById(id, {
-      ...dto,
-      userId,
-    });
-    return { statusCode: HttpStatus.OK, data: data, message: 'Success' };
+    try {
+      const data = await this.ticketService.updateTicketById(id, {
+        ...dto,
+        user: userId?._id,
+      });
+      return { statusCode: HttpStatus.OK, data: data, message: 'Success' };
+    } catch (error) {
+      return error;
+    }
   }
 
   @HttpCode(HttpStatus.OK)
@@ -87,9 +90,35 @@ export class TicketController {
     description: 'Ticket retrieved successfully.',
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
-  @Get('retrieve_ticket/:id')
+  @Get('get_ticket/:id')
   async getTicket(@Param('id') id: string): Promise<IResponse> {
-    const data = await this.ticketService.getTicketById(id);
-    return { statusCode: HttpStatus.OK, data: data, message: 'Success' };
+    try {
+      const data = await this.ticketService.getTicketById(id);
+      return { statusCode: HttpStatus.OK, data: data, message: 'Success' };
+    } catch (error) {
+      return error;
+    }
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Ticket' })
+  @ApiParam({ name: 'id', description: 'Event id' })
+  @ApiResponse({
+    status: 200,
+    description: 'Tickets retrieved successfully.',
+  })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @Get('get_event_ticket/:id')
+  async getTicketsByEventId(@Param('id') id: string): Promise<IResponse> {
+    try {
+      const data = await this.ticketService.getTicketsByEventId(id);
+      return {
+        statusCode: HttpStatus.OK,
+        data: data,
+        message: 'Tickets fetched successfully',
+      };
+    } catch (error) {
+      return error;
+    }
   }
 }
