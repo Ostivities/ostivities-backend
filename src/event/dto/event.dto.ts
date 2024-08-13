@@ -15,10 +15,19 @@ import {
 import { EVENT_INFO, EVENT_TYPES } from 'src/util/types';
 
 class ValidateSocials {
+  @ApiProperty({
+    type: String,
+    description: 'Event name',
+  })
   @IsOptional()
   @IsString()
   name: string;
 
+  @ApiProperty({
+    type: String,
+    description: 'Event Custom URL',
+    required: false,
+  })
   @IsOptional()
   @IsUrl()
   url: string;
