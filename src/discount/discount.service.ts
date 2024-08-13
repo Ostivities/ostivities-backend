@@ -4,7 +4,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User } from 'src/auth/schema/auth.schema';
 import { Events } from 'src/event/schema/event.schema';
-import { Ticket } from 'src/ticket/schema/ticket.schema';
+// import { Ticket } from 'src/ticket/schema/ticket.schema';
 import { generateDiscountCode } from 'src/util/helper';
 import { CreateDiscountDto } from './dto/discount.dto';
 import { Discounts } from './schema/discount.schema';
@@ -14,7 +14,7 @@ export class DiscountService {
   constructor(
     @InjectModel(Events.name) private eventModel: Model<Events>,
     @InjectModel(User.name) private userModel: Model<User>,
-    @InjectModel(Ticket.name) private ticketModel: Model<Ticket>,
+    // @InjectModel(Ticket.name) private ticketModel: Model<Ticket>,
     @InjectModel(Discounts.name) private discountModel: Model<Discounts>,
   ) {}
 
