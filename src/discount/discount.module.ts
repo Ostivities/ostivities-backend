@@ -2,16 +2,17 @@ import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserSchema } from 'src/auth/schema/auth.schema';
+import { JwtStrategy } from 'src/auth/strategy/jwt.strategy';
 import { DatabaseModule } from 'src/database/database.module';
 import { Events, EventSchema } from 'src/event/schema/event.schema';
 import { Ticket, TicketSchema } from 'src/ticket/schema/ticket.schema';
 import { DiscountController } from './discount.controller';
-import { Discount } from './discount.provider';
+import { discountProviders } from './discount.provider';
 import { DiscountService } from './discount.service';
 import { Discounts, DiscountsSchema } from './schema/discount.schema';
 
 @Module({
-  providers: [DiscountService, Discount],
+  providers: [DiscountService, JwtStrategy, ...discountProviders],
   controllers: [DiscountController],
   imports: [
     JwtModule.register({
