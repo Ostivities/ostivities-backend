@@ -2,6 +2,18 @@ export enum ACCOUNT_TYPE {
   PERSONAL = 'PERSONAL',
   ORGANISATION = 'ORGANISATION',
 }
+export enum TICKET_ENTITY {
+  SINGLE = 'SINGLE',
+  COLLECTIVE = 'COLLECTIVE',
+}
+export enum TICKET_TYPE {
+  FREE = 'FREE',
+  PAID = 'PAID',
+}
+export enum TICKET_STOCK {
+  LIMITED = 'LIMITED',
+  UN_LIMITED = 'UN_LIMITED',
+}
 
 export enum EVENT_TYPES {
   WEDDING = 'Wedding',
@@ -11,6 +23,21 @@ export enum EVENT_TYPES {
   MUSIC_SHOW = 'Music Show',
   HANGOUTS = 'Hangouts',
   OTHERS = 'Others',
+}
+
+export enum DISCOUNT_TYPES {
+  PERCENTAGE = 'PERCENTAGE',
+  FIXED = 'FIXED',
+}
+
+export enum DISCOUNT_USAGE_LIMIT {
+  ONCE = 'ONCE',
+  UN_LIMITED = 'UN_LIMITED',
+}
+
+export enum APPLICABLE_TICKETS {
+  ALL_TICKETS = 'ALL_TICKETS',
+  SPECIFIC = 'SPECIFIC_TICKET',
 }
 
 export interface IResponse {
@@ -46,6 +73,11 @@ export interface ISingleEvents {
   ticketPrice?: string | any;
   purchaseLimit?: number | any;
   ticketDescription?: string | any;
+}
+
+export interface ITicketQuestions {
+  question: string;
+  isCompulsory: boolean;
 }
 
 export interface ICollectiveEvents {

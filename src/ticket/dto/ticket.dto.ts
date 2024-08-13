@@ -1,86 +1,96 @@
 import { PartialType } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import {
+  IsBoolean,
+  IsEnum,
   IsMongoId,
   IsNotEmpty,
   IsNumber,
   IsOptional,
   IsString,
+  ValidateIf,
+  ValidateNested,
 } from 'class-validator';
+import {
+  ITicketQuestions,
+  TICKET_ENTITY,
+  TICKET_STOCK,
+  TICKET_TYPE,
+} from 'src/util/types';
 
-class SingleEvents {
-  @IsOptional()
-  @IsString()
-  ticketType?: string;
+class TicketQuestion implements ITicketQuestions {
+  @IsNotEmpty()
+  question: string;
 
-  @IsOptional()
-  @IsString()
-  ticketName?: string;
-
-  @IsOptional()
-  @IsString()
-  ticketStock?: string;
-
-  @IsOptional()
-  @IsString()
-  ticketPrice?: string;
-
-  @IsOptional()
-  @IsNumber()
-  purchaseLimit?: number;
-
-  @IsOptional()
-  @IsString()
-  ticketDescription?: string;
-}
-
-class CollectiveEvents {
-  @IsOptional()
-  @IsString()
-  ticketType: string;
-
-  @IsOptional()
-  @IsString()
-  ticketName: string;
-
-  @IsOptional()
-  @IsString()
-  ticketStock: string;
-
-  @IsOptional()
-  @IsString()
-  groupPrice: string;
-
-  @IsOptional()
-  @IsString()
-  groupSize: string;
-
-  @IsOptional()
-  @IsString()
-  ticketPrice: string;
-
-  @IsOptional()
-  @IsString()
-  ticketDescription: string;
+  @IsNotEmpty()
+  isCompulsory: boolean;
 }
 
 export class TicketDto {
   @IsNotEmpty()
   @IsMongoId()
-  userId: string;
+  user: string;
 
   @IsNotEmpty()
   @IsMongoId()
-  eventId: string;
+  event: string;
+
+  @IsNotEmpty()
+  @IsEnum(TICKET_ENTITY)
+  @IsString()
+  ticketEntity: TICKET_ENTITY;
+
+  @IsNotEmpty()
+  @IsEnum(TICKET_TYPE)
+  @IsString()
+  ticketType: TICKET_TYPE;
 
   @IsNotEmpty()
   @IsString()
-  eventName: string;
+  ticketName: string;
+
+  @IsNotEmpty()
+  @IsEnum(TICKET_STOCK)
+  @IsString()
+  ticketStock: TICKET_STOCK;
+
+  @ValidateIf((o) => o.ticketStock === TICKET_STOCK.LIMITED)
+  @IsNotEmpty()
+  @IsNumber()
+  ticketQty: number;
+
+  @ValidateIf((o) => o.ticketType === TICKET_TYPE.PAID)
+  @IsNotEmpty()
+  @IsNumber()
+  ticketPrice: number;
 
   @IsOptional()
-  singleTicket: SingleEvents;
+  @IsString()
+  ticketDescription?: string;
+
+  @ValidateIf((o) => o.ticketType === TICKET_STOCK.LIMITED)
+  @IsNotEmpty()
+  @IsNumber()
+  purchaseLimit?: number;
+
+  @ValidateIf((o) => o.ticketEntity === TICKET_ENTITY.COLLECTIVE)
+  @IsNotEmpty()
+  @IsNumber()
+  groupPrice: number;
+
+  @ValidateIf((o) => o.ticketEntity === TICKET_ENTITY.COLLECTIVE)
+  @IsNotEmpty()
+  @IsNumber()
+  groupSize: number;
+
+  @IsNotEmpty()
+  @IsBoolean()
+  guestAsChargeBearer: boolean;
 
   @IsOptional()
-  collectiveTicket: CollectiveEvents;
+  @ValidateNested({ each: true })
+  @Type(() => TicketQuestion)
+  ticketQuestions: ITicketQuestions[];
 }
 
 export class CreateTicketDto extends TicketDto {}

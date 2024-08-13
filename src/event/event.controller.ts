@@ -21,6 +21,7 @@ import {
 } from '@nestjs/swagger';
 import { GetCurrentUser } from 'src/auth/decorator/user.decorator';
 import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
+import { PaginationDto } from 'src/util/dto.utils';
 import { IResponse } from 'src/util/types';
 import {
   CreateEventDto,
@@ -53,27 +54,39 @@ export class EventController {
   }
 
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'List all events' })
+  @ApiOperation({ summary: 'List all user events' })
   @ApiResponse({
     status: 200,
     description: 'Events retrieved successfully.',
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
-  @Get('retrieve_events')
-  async getAllEvents(): Promise<IResponse> {
-    const data = await this.eventService.getEvents();
-    return { statusCode: HttpStatus.OK, data: data, message: 'Success' };
+  @Get('get_user_events')
+  async getAllUserEvents(
+    @Query() paginationDto: PaginationDto,
+    @GetCurrentUser('id') id: string,
+  ): Promise<IResponse> {
+    try {
+      const { page, limit } = paginationDto;
+      const data = await this.eventService.getAllUserEventsById(
+        page,
+        limit,
+        id,
+      );
+      return { statusCode: HttpStatus.OK, data: data, message: 'Success' };
+    } catch (error) {
+      return error;
+    }
   }
 
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Get event' })
+  @ApiOperation({ summary: 'Get an event' })
   @ApiParam({ name: 'id', description: 'Event ID' })
   @ApiResponse({
     status: 200,
     description: 'Event retrieved successfully.',
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
-  @Get('retrieve_event/:id')
+  @Get('get_user_event/:id')
   async getEvent(@Param('id') id: string): Promise<IResponse> {
     const data = await this.eventService.getEventsById(id);
     return { statusCode: HttpStatus.OK, data: data, message: 'Success' };
@@ -92,9 +105,16 @@ export class EventController {
   async updateEvent(
     @Param('id') id: string,
     @Body() dto: UpdateEventDto,
+    @GetCurrentUser('id') userId: string,
   ): Promise<IResponse> {
-    const data = await this.eventService.updateEventById(id, dto);
-    return { statusCode: HttpStatus.OK, data: data, message: 'Success' };
+    try {
+      const data = await this.eventService.updateEventById(id, userId, {
+        ...dto,
+      });
+      return { statusCode: HttpStatus.OK, data, message: 'Success' };
+    } catch (error) {
+      return error;
+    }
   }
 
   @HttpCode(HttpStatus.OK)
@@ -187,7 +207,7 @@ export class EventController {
   @ApiParam({ name: 'id', description: 'Event ID' })
   @ApiResponse({
     status: 200,
-    description: 'Event updated successfully.',
+    description: 'Event deleted successfully.',
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   @Delete('delete_event/:id')

@@ -3,70 +3,128 @@ import mongoose, { HydratedDocument } from 'mongoose';
 import { User } from 'src/auth/schema/auth.schema';
 import { Events } from 'src/event/schema/event.schema';
 import { schemaConfig } from 'src/util/schema.config';
+import { TICKET_ENTITY, TICKET_STOCK, TICKET_TYPE } from 'src/util/types';
 
 export type UserDocument = HydratedDocument<Ticket>;
 
 @Schema(schemaConfig)
-class SingleEvents {
-  @Prop()
+export class Ticket {
+  // @Prop({
+  //   required: false,
+  //   type: [SingleEvents],
+  //   default: [],
+  // })
+  // singleTicket: SingleEvents[];
+
+  // @Prop({ required: false, type: [CollectiveEvents], default: [] })
+  // collectiveTicket: CollectiveEvents[];
+
+  @Prop({
+    type: String,
+    required: [true, 'ticket type is required'],
+    enum: {
+      values: ['FREE', 'PAID'],
+      message: '{VALUE} is not supported',
+    },
+  })
   ticketType: string;
 
-  @Prop()
+  @Prop({ type: String, required: [true, 'ticket name is required'] })
   ticketName: string;
 
-  @Prop()
-  ticketStock: string;
+  @Prop({ type: String, required: [true, 'ticket description is required'] })
+  ticketDescription: string;
 
-  @Prop()
-  ticketPrice: string;
+  @Prop({
+    type: String,
+    required: [true, 'ticket entity is required'],
+    enum: {
+      values: [TICKET_ENTITY.SINGLE, TICKET_ENTITY.COLLECTIVE],
+      message: '{VALUE} is not supported',
+    },
+  })
+  ticketEntity: TICKET_ENTITY;
 
-  @Prop()
+  @Prop({
+    type: Number,
+    validate: {
+      validator: function (value: string) {
+        return this.ticketStock === TICKET_STOCK.LIMITED ||
+          this.ticketEntity === TICKET_ENTITY.SINGLE
+          ? !!value
+          : true;
+      },
+      message: 'purchase limit is required',
+    },
+  })
   purchaseLimit: number;
 
-  @Prop()
-  ticketDescription: string;
-}
-
-@Schema(schemaConfig)
-class CollectiveEvents {
-  @Prop()
-  ticketType: string;
-
-  @Prop()
-  ticketName: string;
-
-  @Prop()
-  ticketStock: string;
-
-  @Prop()
-  groupPrice: string;
-
-  @Prop()
-  groupSize: string;
-
-  @Prop()
-  ticketPrice: string;
-
-  @Prop()
-  ticketDescription: string;
-}
-
-@Schema(schemaConfig)
-export class Ticket {
   @Prop({
-    required: false,
-    type: SingleEvents,
-    default: {},
+    type: Number,
+    validate: {
+      validator: function (value: string) {
+        return this.ticketEntity === TICKET_ENTITY.COLLECTIVE ? !!value : true;
+      },
+      message: 'group price is required',
+    },
   })
-  singleTicket: SingleEvents;
+  groupPrice: number;
 
-  @Prop({ required: false, type: CollectiveEvents, default: {} })
-  collectiveTicket: CollectiveEvents;
+  @Prop({
+    type: Number,
+    validate: {
+      validator: function (value: string) {
+        return this.ticketEntity === TICKET_ENTITY.COLLECTIVE ? !!value : true;
+      },
+      message: 'group size is required',
+    },
+  })
+  groupSize: number;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: User.name })
+  @Prop({
+    type: String,
+    required: [true, 'ticket entity is required'],
+    enum: {
+      values: [TICKET_STOCK.LIMITED, TICKET_STOCK.UN_LIMITED],
+      message: '{VALUE} is not supported',
+    },
+  })
+  ticketStock: TICKET_STOCK;
+
+  @Prop({
+    type: Number,
+    validate: {
+      validator: function (value: string) {
+        return this.ticketStock === TICKET_STOCK.LIMITED ? !!value : true;
+      },
+      message: 'ticket qty is required',
+    },
+  })
+  ticketQty: number;
+
+  @Prop({
+    type: Number,
+    validate: {
+      validator: function (value: string) {
+        return this.ticketPrice === TICKET_TYPE.PAID ? !!value : true;
+      },
+      message: 'ticket price is required',
+    },
+  })
+  ticketPrice: number;
+
+  @Prop({
+    type: mongoose.Schema.Types.ObjectId,
+    ref: User.name,
+    required: true,
+  })
   user: mongoose.Schema.Types.ObjectId;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: Events.name })
+  @Prop({
+    type: mongoose.Schema.Types.ObjectId,
+    ref: Events.name,
+    required: true,
+  })
   event: mongoose.Schema.Types.ObjectId;
 }
 

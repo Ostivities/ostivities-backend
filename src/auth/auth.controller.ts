@@ -11,10 +11,12 @@ import { IResponse } from 'src/util/types';
 import { AuthService } from './auth.service';
 import { Public } from './decorator/public.decorator';
 import {
+  ActivateAccountDto,
   CreateUserDto,
   ForgotPasswordDto,
   LoginUserDto,
   ResetPasswordDto,
+  VerifyAccountDto,
 } from './dto/auth.dto';
 
 @Controller('auth')
@@ -39,6 +41,48 @@ export class AuthController {
 
   @Public()
   @HttpCode(HttpStatus.OK)
+  @ApiBody({ type: ActivateAccountDto })
+  @ApiOperation({ summary: 'Generate otp' })
+  @ApiResponse({
+    status: 200,
+    description: 'OTP sent.',
+  })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @Post('generate_otp')
+  async generateOtp(@Body() dto: ActivateAccountDto) {
+    await this.authService.generateOtp(dto);
+    return {
+      statusCode: HttpStatus.OK,
+      message: `OTP sent to ${dto.email}`,
+    };
+  }
+
+  @Public()
+  @HttpCode(HttpStatus.OK)
+  @ApiBody({ type: VerifyAccountDto })
+  @ApiOperation({ summary: 'Verify otp' })
+  @ApiResponse({
+    status: 200,
+    description: 'OTP Verification.',
+  })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @Post('verify_otp')
+  async activateAccount(@Body() dto: VerifyAccountDto) {
+    try {
+      const data = await this.authService.activateAccount(dto);
+
+      return {
+        statusCode: HttpStatus.OK,
+        message: `${dto.email} verified successfully`,
+        data,
+      };
+    } catch (error) {
+      return error;
+    }
+  }
+
+  @Public()
+  @HttpCode(HttpStatus.OK)
   @ApiBody({ type: LoginUserDto })
   @ApiOperation({ summary: 'Login' })
   @ApiResponse({
@@ -52,7 +96,7 @@ export class AuthController {
     return {
       statusCode: HttpStatus.OK,
       data,
-      message: 'successfully logged in',
+      message: 'Login successful',
     };
   }
 

@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
@@ -36,13 +37,24 @@ export class TicketController {
     description: 'Ticket created successfully.',
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
-  @Post('create')
+  @Post('create_ticket')
   async createTicket(
     @Body() dto: CreateTicketDto,
-    @GetCurrentUser('id') id: string,
+    @GetCurrentUser('id') id: string | any,
   ): Promise<IResponse> {
-    const data = await this.ticketService.createTicket({ ...dto, userId: id });
-    return { statusCode: HttpStatus.CREATED, data: data, message: 'Success' };
+    try {
+      const data = await this.ticketService.createTicket({
+        ...dto,
+        user: id?._id,
+      });
+      return {
+        statusCode: HttpStatus.CREATED,
+        data: data,
+        message: 'ticket created successfully',
+      };
+    } catch (error) {
+      return error;
+    }
   }
 
   @HttpCode(HttpStatus.OK)
@@ -58,22 +70,78 @@ export class TicketController {
   async updateTicket(
     @Param('id') id: string,
     @Body() dto: UpdateTicketDto,
+    @GetCurrentUser('id') userId: string | any,
   ): Promise<IResponse> {
-    const data = await this.ticketService.updateTicketById(id, dto);
-    return { statusCode: HttpStatus.OK, data: data, message: 'Success' };
+    try {
+      const data = await this.ticketService.updateTicketById(id, {
+        ...dto,
+        user: userId?._id,
+      });
+      return { statusCode: HttpStatus.OK, data: data, message: 'Success' };
+    } catch (error) {
+      return error;
+    }
   }
 
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Ticket' })
+  @ApiOperation({ summary: 'Get ticket by id' })
   @ApiParam({ name: 'id', description: 'Ticket id' })
   @ApiResponse({
     status: 200,
     description: 'Ticket retrieved successfully.',
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
-  @Get('retrieve_ticket/:id')
+  @Get('get_ticket/:id')
   async getTicket(@Param('id') id: string): Promise<IResponse> {
-    const data = await this.ticketService.getTicketById(id);
-    return { statusCode: HttpStatus.OK, data: data, message: 'Success' };
+    try {
+      const data = await this.ticketService.getTicketById(id);
+      return { statusCode: HttpStatus.OK, data: data, message: 'Success' };
+    } catch (error) {
+      return error;
+    }
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'List tickets of an event' })
+  @ApiParam({ name: 'id', description: 'Event id' })
+  @ApiResponse({
+    status: 200,
+    description: 'Tickets retrieved successfully.',
+  })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @Get('get_event_ticket/:id')
+  async getTicketsByEventId(@Param('id') id: string): Promise<IResponse> {
+    try {
+      const data = await this.ticketService.getTicketsByEventId(id);
+      return {
+        statusCode: HttpStatus.OK,
+        data: data,
+        message: 'Tickets fetched successfully',
+      };
+    } catch (error) {
+      return error;
+    }
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Delete ticket by an id' })
+  @ApiParam({ name: 'id', description: 'Ticket id' })
+  @ApiResponse({
+    status: 200,
+    description: 'Ticket deleted successfully.',
+  })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @Delete('delete_ticket/:id')
+  async deleteTicketById(@Param('id') id: string): Promise<IResponse> {
+    try {
+      const data = await this.ticketService.deleteTicketById(id);
+      return {
+        statusCode: HttpStatus.OK,
+        data: data,
+        message: 'Tickets deleted successfully',
+      };
+    } catch (error) {
+      return error;
+    }
   }
 }

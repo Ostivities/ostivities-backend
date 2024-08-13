@@ -1,6 +1,5 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
-import mongoose, { HydratedDocument } from 'mongoose';
-import { Events } from 'src/event/schema/event.schema';
+import { HydratedDocument } from 'mongoose';
 import { schemaConfig } from 'src/util/schema.config';
 import { ACCOUNT_TYPE } from 'src/util/types';
 
@@ -29,10 +28,6 @@ export class User {
   hash: string;
 
   @Prop({
-    // required: [
-    //   this.accountType === ACCOUNT_TYPE.PERSONAL,
-    //   'first name is required',
-    // ],
     validate: {
       validator: function (value: string) {
         return this.accountType === ACCOUNT_TYPE.PERSONAL
@@ -45,7 +40,6 @@ export class User {
   firstName: string;
 
   @Prop({
-    // required: [, 'last name is required'],
     validate: {
       validator: function (value: string) {
         return this.accountType === ACCOUNT_TYPE.PERSONAL
@@ -84,9 +78,28 @@ export class User {
   terms_and_condition: boolean;
 
   @Prop({
-    type: [{ type: mongoose.Schema.Types.ObjectId, ref: Events?.name }],
+    type: Number,
+    default: 0,
   })
-  events: [Events];
+  total_number_of_events: number;
+
+  @Prop({
+    type: Number,
+    default: 0,
+  })
+  total_number_of_tickets: number;
+
+  @Prop({
+    type: Boolean,
+    default: false,
+  })
+  is_active: boolean;
+
+  // @Prop({
+  //   type: SettlementAccountSchema,
+  //   default: {},
+  // })
+  // settlementAcounts: SettlementAccount;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

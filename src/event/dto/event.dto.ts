@@ -5,14 +5,14 @@ import {
   IsEnum,
   IsMongoId,
   IsNotEmpty,
-  IsNumber,
   IsObject,
   IsOptional,
   IsString,
   IsUrl,
+  ValidateIf,
   ValidateNested,
 } from 'class-validator';
-import { EVENT_TYPES } from 'src/util/types';
+import { EVENT_INFO, EVENT_TYPES } from 'src/util/types';
 
 class ValidateSocials {
   @IsOptional()
@@ -22,62 +22,6 @@ class ValidateSocials {
   @IsOptional()
   @IsUrl()
   url: string;
-}
-
-class SingleEvents {
-  @IsOptional()
-  @IsString()
-  ticketType?: string;
-
-  @IsOptional()
-  @IsString()
-  ticketName?: string;
-
-  @IsOptional()
-  @IsString()
-  ticketStock?: string;
-
-  @IsOptional()
-  @IsString()
-  ticketPrice?: string;
-
-  @IsOptional()
-  @IsNumber()
-  purchaseLimit?: number;
-
-  @IsOptional()
-  @IsString()
-  ticketDescription?: string;
-}
-
-class CollectiveEvents {
-  @IsOptional()
-  @IsString()
-  ticketType: string;
-
-  @IsOptional()
-  @IsString()
-  ticketName: string;
-
-  @IsOptional()
-  @IsString()
-  ticketStock: string;
-
-  @IsOptional()
-  @IsString()
-  groupPrice: string;
-
-  @IsOptional()
-  @IsString()
-  groupSize: string;
-
-  @IsOptional()
-  @IsString()
-  ticketPrice: string;
-
-  @IsOptional()
-  @IsString()
-  ticketDescription: string;
 }
 
 class SupportDocuments {
@@ -119,23 +63,30 @@ export class EventDto {
   supportingDocument: SupportDocuments;
 
   @IsEnum(EVENT_TYPES)
-  @IsOptional()
+  @IsNotEmpty()
   eventType: string;
 
-  @IsOptional()
+  @IsEnum(EVENT_INFO)
+  @IsNotEmpty()
+  eventInfo: string;
+
+  @IsNotEmpty()
   @IsString()
   timeZone: string;
 
-  @IsOptional()
+  @IsNotEmpty()
   @IsString()
+  @ValidateIf((o) => o.ventInfo === EVENT_INFO.RECURRING)
   frequency: string;
 
-  @IsOptional()
+  @IsNotEmpty()
   @IsString()
+  @ValidateIf((o) => o.ventInfo === EVENT_INFO.SINGLE)
   startDate: string;
 
-  @IsOptional()
+  @IsNotEmpty()
   @IsString()
+  @ValidateIf((o) => o.ventInfo === EVENT_INFO.SINGLE)
   endDate: string;
 
   @IsOptional()
@@ -149,11 +100,11 @@ export class EventDto {
   @IsUrl()
   eventImage: string;
 
-  @IsOptional()
-  singleTicket: SingleEvents;
+  // @IsOptional()
+  // singleTicket: SingleEvents;
 
-  @IsOptional()
-  collectiveTicket: CollectiveEvents;
+  // @IsOptional()
+  // collectiveTicket: CollectiveEvents;
 
   @IsNotEmpty()
   @IsMongoId()
@@ -162,7 +113,9 @@ export class EventDto {
 
 export class CreateEventDto extends OmitType(EventDto, ['user']) {}
 
-export class UpdateEventDto extends PartialType(CreateEventDto) {}
+export class UpdateEventDto extends PartialType(CreateEventDto) {
+  user?: string;
+}
 
 export class StringArrayDto {
   @ApiProperty({ type: [String] })

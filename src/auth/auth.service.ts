@@ -9,14 +9,21 @@ import { FORBIDDEN_MESSAGE } from '@nestjs/core/guards';
 import { JwtService } from '@nestjs/jwt';
 import { InjectModel } from '@nestjs/mongoose';
 import * as argon from 'argon2';
+import * as crypto from 'crypto';
 import { Model } from 'mongoose';
+import { SecurityDto } from 'src/security/dto/security.dto';
+import { Security } from 'src/security/schema/security.schema';
+import { otpGenerator } from 'src/util/helper';
 import { ACCOUNT_TYPE } from 'src/util/types';
 import {
+  ActivateAccountDto,
   CreateUserDto,
   ForgotPasswordDto,
   LoginUserDto,
   ResetPasswordDto,
+  VerifyAccountDto,
 } from './dto/auth.dto';
+import { ActivateUser } from './schema/activation.schema';
 import { User } from './schema/auth.schema';
 import { ForgotPasswordModel } from './schema/forgotpassword.schema';
 
@@ -28,10 +35,17 @@ export class AuthService {
     @InjectModel(User.name) private userModel: Model<User>,
     @InjectModel(ForgotPasswordModel.name)
     private forgotPasswordModel: Model<ForgotPasswordModel>,
+    @InjectModel(Security.name) private securityModel: Model<Security>,
+    @InjectModel(ActivateUser.name)
+    private activateAccountModel: Model<ActivateUser>,
+    // private readonly logger = new Logger(AuthService.name),
   ) {}
 
   // REGISTER USER
   async register(dto: CreateUserDto): Promise<User> {
+    const publicKey = 'pub_' + crypto.randomBytes(16).toString('hex');
+    const secretKey = 'pk_' + crypto.randomBytes(16).toString('hex');
+
     try {
       const checkIfUserexist = await this.userModel.findOne({
         email: dto.email,
@@ -67,9 +81,104 @@ export class AuthService {
       const createdUser = new this.userModel({
         ...user,
       });
-
+      // 906767
       const savedUser = await createdUser.save();
+
+      if (savedUser) {
+        const security: SecurityDto = {
+          publicKey,
+          secretKey,
+          user: savedUser?.id,
+        };
+        const newSecurityKey = new this.securityModel({
+          ...security,
+        });
+        await newSecurityKey.save();
+      }
+      await this.generateOtp({ email: dto.email });
       return savedUser;
+    } catch (error) {
+      throw error;
+    }
+  }
+
+  // GENERATE OTP
+  async generateOtp(dto: ActivateAccountDto): Promise<ActivateUser> {
+    try {
+      const userActive: any = await this.activateAccountModel.findOne({
+        email: dto.email,
+      });
+
+      if (userActive) {
+        const currentTime = new Date().getTime();
+        const activateAccountTimestamp = new Date(
+          userActive?.timeStamp,
+        ).getTime();
+
+        const timeDifference = Math.abs(currentTime - activateAccountTimestamp);
+        const fiveMinutesInMilliseconds = 5 * 60 * 1000;
+
+        if (timeDifference <= fiveMinutesInMilliseconds) {
+          throw new ForbiddenException('token already sent');
+        }
+
+        if (timeDifference > fiveMinutesInMilliseconds) {
+          throw new ForbiddenException('token expired');
+        }
+      } else {
+        const otp = otpGenerator();
+        console.log(otp, 'otp generated');
+        const activateAccountModelUpdate =
+          await this.activateAccountModel.findOneAndUpdate(
+            { email: dto.email },
+            {
+              $set: {
+                email: dto.email,
+                otp,
+              },
+            },
+            { upsert: true, new: true },
+          );
+
+        if (activateAccountModelUpdate) {
+          return activateAccountModelUpdate;
+        }
+      }
+    } catch (error) {}
+  }
+
+  // ACTIVATE ACCONT
+  async activateAccount(dto: VerifyAccountDto): Promise<any> {
+    try {
+      const userActive: any = await this.activateAccountModel.findOne({
+        email: dto.email,
+      });
+
+      // console.log(userActive, 'user active');
+
+      const currentTime = new Date().getMinutes();
+      const userActiveTimeStamp = new Date(userActive?.timeStamp).getMinutes();
+
+      const fiveMinutesInMilliseconds = 1 * 60 * 1000;
+      const timeDifference = Math.abs(currentTime - userActiveTimeStamp);
+
+      if (
+        timeDifference <= fiveMinutesInMilliseconds &&
+        dto.otp === userActive?.otp
+      ) {
+        await this.userModel.findOneAndUpdate(
+          { email: dto.email },
+          {
+            $set: {
+              is_active: true,
+            },
+          },
+          { upsert: true, new: true, runValidators: true },
+        );
+        return 'Account activated successfully';
+      } else {
+        return { message: 'OTP expired' };
+      }
     } catch (error) {
       throw error;
     }
@@ -85,6 +194,10 @@ export class AuthService {
       throw new ConflictException('User not found');
     }
 
+    // if (user.is_active === false) {
+    //   throw new Error('User not found');
+    // }
+
     const pwdMatch = await argon.verify(user.hash, dto.password);
     if (!pwdMatch) {
       // throw new ForbiddenException(`User with this credentials doesn't exist`);
@@ -96,7 +209,11 @@ export class AuthService {
         expiresIn: '24h',
         secret: secret,
       });
-      return { accessToken: token };
+      if (user.is_active === false) {
+        return { message: 'kindly verify account', is_active: false };
+      } else {
+        return { accessToken: token };
+      }
     }
   }
 
