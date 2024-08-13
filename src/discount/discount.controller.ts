@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   HttpCode,
   HttpStatus,
   Param,
@@ -34,15 +35,38 @@ export class DiscountController {
     @Param('id') eventId: string,
     @GetCurrentUser('id') user: string,
   ): Promise<IResponse> {
-    const data = await this.discountService.createDiscount({
-      ...dto,
-      event: eventId,
-      user,
-    });
-    return {
-      statusCode: HttpStatus.CREATED,
-      data: data,
-      message: 'Discount created sucessfully',
-    };
+    try {
+      const data = await this.discountService.createDiscount({
+        ...dto,
+        event: eventId,
+        user,
+      });
+      return {
+        statusCode: HttpStatus.CREATED,
+        data: data,
+        message: 'Discount created sucessfully',
+      };
+    } catch (error) {
+      return error;
+    }
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Delete discount' })
+  @ApiResponse({
+    status: 200,
+    description: 'Discount deleted successfully.',
+  })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @Delete('delete/:discountId')
+  async deleteDiscount(@Param('discountId') discountId: string) {
+    try {
+      const data = await this.discountService.deleteDiscount(discountId);
+      return {
+        statusCode: HttpStatus.CREATED,
+        data: data,
+        message: 'Discount created sucessfully',
+      };
+    } catch (error) {}
   }
 }

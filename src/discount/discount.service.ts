@@ -4,8 +4,6 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User } from 'src/auth/schema/auth.schema';
 import { Events } from 'src/event/schema/event.schema';
-// import { Ticket } from 'src/ticket/schema/ticket.schema';
-import { generateDiscountCode } from 'src/util/helper';
 import { CreateDiscountDto, UpdateDiscountDto } from './dto/discount.dto';
 import { Discounts } from './schema/discount.schema';
 
@@ -30,22 +28,10 @@ export class DiscountService {
       throw new Error('Event not found');
     }
     try {
-      let discountCode: string;
-      let existingDiscount: any;
-
-      // CHECK IF A DISCOUNT CODE EXISTS (HANDLES POSSIBLE CODE COLLISIONS)
-      do {
-        discountCode = generateDiscountCode();
-        existingDiscount = await this.discountModel.findOne({
-          discountCode,
-        });
-      } while (existingDiscount);
-
       const discount = new this.discountModel({
         ...dto,
         event: event,
         user: userData?._id,
-        discountCode,
       }).save();
 
       return discount;
@@ -93,6 +79,21 @@ export class DiscountService {
       }
 
       return discount.save();
+    } catch (error) {
+      throw new ForbiddenException(FORBIDDEN_MESSAGE);
+    }
+  }
+
+  async deleteDiscount(id: string): Promise<any> {
+    const discount = await this.discountModel.findOne({ _id: id }).lean();
+    if (!discount) {
+      throw new Error('Discount not found');
+    }
+    try {
+      const deletedDiscount = await this.discountModel.findByIdAndDelete({
+        _id: id,
+      });
+      return deletedDiscount;
     } catch (error) {
       throw new ForbiddenException(FORBIDDEN_MESSAGE);
     }
