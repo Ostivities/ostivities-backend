@@ -1,4 +1,4 @@
-import { PartialType } from '@nestjs/swagger';
+import { OmitType, PartialType } from '@nestjs/swagger';
 import {
   ArrayNotEmpty,
   IsArray,
@@ -52,4 +52,6 @@ export class DiscountDto {
 
 export class CreateDiscountDto extends DiscountDto {}
 
-export class UpdateDiscountDto extends PartialType(DiscountDto) {}
+export class UpdateDiscountDto extends PartialType(
+  OmitType(DiscountDto, ['discountCode'] as const),
+) {}
