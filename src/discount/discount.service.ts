@@ -33,7 +33,7 @@ export class DiscountService {
       let discountCode: string;
       let existingDiscount: any;
 
-      // CHECK IF AN DISCOUNT CODE EXISTS (HANDLES POSSIBLE CODE COLLISIONS)
+      // CHECK IF A DISCOUNT CODE EXISTS (HANDLES POSSIBLE CODE COLLISIONS)
       do {
         discountCode = generateDiscountCode();
         existingDiscount = await this.discountModel.findOne({

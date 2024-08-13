@@ -1,5 +1,14 @@
 import { PartialType } from '@nestjs/swagger';
-import { IsEnum, IsMongoId, IsNotEmpty, IsString } from 'class-validator';
+import {
+  ArrayNotEmpty,
+  IsArray,
+  IsEnum,
+  IsMongoId,
+  IsNotEmpty,
+  IsString,
+  ValidateIf,
+} from 'class-validator';
+import { Types } from 'mongoose';
 import { DISCOUNT_TYPES, DISCOUNT_USAGE_LIMIT } from 'src/util/types';
 
 export class DiscountDto {
@@ -13,8 +22,11 @@ export class DiscountDto {
   discountType: DISCOUNT_TYPES;
 
   @IsNotEmpty()
-  @IsMongoId()
-  ticket: [];
+  @ValidateIf((obj) => Array.isArray(obj.ticket))
+  @IsArray()
+  @ArrayNotEmpty()
+  @IsMongoId({ each: true })
+  ticket: Types.ObjectId[] | Types.ObjectId;
 
   @IsNotEmpty()
   @IsEnum(DISCOUNT_USAGE_LIMIT)
