@@ -34,76 +34,156 @@ class ValidateSocials {
 }
 
 class SupportDocuments {
+  @ApiProperty({
+    type: String,
+    description: 'file name',
+    required: false,
+  })
   @IsOptional()
   @IsString()
   fileName: string;
 
+  @ApiProperty({
+    type: String,
+    description: 'file URL',
+    required: false,
+  })
   @IsOptional()
   @IsString()
   fileUrl: string;
 }
 
 export class EventDto {
+  @ApiProperty({
+    type: String,
+    description: 'Event name',
+    required: true,
+  })
   @IsNotEmpty()
   @IsString()
   eventName: string;
 
+  @ApiProperty({
+    type: String,
+    description: 'Event details',
+    required: true,
+  })
   @IsNotEmpty()
   @IsString()
   eventDetails: string;
 
+  @ApiProperty({
+    type: String,
+    description: 'state',
+    required: true,
+  })
   @IsNotEmpty()
   @IsString()
   state: string;
 
+  @ApiProperty({
+    type: String,
+    description: 'Address',
+    required: true,
+  })
   @IsNotEmpty()
   @IsString()
   address: string;
 
+  @ApiProperty({
+    type: String,
+    description: 'Event URL',
+    required: true,
+  })
   @IsNotEmpty()
   @IsString()
   @IsUrl()
   eventURL: string;
 
+  @ApiProperty({
+    type: SupportDocuments,
+    description: 'Supporting documents',
+    required: false,
+  })
   @IsOptional()
   @IsObject()
   @ValidateNested()
   @Type(() => SupportDocuments)
   supportingDocument: SupportDocuments;
 
+  @ApiProperty({
+    enum: EVENT_TYPES,
+    description: 'event type',
+    required: true,
+  })
   @IsEnum(EVENT_TYPES)
   @IsNotEmpty()
-  eventType: string;
+  eventType: EVENT_TYPES;
 
+  @ApiProperty({
+    enum: EVENT_INFO,
+    description: 'event information',
+    required: true,
+  })
   @IsEnum(EVENT_INFO)
   @IsNotEmpty()
-  eventInfo: string;
+  eventInfo: EVENT_INFO;
 
+  @ApiProperty({
+    type: String,
+    description: 'time zone',
+    required: true,
+  })
   @IsNotEmpty()
   @IsString()
   timeZone: string;
 
+  @ApiProperty({
+    type: String,
+    description: 'frequency',
+    required: true,
+  })
   @IsNotEmpty()
   @IsString()
   @ValidateIf((o) => o.ventInfo === EVENT_INFO.RECURRING)
   frequency: string;
 
+  @ApiProperty({
+    type: String,
+    description: 'start date',
+    required: true,
+  })
   @IsNotEmpty()
   @IsString()
   @ValidateIf((o) => o.ventInfo === EVENT_INFO.SINGLE)
   startDate: string;
 
+  @ApiProperty({
+    type: String,
+    description: 'end date',
+    required: true,
+  })
   @IsNotEmpty()
   @IsString()
   @ValidateIf((o) => o.ventInfo === EVENT_INFO.SINGLE)
   endDate: string;
 
+  @ApiProperty({
+    type: ValidateSocials,
+    description: 'social media url',
+    required: false,
+  })
   @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => ValidateSocials)
   socials: ValidateSocials[];
 
+  @ApiProperty({
+    type: String,
+    description: 'image url',
+    required: false,
+  })
   @IsOptional()
   @IsString()
   @IsUrl()

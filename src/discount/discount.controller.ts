@@ -63,10 +63,12 @@ export class DiscountController {
     try {
       const data = await this.discountService.deleteDiscount(discountId);
       return {
-        statusCode: HttpStatus.CREATED,
+        statusCode: HttpStatus.OK,
         data: data,
-        message: 'Discount created sucessfully',
+        message: 'Discount deleted sucessfully',
       };
-    } catch (error) {}
+    } catch (error) {
+      return error;
+    }
   }
 }

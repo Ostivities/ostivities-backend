@@ -21,7 +21,7 @@ export class CreateUserDto {
   })
   @IsEnum(ACCOUNT_TYPE)
   @IsNotEmpty()
-  accountType: string;
+  accountType: ACCOUNT_TYPE;
 
   @ApiProperty({
     description: 'First name',
