@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Delete,
+  Get,
   HttpCode,
   HttpStatus,
   Param,
@@ -32,7 +33,7 @@ export class DiscountController {
   @Post('create/:eventId')
   async createDiscount(
     @Body() dto: CreateDiscountDto,
-    @Param('id') eventId: string,
+    @Param('eventId') eventId: string,
     @GetCurrentUser('id') user: string,
   ): Promise<IResponse> {
     try {
@@ -44,7 +45,7 @@ export class DiscountController {
       return {
         statusCode: HttpStatus.CREATED,
         data: data,
-        message: 'Discount created sucessfully',
+        message: 'Discount created successfully',
       };
     } catch (error) {
       return error;
@@ -67,6 +68,22 @@ export class DiscountController {
         data: data,
         message: 'Discount deleted sucessfully',
       };
+    } catch (error) {
+      return error;
+    }
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Get discount(s) by event id' })
+  @ApiResponse({
+    status: 200,
+    description: 'Discount fetched successfully.',
+  })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @Get('discount/:eventId')
+  async getDiscountByEventId(@Param('eventId') eventId: string) {
+    try {
+      const data = await this.discountService.getDiscountByEventId(eventId);
     } catch (error) {
       return error;
     }

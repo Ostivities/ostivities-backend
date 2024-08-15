@@ -98,4 +98,19 @@ export class DiscountService {
       throw new ForbiddenException(FORBIDDEN_MESSAGE);
     }
   }
+
+  async getDiscountByEventId(eventId: string) {
+    const eventData = await this.eventModel.findById(event);
+    if (!eventData) {
+      throw new Error('Event not found');
+    }
+    try {
+      const eventDiscount = await this.discountModel.findById({
+        event: eventId,
+      });
+      return eventDiscount;
+    } catch (error) {
+      throw new ForbiddenException(FORBIDDEN_MESSAGE);
+    }
+  }
 }
