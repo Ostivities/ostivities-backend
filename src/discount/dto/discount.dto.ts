@@ -41,7 +41,7 @@ export class DiscountDto {
   @IsArray()
   @ArrayNotEmpty()
   @IsMongoId({ each: true })
-  ticket: Types.ObjectId[] | Types.ObjectId;
+  ticket: [Types.ObjectId];
 
   @ApiProperty({
     enum: DISCOUNT_USAGE_LIMIT,
