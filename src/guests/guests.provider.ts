@@ -1,4 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import { Mongoose } from 'mongoose';
+import { GuestSchema } from './schema/guests.schema';
 
-@Injectable()
-export class Guests {}
+export const guestProviders = [
+  {
+    provide: 'GUESTS_MODEL',
+    useFactory: (mongoose: Mongoose) => mongoose.model('Guests', GuestSchema),
+    inject: ['DATABASE_CONNECTION'],
+  },
+];

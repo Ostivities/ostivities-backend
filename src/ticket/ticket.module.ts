@@ -8,7 +8,8 @@ import {
   Discounts,
   DiscountsSchema,
 } from 'src/discount/schema/discount.schema';
-import { EventSchema, Events } from 'src/event/schema/event.schema';
+import { Events, EventSchema } from 'src/event/schema/event.schema';
+import { Guests, GuestSchema } from 'src/guests/schema/guests.schema';
 import { Ticket, TicketSchema } from './schema/ticket.schema';
 import { TicketController } from './ticket.controller';
 import { ticketProviders } from './ticket.provider';
@@ -25,6 +26,7 @@ import { TicketService } from './ticket.service';
       { name: Events.name, schema: EventSchema },
       { name: User.name, schema: UserSchema },
       { name: Discounts.name, schema: DiscountsSchema },
+      { name: Guests.name, schema: GuestSchema },
     ]),
     DatabaseModule,
   ],
