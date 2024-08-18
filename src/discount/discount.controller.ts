@@ -27,7 +27,7 @@ export class DiscountController {
   @ApiOperation({ summary: 'Create Discount' })
   @ApiResponse({
     status: 200,
-    description: 'Discount created successfully.',
+    description: 'Discount code created successfully.',
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   @Post('create/:eventId')
@@ -57,7 +57,7 @@ export class DiscountController {
   @ApiOperation({ summary: 'Delete discount' })
   @ApiResponse({
     status: 200,
-    description: 'Discount deleted successfully.',
+    description: 'Discount code deleted successfully.',
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   @Delete('delete/:discountId')

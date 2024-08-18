@@ -11,3 +11,11 @@ export const generateDiscountCode = (length: number = 5): string => {
   }
   return code;
 };
+
+export const emailRegExp =
+  /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/;
+
+export const generateOrderNumber = (): string => {
+  const randomDigits = Math.floor(1000 + Math.random() * 9000);
+  return randomDigits.toString();
+};
