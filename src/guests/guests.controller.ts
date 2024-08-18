@@ -1,5 +1,6 @@
 import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { GuestDto } from './dto/guests.dto';
 import { GuestsService } from './guests.service';
 
 @Controller('guests')
@@ -8,7 +9,7 @@ export class GuestsController {
   constructor(private guestService: GuestsService) {}
 
   @HttpCode(HttpStatus.CREATED)
-  @ApiBody({})
+  @ApiBody({ type: GuestDto })
   @ApiOperation({ summary: 'Register guest' })
   @ApiResponse({
     status: 201,
@@ -16,12 +17,7 @@ export class GuestsController {
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   @Post('register')
-  async register(
-    @Body('name') name: string,
-    @Body('email') email: string,
-    @Body('event') event: any,
-    @Body('ticket') ticket: any,
-  ) {
-    return this.guestService.register(name, email, event, ticket);
+  async register(@Body() dto: GuestDto) {
+    return this.guestService.register(dto);
   }
 }
