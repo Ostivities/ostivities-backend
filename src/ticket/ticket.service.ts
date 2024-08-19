@@ -17,8 +17,6 @@ export class TicketService {
 
   async createTicket(dto: CreateTicketDto): Promise<Ticket> {
     const { user, event } = dto;
-    console.log(user, 'user id');
-    console.log(event, 'user id');
 
     const eventData = await this.eventModel.findById(event);
     if (!eventData) {

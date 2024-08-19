@@ -1,5 +1,6 @@
 import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { IResponse } from 'src/util/types';
 import { GuestDto } from './dto/guests.dto';
 import { GuestsService } from './guests.service';
 
@@ -17,7 +18,16 @@ export class GuestsController {
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   @Post('register')
-  async register(@Body() dto: GuestDto) {
-    return this.guestService.register(dto);
+  async register(@Body() dto: GuestDto): Promise<IResponse> {
+    try {
+      const data = await this.guestService.register(dto);
+      return {
+        statusCode: HttpStatus.OK,
+        data: data,
+        message: 'Registration was successful',
+      };
+    } catch (error) {
+      return error;
+    }
   }
 }
