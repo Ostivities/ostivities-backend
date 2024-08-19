@@ -1,6 +1,7 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsAlpha, IsEmail, IsNotEmpty, Matches } from 'class-validator';
+import { IsAlpha, IsEmail, IsEnum, IsNotEmpty, Matches } from 'class-validator';
 import { emailRegExp } from 'src/util/helper';
+import { STAFF_ROLE } from 'src/util/types';
 
 export class CoordinatorDto {
   @ApiProperty({
@@ -21,4 +22,12 @@ export class CoordinatorDto {
   @IsNotEmpty()
   @IsAlpha()
   staff_name: string;
+
+  @ApiProperty({
+    enum: STAFF_ROLE,
+    description: 'staff role',
+  })
+  @IsEnum(STAFF_ROLE)
+  @IsNotEmpty()
+  staff_role: STAFF_ROLE;
 }

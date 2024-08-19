@@ -23,8 +23,8 @@ export enum TICKET_STOCK {
 }
 
 export enum STAFF_ROLE {
-  USHER = 'USHER',
   AGENT = 'AGENT',
+  USHER = 'USHER',
   AUDITOR = 'AUDITOR',
 }
 
