@@ -1,4 +1,11 @@
-import { Injectable } from '@nestjs/common';
+import { Mongoose } from 'mongoose';
+import { CoordinatorSchema } from './schema/coordinator.schema';
 
-@Injectable()
-export class Coordinators {}
+export const coordinatorProviders = [
+  {
+    provide: 'COORDINATOR_MODEL',
+    useFactory: (mongoose: Mongoose) =>
+      mongoose.model('Coordinator', CoordinatorSchema),
+    inject: ['DATABASE_CONNECTION'],
+  },
+];

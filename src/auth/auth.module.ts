@@ -1,6 +1,10 @@
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { MongooseModule } from '@nestjs/mongoose';
+import {
+  Coordinator,
+  CoordinatorSchema,
+} from 'src/coordinators/schema/coordinator.schema';
 import { DatabaseModule } from 'src/database/database.module';
 import {
   Discounts,
@@ -37,6 +41,7 @@ import { JwtStrategy } from './strategy/jwt.strategy';
       { name: SettlementAccount.name, schema: SettlementAccountSchema },
       { name: ActivateUser.name, schema: ActivateUserSchema },
       { name: Discounts.name, schema: DiscountsSchema },
+      { name: Coordinator.name, schema: CoordinatorSchema },
     ]),
     DatabaseModule,
   ],

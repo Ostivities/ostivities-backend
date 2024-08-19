@@ -5,7 +5,7 @@ import { STAFF_ROLE } from 'src/util/types';
 
 export class CoordinatorDto {
   @ApiProperty({
-    description: 'Email address',
+    description: 'Staff email address',
     type: String,
     required: true,
   })

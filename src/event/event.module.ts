@@ -3,6 +3,10 @@ import { JwtModule } from '@nestjs/jwt';
 import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserSchema } from 'src/auth/schema/auth.schema';
 import { JwtStrategy } from 'src/auth/strategy/jwt.strategy';
+import {
+  Coordinator,
+  CoordinatorSchema,
+} from 'src/coordinators/schema/coordinator.schema';
 import { DatabaseModule } from 'src/database/database.module';
 import {
   Discounts,
@@ -27,6 +31,7 @@ import { Events, EventSchema } from './schema/event.schema';
       { name: Discounts.name, schema: DiscountsSchema },
       { name: Ticket.name, schema: TicketSchema },
       { name: Guests.name, schema: GuestSchema },
+      { name: Coordinator.name, schema: CoordinatorSchema },
     ]),
     DatabaseModule,
   ],
