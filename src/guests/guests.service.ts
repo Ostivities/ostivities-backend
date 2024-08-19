@@ -47,4 +47,19 @@ export class GuestsService {
       throw new ForbiddenException(FORBIDDEN_MESSAGE);
     }
   }
+
+  async getGuestsByTicketId(ticketId: string): Promise<Guests[]> {
+    const ticketData = await this.ticketModel.findById(ticketId);
+    if (!ticketData) {
+      throw new Error('Ticket not found');
+    }
+    try {
+      const event = await this.guestModel
+        .find({ ticket: ticketId })
+        .populate('event');
+      return event;
+    } catch (error) {
+      throw new ForbiddenException(FORBIDDEN_MESSAGE);
+    }
+  }
 }

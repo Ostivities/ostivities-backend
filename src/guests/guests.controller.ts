@@ -69,4 +69,27 @@ export class GuestsController {
       return error;
     }
   }
+
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Get all guests' })
+  @ApiParam({ name: 'ticket id', description: 'Event ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'Guests fetched successfully.',
+  })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @Get('ticket/:ticketId')
+  async getGuestsByTicketId(@Param('ticketId') ticketId: string) {
+    try {
+      const data = await this.guestService.getGuestsByTicketId(ticketId);
+      return {
+        statusCode: HttpStatus.OK,
+        data: data,
+        message: 'Guests fetched successful',
+      };
+    } catch (error) {
+      return error;
+    }
+  }
 }
