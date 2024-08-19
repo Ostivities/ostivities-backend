@@ -116,7 +116,7 @@ export class GuestDto {
   })
   @IsString()
   @IsEmpty()
-  disocuntCode: number;
+  disocuntCode: string;
 
   @ApiProperty({
     description: 'Quantity',

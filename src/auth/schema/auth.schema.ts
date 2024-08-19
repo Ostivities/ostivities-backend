@@ -1,5 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import { HydratedDocument } from 'mongoose';
+import { emailRegExp } from 'src/util/helper';
 import { schemaConfig } from 'src/util/schema.config';
 import { ACCOUNT_TYPE } from 'src/util/types';
 
@@ -12,9 +13,7 @@ export class User {
     required: [true, 'email is required'],
     validate: {
       validator: function (v: string) {
-        return /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/.test(
-          v,
-        );
+        return emailRegExp.test(v);
       },
       message: (props: { value: any }) =>
         `${props.value} is not a valid email address!`,
@@ -24,6 +23,7 @@ export class User {
 
   @Prop({
     required: [true, 'password is required'],
+    type: String,
   })
   hash: string;
 
