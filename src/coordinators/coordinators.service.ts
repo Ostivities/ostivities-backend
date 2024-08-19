@@ -31,6 +31,7 @@ export class CoordinatorsService {
     if (!eventData) {
       throw new Error('Event not found');
     }
+
     try {
       const createdStaff = new this.coordinatorModel({
         ...dto,
@@ -39,6 +40,32 @@ export class CoordinatorsService {
       });
       const newStaff = await createdStaff.save();
       return newStaff;
+    } catch (error) {
+      throw new ForbiddenException(FORBIDDEN_MESSAGE);
+    }
+  }
+
+  async getCoordinatorById(id: string, eventId: string): Promise<Coordinator> {
+    const eventData = await this.eventModel.findById(eventId);
+    if (!eventData) {
+      throw new Error('Event not found');
+    }
+    try {
+      const staff = await this.coordinatorModel.findById({ _id: id }).lean();
+      return staff;
+    } catch (error) {}
+  }
+
+  async getCoordinatorByEventId(eventId: string): Promise<Coordinator[]> {
+    const eventData = await this.eventModel.findById(eventId);
+    if (!eventData) {
+      throw new Error('Event not found');
+    }
+    try {
+      const staffs = await this.coordinatorModel
+        .find({ event: eventId })
+        .populate('event');
+      return staffs;
     } catch (error) {
       throw new ForbiddenException(FORBIDDEN_MESSAGE);
     }
