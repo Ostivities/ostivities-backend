@@ -12,6 +12,7 @@ export enum TICKET_ENTITY {
   SINGLE = 'SINGLE',
   COLLECTIVE = 'COLLECTIVE',
 }
+
 export enum TICKET_TYPE {
   FREE = 'FREE',
   PAID = 'PAID',
@@ -19,6 +20,12 @@ export enum TICKET_TYPE {
 export enum TICKET_STOCK {
   LIMITED = 'LIMITED',
   UN_LIMITED = 'UN_LIMITED',
+}
+
+export enum STAFF_ROLE {
+  USHER = 'USHER',
+  AGENT = 'AGENT',
+  AUDITOR = 'AUDITOR',
 }
 
 export enum EVENT_TYPES {
