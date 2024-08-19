@@ -1,5 +1,7 @@
 import { Prop, SchemaFactory } from '@nestjs/mongoose';
-import { HydratedDocument } from 'mongoose';
+import mongoose, { HydratedDocument } from 'mongoose';
+import { User } from 'src/auth/schema/auth.schema';
+import { Events } from 'src/event/schema/event.schema';
 import { emailRegExp } from 'src/util/helper';
 import { STAFF_ROLE } from 'src/util/types';
 
@@ -34,6 +36,20 @@ export class Coordinator {
     },
   })
   staff_role: STAFF_ROLE;
+
+  @Prop({
+    type: mongoose.Schema.Types.ObjectId,
+    ref: User.name,
+    required: true,
+  })
+  user: mongoose.Schema.Types.ObjectId;
+
+  @Prop({
+    type: mongoose.Schema.Types.ObjectId,
+    ref: Events.name,
+    required: true,
+  })
+  event: mongoose.Schema.Types.ObjectId;
 }
 
 export const CoordinatorSchema = SchemaFactory.createForClass(Coordinator);
