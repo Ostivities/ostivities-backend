@@ -20,7 +20,7 @@ import { IResponse } from 'src/util/types';
 import { GuestDto } from './dto/guests.dto';
 import { GuestsService } from './guests.service';
 
-@Controller('guests')
+@Controller('guest')
 @ApiTags('Guest Service')
 export class GuestsController {
   constructor(private guestService: GuestsService) {}
@@ -33,10 +33,13 @@ export class GuestsController {
     description: 'Registration was successful.',
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
-  @Post('register')
-  async register(@Body() dto: GuestDto): Promise<IResponse> {
+  @Post('register/:eventId')
+  async register(
+    @Param('eventId') eventId: string,
+    @Body() dto: GuestDto,
+  ): Promise<IResponse> {
     try {
-      const data = await this.guestService.register(dto);
+      const data = await this.guestService.register({ ...dto, event: eventId });
       return {
         statusCode: HttpStatus.OK,
         data: data,
