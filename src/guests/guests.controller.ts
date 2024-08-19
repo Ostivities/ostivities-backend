@@ -39,7 +39,7 @@ export class GuestsController {
     @Body() dto: GuestDto,
   ): Promise<IResponse> {
     try {
-      const data = await this.guestService.register({ ...dto, event: eventId });
+      const data = await this.guestService.register({ ...dto }, eventId);
       return {
         statusCode: HttpStatus.OK,
         data: data,

@@ -64,14 +64,14 @@ class PersonalInformation {
 }
 
 export class GuestDto {
-  @ApiProperty({
-    type: String,
-    description: 'event Id',
-    required: true,
-  })
-  @IsNotEmpty()
-  @IsMongoId()
-  event: string;
+  // @ApiProperty({
+  //   type: String,
+  //   description: 'event Id',
+  //   required: true,
+  // })
+  // @IsNotEmpty()
+  // @IsMongoId()
+  // event: string;
 
   @ApiProperty({
     type: String,
@@ -128,9 +128,9 @@ export class GuestDto {
   @IsNotEmpty()
   quantity: number = 1;
 
-  @IsNumber()
-  @IsNotEmpty()
-  orderNo: number;
+  // @IsNumber()
+  // @IsNotEmpty()
+  // orderNo: number;
 
   @ApiProperty({
     enum: PAYMENT_METHODS,
