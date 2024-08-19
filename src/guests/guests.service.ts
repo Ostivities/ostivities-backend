@@ -1,4 +1,5 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
+import { FORBIDDEN_MESSAGE } from '@nestjs/core/guards';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Events } from 'src/event/schema/event.schema';
@@ -27,6 +28,23 @@ export class GuestsService {
       });
       const savedGuest = await newRegistration.save();
       return savedGuest;
-    } catch (error) {}
+    } catch (error) {
+      throw new ForbiddenException(FORBIDDEN_MESSAGE);
+    }
+  }
+
+  async getGuestsByEventId(eventId: string): Promise<Guests[]> {
+    const eventData = await this.eventModel.findById(eventId);
+    if (!eventData) {
+      throw new Error('Event not found');
+    }
+    try {
+      const event = await this.guestModel
+        .find({ event: eventId })
+        .populate('ticket');
+      return event;
+    } catch (error) {
+      throw new ForbiddenException(FORBIDDEN_MESSAGE);
+    }
   }
 }

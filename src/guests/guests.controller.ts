@@ -1,5 +1,21 @@
-import { Body, Controller, HttpCode, HttpStatus, Post } from '@nestjs/common';
-import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  Body,
+  Controller,
+  Get,
+  HttpCode,
+  HttpStatus,
+  Param,
+  Post,
+  UseGuards,
+} from '@nestjs/common';
+import {
+  ApiBody,
+  ApiOperation,
+  ApiParam,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
+import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
 import { IResponse } from 'src/util/types';
 import { GuestDto } from './dto/guests.dto';
 import { GuestsService } from './guests.service';
@@ -25,6 +41,29 @@ export class GuestsController {
         statusCode: HttpStatus.OK,
         data: data,
         message: 'Registration was successful',
+      };
+    } catch (error) {
+      return error;
+    }
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Get all guests' })
+  @ApiParam({ name: 'event id', description: 'Event ID' })
+  @ApiResponse({
+    status: 200,
+    description: 'Guests fetched successfully.',
+  })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @Get('event/:eventId')
+  async getGuestsByEventId(@Param('eventId') eventId: string) {
+    try {
+      const data = await this.guestService.getGuestsByEventId(eventId);
+      return {
+        statusCode: HttpStatus.OK,
+        data: data,
+        message: 'Guests fetched successful',
       };
     } catch (error) {
       return error;
