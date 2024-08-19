@@ -56,7 +56,7 @@ export class CoordinatorsService {
     } catch (error) {}
   }
 
-  async getCoordinatorByEventId(eventId: string): Promise<Coordinator[]> {
+  async getCoordinatorsByEventId(eventId: string): Promise<Coordinator[]> {
     const eventData = await this.eventModel.findById(eventId);
     if (!eventData) {
       throw new Error('Event not found');
