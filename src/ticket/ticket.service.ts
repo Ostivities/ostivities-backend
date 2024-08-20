@@ -17,8 +17,6 @@ export class TicketService {
 
   async createTicket(dto: CreateTicketDto): Promise<Ticket> {
     const { user, event } = dto;
-    console.log(user, 'user id');
-    console.log(event, 'user id');
 
     const eventData = await this.eventModel.findById(event);
     if (!eventData) {
@@ -80,7 +78,11 @@ export class TicketService {
 
   async getTicketById(id: string): Promise<Ticket> {
     try {
-      const ticket = await this.ticketModel.findOne({ _id: id }).lean();
+      const ticket = (await this.ticketModel.findOne({ _id: id })).populate([
+        'discount',
+        'event',
+        'user',
+      ]);
       return ticket;
     } catch (error) {
       throw new ForbiddenException(FORBIDDEN_MESSAGE);
@@ -93,7 +95,10 @@ export class TicketService {
       throw new Error('Event not found');
     }
     try {
-      const tickets = await this.ticketModel.find({ event: eventData?._id });
+      const tickets = await this.ticketModel
+        .find({ event: eventData?._id })
+        .populate(['discount', 'event', 'user'])
+        .exec();
       return tickets;
     } catch (error) {
       throw new ForbiddenException(FORBIDDEN_MESSAGE);

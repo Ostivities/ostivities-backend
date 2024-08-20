@@ -12,6 +12,9 @@ import { TicketModule } from './ticket/ticket.module';
 import { SettleAccountsModule } from './settle_accounts/settle_accounts.module';
 import { SecurityModule } from './security/security.module';
 import { DiscountModule } from './discount/discount.module';
+import { GuestsModule } from './guests/guests.module';
+import { CoordinatorsModule } from './coordinators/coordinators.module';
+import { VendorModule } from './vendor/vendor.module';
 
 @Module({
   imports: [
@@ -30,6 +33,9 @@ import { DiscountModule } from './discount/discount.module';
     SettleAccountsModule,
     SecurityModule,
     DiscountModule,
+    GuestsModule,
+    CoordinatorsModule,
+    VendorModule,
   ],
   controllers: [AppController],
   providers: [AppService],

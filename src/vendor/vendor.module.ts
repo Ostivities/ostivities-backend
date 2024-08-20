@@ -1,0 +1,23 @@
+import { Module } from '@nestjs/common';
+import { MongooseModule } from '@nestjs/mongoose';
+import { User, UserSchema } from 'src/auth/schema/auth.schema';
+import { DatabaseModule } from 'src/database/database.module';
+import { Events, EventSchema } from 'src/event/schema/event.schema';
+import { Vendor, VendorSchema } from './schema/vendor.schema';
+import { VendorController } from './vendor.controller';
+import { vendorProviders } from './vendor.provider';
+import { VendorService } from './vendor.service';
+
+@Module({
+  controllers: [VendorController],
+  providers: [VendorService, ...vendorProviders],
+  imports: [
+    DatabaseModule,
+    MongooseModule.forFeature([
+      { name: User.name, schema: UserSchema },
+      { name: Events.name, schema: EventSchema },
+      { name: Vendor.name, schema: VendorSchema },
+    ]),
+  ],
+})
+export class VendorModule {}

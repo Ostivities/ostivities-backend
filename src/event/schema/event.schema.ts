@@ -29,7 +29,7 @@ class TicketQuestionSchema {
 }
 
 @Schema(schemaConfig)
-class Socials {
+export class Socials {
   @Prop({ type: String, required: false })
   name: string;
 

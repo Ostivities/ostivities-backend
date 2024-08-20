@@ -12,6 +12,7 @@ import {
   MinLength,
   ValidateIf,
 } from 'class-validator';
+import { emailRegExp } from 'src/util/helper';
 import { ACCOUNT_TYPE } from '../../util/types';
 
 export class CreateUserDto {
@@ -21,7 +22,7 @@ export class CreateUserDto {
   })
   @IsEnum(ACCOUNT_TYPE)
   @IsNotEmpty()
-  accountType: string;
+  accountType: ACCOUNT_TYPE;
 
   @ApiProperty({
     description: 'First name',
@@ -62,10 +63,7 @@ export class CreateUserDto {
   })
   @IsEmail()
   @IsNotEmpty()
-  @Matches(
-    /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:\.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/,
-    { message: 'email must be a valid email' },
-  )
+  @Matches(emailRegExp, { message: 'email must be a valid email' })
   email: string;
 
   @ApiProperty({

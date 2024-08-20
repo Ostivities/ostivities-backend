@@ -26,11 +26,11 @@ export class Discounts {
   discountType: DISCOUNT_TYPES;
 
   @Prop({
-    type: Types.ObjectId,
-    ref: 'Event',
+    type: [Types.ObjectId],
+    ref: 'Ticket',
     required: true,
   })
-  ticket: Ticket;
+  ticket: [Ticket];
 
   @Prop({
     required: [true, 'usage limit is required'],

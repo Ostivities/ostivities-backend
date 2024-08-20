@@ -4,6 +4,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User } from 'src/auth/schema/auth.schema';
 import { Events } from 'src/event/schema/event.schema';
+import { Ticket } from 'src/ticket/schema/ticket.schema';
 import { CreateDiscountDto, UpdateDiscountDto } from './dto/discount.dto';
 import { Discounts } from './schema/discount.schema';
 
@@ -12,7 +13,7 @@ export class DiscountService {
   constructor(
     @InjectModel(Events.name) private eventModel: Model<Events>,
     @InjectModel(User.name) private userModel: Model<User>,
-    // @InjectModel(Ticket.name) private ticketModel: Model<Ticket>,
+    @InjectModel(Ticket.name) private ticketModel: Model<Ticket>,
     @InjectModel(Discounts.name) private discountModel: Model<Discounts>,
   ) {}
 
@@ -32,9 +33,18 @@ export class DiscountService {
         ...dto,
         event: event,
         user: userData?._id,
-      }).save();
+      });
 
-      return discount;
+      const newDiscount = await discount.save();
+
+      if (dto.ticket && dto.ticket.length > 0) {
+        await this.ticketModel.updateMany(
+          { _id: { $in: dto.ticket } },
+          { $set: { discount: newDiscount._id } },
+        );
+      }
+
+      return newDiscount;
     } catch (error) {
       throw new ForbiddenException(FORBIDDEN_MESSAGE);
     }
@@ -95,6 +105,42 @@ export class DiscountService {
       });
       return deletedDiscount;
     } catch (error) {
+      throw new ForbiddenException(FORBIDDEN_MESSAGE);
+    }
+  }
+
+  async getDiscountByEventId(eventId: string) {
+    const eventData = await this.eventModel.findById(eventId);
+    if (!eventData) {
+      throw new Error('Event not found');
+    }
+    try {
+      const eventDiscount = await this.discountModel
+        .find({
+          event: eventData?._id,
+        })
+        .populate(['event', 'ticket'])
+        .exec();
+      return eventDiscount;
+    } catch (error) {
+      console.log(error, 'kk');
+      throw new ForbiddenException(FORBIDDEN_MESSAGE);
+    }
+  }
+
+  async getDiscountByTicketId(ticketId: string) {
+    const ticketData = await this.ticketModel.findById(ticketId);
+    if (!ticketData) {
+      throw new Error('Ticket not found');
+    }
+    try {
+      const eventDiscount = await this.discountModel
+        .findOne({ ticket: { $in: ticketId } })
+        .populate(['ticket', 'event'])
+        .exec();
+      return eventDiscount;
+    } catch (error) {
+      console.log(error, 'kk');
       throw new ForbiddenException(FORBIDDEN_MESSAGE);
     }
   }

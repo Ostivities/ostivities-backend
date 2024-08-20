@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Delete,
+  Get,
   HttpCode,
   HttpStatus,
   Param,
@@ -26,13 +27,13 @@ export class DiscountController {
   @ApiOperation({ summary: 'Create Discount' })
   @ApiResponse({
     status: 200,
-    description: 'Discount created successfully.',
+    description: 'Discount code created successfully.',
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   @Post('create/:eventId')
   async createDiscount(
     @Body() dto: CreateDiscountDto,
-    @Param('id') eventId: string,
+    @Param('eventId') eventId: string,
     @GetCurrentUser('id') user: string,
   ): Promise<IResponse> {
     try {
@@ -44,9 +45,10 @@ export class DiscountController {
       return {
         statusCode: HttpStatus.CREATED,
         data: data,
-        message: 'Discount created sucessfully',
+        message: 'Discount created successfully',
       };
     } catch (error) {
+      console.log(error, 'error');
       return error;
     }
   }
@@ -55,7 +57,7 @@ export class DiscountController {
   @ApiOperation({ summary: 'Delete discount' })
   @ApiResponse({
     status: 200,
-    description: 'Discount deleted successfully.',
+    description: 'Discount code deleted successfully.',
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   @Delete('delete/:discountId')
@@ -63,10 +65,54 @@ export class DiscountController {
     try {
       const data = await this.discountService.deleteDiscount(discountId);
       return {
-        statusCode: HttpStatus.CREATED,
+        statusCode: HttpStatus.OK,
         data: data,
-        message: 'Discount created sucessfully',
+        message: 'Discount deleted sucessfully',
       };
-    } catch (error) {}
+    } catch (error) {
+      return error;
+    }
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Get discount by event id' })
+  @ApiResponse({
+    status: 200,
+    description: 'Discount fetched successfully.',
+  })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @Get('event/:eventId')
+  async getDiscountByEventId(@Param('eventId') eventId: string) {
+    console.log(eventId, 'hh');
+    try {
+      const data = await this.discountService.getDiscountByEventId(eventId);
+      return {
+        statusCode: HttpStatus.OK,
+        data: data,
+        message: 'Discount fetched successfully',
+      };
+    } catch (error) {
+      return error;
+    }
+  }
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Get discount by ticket id' })
+  @ApiResponse({
+    status: 200,
+    description: 'Discount fetched successfully.',
+  })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @Get('ticket/:ticketId')
+  async getDiscountByTicketId(@Param('ticketId') ticketId: string) {
+    try {
+      const data = await this.discountService.getDiscountByTicketId(ticketId);
+      return {
+        statusCode: HttpStatus.OK,
+        data: data,
+        message: 'Discount fetched successfully',
+      };
+    } catch (error) {
+      return error;
+    }
   }
 }

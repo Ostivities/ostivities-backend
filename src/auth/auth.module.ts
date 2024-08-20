@@ -1,7 +1,15 @@
 import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { MongooseModule } from '@nestjs/mongoose';
+import {
+  Coordinator,
+  CoordinatorSchema,
+} from 'src/coordinators/schema/coordinator.schema';
 import { DatabaseModule } from 'src/database/database.module';
+import {
+  Discounts,
+  DiscountsSchema,
+} from 'src/discount/schema/discount.schema';
 import { EventSchema, Events } from 'src/event/schema/event.schema';
 import { Security, SecuritySchema } from 'src/security/schema/security.schema';
 import {
@@ -32,6 +40,8 @@ import { JwtStrategy } from './strategy/jwt.strategy';
       { name: Security.name, schema: SecuritySchema },
       { name: SettlementAccount.name, schema: SettlementAccountSchema },
       { name: ActivateUser.name, schema: ActivateUserSchema },
+      { name: Discounts.name, schema: DiscountsSchema },
+      { name: Coordinator.name, schema: CoordinatorSchema },
     ]),
     DatabaseModule,
   ],

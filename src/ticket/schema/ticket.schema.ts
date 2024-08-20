@@ -1,6 +1,7 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
 import { User } from 'src/auth/schema/auth.schema';
+import { Discounts } from 'src/discount/schema/discount.schema';
 import { Events } from 'src/event/schema/event.schema';
 import { schemaConfig } from 'src/util/schema.config';
 import { TICKET_ENTITY, TICKET_STOCK, TICKET_TYPE } from 'src/util/types';
@@ -126,6 +127,13 @@ export class Ticket {
     required: true,
   })
   event: mongoose.Schema.Types.ObjectId;
+
+  @Prop({
+    type: mongoose.Schema.Types.ObjectId,
+    ref: Discounts.name,
+    required: false,
+  })
+  discount: mongoose.Schema.Types.ObjectId;
 }
 
 export const TicketSchema = SchemaFactory.createForClass(Ticket);

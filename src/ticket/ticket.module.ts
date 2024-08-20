@@ -4,7 +4,12 @@ import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserSchema } from 'src/auth/schema/auth.schema';
 import { JwtStrategy } from 'src/auth/strategy/jwt.strategy';
 import { DatabaseModule } from 'src/database/database.module';
-import { EventSchema, Events } from 'src/event/schema/event.schema';
+import {
+  Discounts,
+  DiscountsSchema,
+} from 'src/discount/schema/discount.schema';
+import { Events, EventSchema } from 'src/event/schema/event.schema';
+import { Guests, GuestSchema } from 'src/guests/schema/guests.schema';
 import { Ticket, TicketSchema } from './schema/ticket.schema';
 import { TicketController } from './ticket.controller';
 import { ticketProviders } from './ticket.provider';
@@ -20,6 +25,8 @@ import { TicketService } from './ticket.service';
       { name: Ticket.name, schema: TicketSchema },
       { name: Events.name, schema: EventSchema },
       { name: User.name, schema: UserSchema },
+      { name: Discounts.name, schema: DiscountsSchema },
+      { name: Guests.name, schema: GuestSchema },
     ]),
     DatabaseModule,
   ],
