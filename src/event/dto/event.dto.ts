@@ -14,7 +14,7 @@ import {
 } from 'class-validator';
 import { EVENT_INFO, EVENT_TYPES } from 'src/util/types';
 
-class ValidateSocials {
+export class ValidateSocials {
   @ApiProperty({
     type: String,
     description: 'Event name',
