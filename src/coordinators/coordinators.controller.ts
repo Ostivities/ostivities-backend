@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Get,
   HttpCode,
   HttpStatus,
   Param,
@@ -40,6 +41,51 @@ export class CoordinatorsController {
         statusCode: HttpStatus.CREATED,
         data: data,
         message: 'Staff created successfully',
+      };
+    } catch (error) {
+      return error;
+    }
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Coordinator info' })
+  @ApiResponse({
+    status: 201,
+    description: 'Staff fetched successfully.',
+  })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @Get('coordnator/:id')
+  async getCoordinatorById(@Param('id') id: string, eventId: string) {
+    try {
+      const data = await this.coordinatorService.getCoordinatorById(
+        id,
+        eventId,
+      );
+      return {
+        statusCode: HttpStatus.OK,
+        data: data,
+        message: 'Staff fetched successfully',
+      };
+    } catch (error) {
+      return error;
+    }
+  }
+
+  @ApiOperation({ summary: 'Event Coordinators' })
+  @ApiResponse({
+    status: 201,
+    description: 'Staffs fetched successfully.',
+  })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @Get('coordnators/:eventId')
+  async getCoordinatorsByEventId(@Param('eventId') eventId: string) {
+    try {
+      const data =
+        await this.coordinatorService.getCoordinatorsByEventId(eventId);
+      return {
+        statusCode: HttpStatus.OK,
+        data: data,
+        message: 'Staffs fetched successfully',
       };
     } catch (error) {
       return error;
