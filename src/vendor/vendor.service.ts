@@ -1,4 +1,30 @@
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
+import { FORBIDDEN_MESSAGE } from '@nestjs/core/guards';
+import { InjectModel } from '@nestjs/mongoose';
+import { Model } from 'mongoose';
+import { Events } from 'src/event/schema/event.schema';
+import { VendorDto } from './dto/vendor.dto';
+import { Vendor } from './schema/vendor.schema';
 
 @Injectable()
-export class VendorService {}
+export class VendorService {
+  constructor(
+    @InjectModel(Events.name) private eventModel: Model<Events>,
+    @InjectModel(Vendor.name) private vendorModel: Model<Vendor>,
+  ) {}
+
+  async createVendor(dto: VendorDto, eventId: string): Promise<Vendor> {
+    try {
+      const eventData = await this.eventModel.findById(eventId);
+      if (!eventData) {
+        throw new Error('Event not found');
+      }
+
+      const createdVendor = new this.vendorModel({ ...dto, event: eventId });
+      const savedVendor = await createdVendor.save();
+      return savedVendor;
+    } catch (error) {
+      throw new ForbiddenException(FORBIDDEN_MESSAGE);
+    }
+  }
+}

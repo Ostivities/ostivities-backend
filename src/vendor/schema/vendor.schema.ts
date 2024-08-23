@@ -1,6 +1,5 @@
 import { Prop, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
-import { User } from 'src/auth/schema/auth.schema';
 import { Events, Socials } from 'src/event/schema/event.schema';
 import { emailRegExp } from 'src/util/helper';
 import { STATUS } from 'src/util/types';
@@ -69,13 +68,6 @@ export class Vendor {
     },
   })
   status: STATUS.PENDING;
-
-  @Prop({
-    type: mongoose.Schema.Types.ObjectId,
-    ref: User.name,
-    required: true,
-  })
-  user: mongoose.Schema.Types.ObjectId;
 
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
