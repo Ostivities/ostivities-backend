@@ -3,6 +3,7 @@ import mongoose, { HydratedDocument } from 'mongoose';
 import { User } from 'src/auth/schema/auth.schema';
 import { Events, Socials } from 'src/event/schema/event.schema';
 import { emailRegExp } from 'src/util/helper';
+import { STATUS } from 'src/util/types';
 
 export type VendorDocument = HydratedDocument<Vendor>;
 
@@ -42,10 +43,32 @@ export class Vendor {
   vendor_address: string;
 
   @Prop({
-    required: false,
+    required: true,
     type: String,
   })
   specialities: string;
+
+  @Prop({
+    required: false,
+    type: String,
+  })
+  description: string;
+
+  @Prop({
+    required: false,
+    type: Boolean,
+  })
+  exhibition_space: boolean;
+
+  @Prop({
+    required: false,
+    type: STATUS,
+    enum: {
+      values: Object.values(STATUS),
+      message: '{VALUE} is not supported',
+    },
+  })
+  status: STATUS.PENDING;
 
   @Prop({
     type: mongoose.Schema.Types.ObjectId,

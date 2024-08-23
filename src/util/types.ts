@@ -28,6 +28,12 @@ export enum STAFF_ROLE {
   AUDITOR = 'AUDITOR',
 }
 
+export enum STATUS {
+  PENDING = 'PENDING',
+  APPROVED = 'APPROVED',
+  DECLINED = 'DECLINED',
+}
+
 export enum EVENT_TYPES {
   WEDDING = 'Wedding',
   BIRTHDAY_PARTY = 'Birthday party',
