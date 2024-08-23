@@ -3,7 +3,9 @@ import { Type } from 'class-transformer';
 import {
   IsAlpha,
   IsArray,
+  IsBoolean,
   IsEmail,
+  IsEmpty,
   IsNotEmpty,
   IsOptional,
   IsString,
@@ -45,6 +47,24 @@ export class VendorDto {
   vendor_name: string;
 
   @ApiProperty({
+    description: 'vendor phone number',
+    type: String,
+    required: true,
+  })
+  @IsNotEmpty()
+  @IsString()
+  vendor_phone_number: string;
+
+  @ApiProperty({
+    description: 'vendor address',
+    type: String,
+    required: true,
+  })
+  @IsNotEmpty()
+  @IsString()
+  vendor_address: string;
+
+  @ApiProperty({
     description: 'vendor specialities',
     type: String,
     required: true,
@@ -52,4 +72,22 @@ export class VendorDto {
   @IsNotEmpty()
   @IsString()
   specialities: string;
+
+  @ApiProperty({
+    description: 'vendor business description',
+    type: String,
+    required: false,
+  })
+  @IsEmpty()
+  @IsString()
+  description: string;
+
+  @ApiProperty({
+    description: 'vendor requires exhibition space',
+    type: Boolean,
+    required: false,
+  })
+  @IsNotEmpty()
+  @IsBoolean()
+  exhibition_space: false;
 }
