@@ -70,8 +70,8 @@ export class VendorDto {
     type: String,
     required: false,
   })
-  @IsEmpty()
   @IsUrl()
+  @IsOptional()
   vendor_logo: string;
 
   @ApiProperty({
