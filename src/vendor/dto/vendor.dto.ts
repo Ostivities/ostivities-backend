@@ -18,8 +18,8 @@ import { emailRegExp } from 'src/util/helper';
 
 export class VendorDto {
   @ApiProperty({
-    type: ValidateSocials,
-    description: 'social media url',
+    type: [ValidateSocials],
+    description: 'social media',
     required: false,
   })
   @IsOptional()

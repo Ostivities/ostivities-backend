@@ -10,7 +10,6 @@ import {
   TICKET_STOCK,
   TICKET_TYPE,
 } from 'src/util/types';
-import { Vendor } from 'src/vendor/schema/vendor.schema';
 
 export type EventDocument = HydratedDocument<Events>;
 
@@ -290,12 +289,12 @@ export class Events {
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: User.name })
   user: mongoose.Schema.Types.ObjectId;
 
-  @Prop({
-    type: [mongoose.Schema.Types.ObjectId],
-    ref: 'Vendor',
-    required: false,
-  })
-  Vendors: [Vendor];
+  // @Prop({
+  //   type: [mongoose.Schema.Types.ObjectId],
+  //   ref: 'Vendor',
+  //   required: false,
+  // })
+  // Vendors: [Vendor];
 
   @Prop({ type: Number, default: 0 })
   ticketSold: number;

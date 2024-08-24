@@ -66,14 +66,14 @@ export class Vendor {
   exhibition_space: boolean;
 
   @Prop({
-    required: false,
+    required: true,
     type: STATUS,
     enum: {
       values: Object.values(STATUS),
       message: '{VALUE} is not supported',
     },
   })
-  status: STATUS.PENDING;
+  status: STATUS;
 
   @Prop({
     type: mongoose.Schema.Types.ObjectId,

@@ -14,9 +14,9 @@ import { VendorService } from './vendor.service';
   imports: [
     DatabaseModule,
     MongooseModule.forFeature([
+      { name: Vendor.name, schema: VendorSchema },
       { name: User.name, schema: UserSchema },
       { name: Events.name, schema: EventSchema },
-      { name: Vendor.name, schema: VendorSchema },
     ]),
   ],
 })

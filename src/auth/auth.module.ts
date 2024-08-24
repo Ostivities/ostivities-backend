@@ -16,6 +16,7 @@ import {
   SettlementAccount,
   SettlementAccountSchema,
 } from 'src/settle_accounts/schema/settlement.schema';
+import { Vendor, VendorSchema } from 'src/vendor/schema/vendor.schema';
 import { AuthController } from './auth.controller';
 import { authProviders } from './auth.providers';
 import { AuthService } from './auth.service';
@@ -42,6 +43,7 @@ import { JwtStrategy } from './strategy/jwt.strategy';
       { name: ActivateUser.name, schema: ActivateUserSchema },
       { name: Discounts.name, schema: DiscountsSchema },
       { name: Coordinator.name, schema: CoordinatorSchema },
+      { name: Vendor.name, schema: VendorSchema },
     ]),
     DatabaseModule,
   ],
