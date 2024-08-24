@@ -39,10 +39,11 @@ export class VendorService {
     vendorId: string,
     status: STATUS,
   ): Promise<Vendor> {
-    const eventData = await this.eventModel.findById(eventId);
+    const eventData = await this.eventModel.findById({ _id: eventId });
     if (!eventData) {
       throw new Error('Event not found');
     }
+    console.log(eventData, 'event data');
     try {
       const updatedTicket = await this.vendorModel.findOneAndUpdate(
         { _id: vendorId },

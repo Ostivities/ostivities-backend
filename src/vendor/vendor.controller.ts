@@ -46,7 +46,7 @@ export class VendorController {
 
   @Patch('approve/:eventId/:vendorId')
   async approveVendor(
-    @Param('vendorId') eventId: string,
+    @Param('eventId') eventId: string,
     @Param('vendorId') vendorId: string,
   ) {
     const vendor = await this.vendorService.updateVendorStatus(
@@ -63,7 +63,7 @@ export class VendorController {
 
   @Patch('decline/:eventId/:vendorId')
   async declineVendor(
-    @Param('vendorId') eventId: string,
+    @Param('eventId') eventId: string,
     @Param('vendorId') vendorId: string,
   ) {
     const vendor = await this.vendorService.updateVendorStatus(
