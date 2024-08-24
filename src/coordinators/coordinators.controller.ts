@@ -9,7 +9,6 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { GetCurrentUser } from 'src/auth/decorator/user.decorator';
 import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
 import { IResponse } from 'src/util/types';
 import { CoordinatorsService } from './coordinators.service';
@@ -33,10 +32,9 @@ export class CoordinatorsController {
   async createStaff(
     @Body() dto: CoordinatorDto,
     @Param('eventId') eventId: string,
-    @GetCurrentUser('id') id: string,
   ): Promise<IResponse> {
     try {
-      const data = await this.coordinatorService.createStaff(dto, eventId, id);
+      const data = await this.coordinatorService.createStaff(dto, eventId);
       return {
         statusCode: HttpStatus.CREATED,
         data: data,

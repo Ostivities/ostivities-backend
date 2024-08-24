@@ -1,12 +1,13 @@
-import { Prop, SchemaFactory } from '@nestjs/mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
-import { User } from 'src/auth/schema/auth.schema';
 import { Events } from 'src/event/schema/event.schema';
 import { emailRegExp } from 'src/util/helper';
+import { schemaConfig } from 'src/util/schema.config';
 import { STAFF_ROLE } from 'src/util/types';
 
 export type CoordinatorDocument = HydratedDocument<Coordinator>;
 
+@Schema(schemaConfig)
 export class Coordinator {
   @Prop({
     unique: true,
@@ -38,11 +39,10 @@ export class Coordinator {
   staff_role: STAFF_ROLE;
 
   @Prop({
-    type: mongoose.Schema.Types.ObjectId,
-    ref: User.name,
-    required: true,
+    required: [true, 'phone number is required'],
+    type: String,
   })
-  user: mongoose.Schema.Types.ObjectId;
+  staff_phone_number: string;
 
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
