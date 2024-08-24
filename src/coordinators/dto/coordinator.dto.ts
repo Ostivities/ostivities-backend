@@ -1,6 +1,5 @@
 import { ApiProperty } from '@nestjs/swagger';
 import {
-  IsAlpha,
   IsEmail,
   IsEnum,
   IsNotEmpty,
@@ -27,7 +26,7 @@ export class CoordinatorDto {
     required: true,
   })
   @IsNotEmpty()
-  @IsAlpha()
+  @IsString()
   staff_name: string;
 
   @ApiProperty({

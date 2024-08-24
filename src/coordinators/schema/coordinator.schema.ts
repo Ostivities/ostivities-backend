@@ -29,7 +29,7 @@ export class Coordinator {
   staff_name: string;
 
   @Prop({
-    type: STAFF_ROLE,
+    // type: STAFF_ROLE,
     required: [true, 'staff role is required'],
     enum: {
       values: Object.values(STAFF_ROLE),
