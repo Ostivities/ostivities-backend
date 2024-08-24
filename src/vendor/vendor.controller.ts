@@ -1,11 +1,13 @@
 import {
   Body,
   Controller,
+  Get,
   HttpCode,
   HttpStatus,
   Param,
   Patch,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 import {
   ApiBody,
@@ -14,6 +16,8 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { Public } from 'src/auth/decorator/public.decorator';
+import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
 import { IResponse, STATUS } from 'src/util/types';
 import { VendorDto } from './dto/vendor.dto';
 import { VendorService } from './vendor.service';
@@ -23,6 +27,7 @@ import { VendorService } from './vendor.service';
 export class VendorController {
   constructor(private vendorService: VendorService) {}
 
+  @Public()
   @HttpCode(HttpStatus.OK)
   @ApiBody({ type: VendorDto })
   @ApiOperation({ summary: 'Create Vendor' })
@@ -49,6 +54,7 @@ export class VendorController {
     }
   }
 
+  @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
   @ApiParam({ name: 'eventId', description: 'Event ID' })
   @ApiParam({ name: 'vendorId', description: 'Vendor ID' })
@@ -63,18 +69,23 @@ export class VendorController {
     @Param('eventId') eventId: string,
     @Param('vendorId') vendorId: string,
   ) {
-    const vendor = await this.vendorService.updateVendorStatus(
-      eventId,
-      vendorId,
-      STATUS.APPROVED,
-    );
-    return {
-      statusCode: 200,
-      data: vendor,
-      message: 'Vendor approved successfully.',
-    };
+    try {
+      const vendor = await this.vendorService.updateVendorStatus(
+        eventId,
+        vendorId,
+        STATUS.APPROVED,
+      );
+      return {
+        statusCode: 200,
+        data: vendor,
+        message: 'Vendor approved successfully.',
+      };
+    } catch (error) {
+      return error;
+    }
   }
 
+  @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
   @ApiParam({ name: 'eventId', description: 'Event ID' })
   @ApiParam({ name: 'vendorId', description: 'Vendor ID' })
@@ -89,15 +100,42 @@ export class VendorController {
     @Param('eventId') eventId: string,
     @Param('vendorId') vendorId: string,
   ) {
-    const vendor = await this.vendorService.updateVendorStatus(
-      eventId,
-      vendorId,
-      STATUS.DECLINED,
-    );
-    return {
-      statusCode: 200,
-      data: vendor,
-      message: 'Vendor declined successfully.',
-    };
+    try {
+      const vendor = await this.vendorService.updateVendorStatus(
+        eventId,
+        vendorId,
+        STATUS.DECLINED,
+      );
+      return {
+        statusCode: 200,
+        data: vendor,
+        message: 'Vendor declined successfully.',
+      };
+    } catch (error) {
+      return error;
+    }
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @ApiParam({ name: 'eventId', description: 'Event ID' })
+  @ApiOperation({ summary: 'Get Vendors of an event' })
+  @ApiResponse({
+    status: 200,
+    description: 'Vendors fetched successfully.',
+  })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @Get(':eventId')
+  async getAllVendorsByEventId(@Param('eventId') eventId: string) {
+    try {
+      const vendor = await this.vendorService.getAllVendorsByEventId(eventId);
+      return {
+        statusCode: 200,
+        data: vendor,
+        message: 'Vendors fetched successfully.',
+      };
+    } catch (error) {
+      return error;
+    }
   }
 }
