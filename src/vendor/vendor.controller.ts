@@ -7,7 +7,13 @@ import {
   Patch,
   Post,
 } from '@nestjs/common';
-import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBody,
+  ApiOperation,
+  ApiParam,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { IResponse, STATUS } from 'src/util/types';
 import { VendorDto } from './dto/vendor.dto';
 import { VendorService } from './vendor.service';
@@ -32,7 +38,6 @@ export class VendorController {
   ): Promise<IResponse> {
     try {
       const data = await this.vendorService.registerVendor(dto, eventId);
-      console.log(data, 'vendor data');
       return {
         statusCode: HttpStatus.OK,
         data: data,
@@ -44,6 +49,15 @@ export class VendorController {
     }
   }
 
+  @HttpCode(HttpStatus.OK)
+  @ApiParam({ name: 'eventId', description: 'Event ID' })
+  @ApiParam({ name: 'vendorId', description: 'Vendor ID' })
+  @ApiOperation({ summary: 'Approve Vendor' })
+  @ApiResponse({
+    status: 200,
+    description: 'Vendor approved successfully.',
+  })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
   @Patch('approve/:eventId/:vendorId')
   async approveVendor(
     @Param('eventId') eventId: string,
@@ -61,6 +75,15 @@ export class VendorController {
     };
   }
 
+  @HttpCode(HttpStatus.OK)
+  @ApiParam({ name: 'eventId', description: 'Event ID' })
+  @ApiParam({ name: 'vendorId', description: 'Vendor ID' })
+  @ApiOperation({ summary: 'Decline Vendor' })
+  @ApiResponse({
+    status: 200,
+    description: 'Vendor declined successfully.',
+  })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
   @Patch('decline/:eventId/:vendorId')
   async declineVendor(
     @Param('eventId') eventId: string,
