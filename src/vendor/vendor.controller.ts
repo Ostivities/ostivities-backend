@@ -138,4 +138,27 @@ export class VendorController {
       return error;
     }
   }
+
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @ApiParam({ name: 'vendorId', description: 'Vendor ID' })
+  @ApiOperation({ summary: 'Get vendor info' })
+  @ApiResponse({
+    status: 200,
+    description: 'Vendor fetched successfully.',
+  })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @Get(':vendorId')
+  async getVendorById(@Param('vendorId') vendorId: string) {
+    try {
+      const vendor = await this.vendorService.getVendorById(vendorId);
+      return {
+        statusCode: 200,
+        data: vendor,
+        message: 'Vendor fetched successfully.',
+      };
+    } catch (error) {
+      return error;
+    }
+  }
 }

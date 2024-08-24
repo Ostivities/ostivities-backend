@@ -77,4 +77,13 @@ export class VendorService {
       throw new ForbiddenException(FORBIDDEN_MESSAGE);
     }
   }
+
+  async getVendorById(vendorId: string): Promise<Vendor> {
+    try {
+      const vendor = await this.vendorModel.findById({ _id: vendorId });
+      return vendor;
+    } catch (error) {
+      throw new ForbiddenException(FORBIDDEN_MESSAGE);
+    }
+  }
 }
