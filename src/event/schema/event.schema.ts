@@ -295,7 +295,7 @@ export class Events {
     ref: 'Vendor',
     required: false,
   })
-  Vendor: [Vendor];
+  Vendors: [Vendor];
 
   @Prop({ type: Number, default: 0 })
   ticketSold: number;
