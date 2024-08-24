@@ -28,6 +28,7 @@ export class VendorController {
     @Body() dto: VendorDto,
     @Param('eventId') eventId: string,
   ): Promise<IResponse> {
+    console.log(eventId, 'event id');
     try {
       const data = await this.vendorService.registerVendor(dto, eventId);
       return {

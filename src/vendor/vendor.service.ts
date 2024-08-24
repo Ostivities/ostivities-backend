@@ -3,6 +3,7 @@ import { FORBIDDEN_MESSAGE } from '@nestjs/core/guards';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { Events } from 'src/event/schema/event.schema';
+import { STATUS } from 'src/util/types';
 import { VendorDto } from './dto/vendor.dto';
 import { Vendor } from './schema/vendor.schema';
 
@@ -20,7 +21,11 @@ export class VendorService {
         throw new Error('Event not found');
       }
 
-      const createdVendor = new this.vendorModel({ ...dto, event: eventId });
+      const createdVendor = new this.vendorModel({
+        ...dto,
+        event: eventData?._id,
+        status: STATUS.PENDING,
+      });
       const savedVendor = await createdVendor.save();
       return savedVendor;
     } catch (error) {

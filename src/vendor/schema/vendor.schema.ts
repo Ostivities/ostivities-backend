@@ -1,6 +1,6 @@
 import { Prop, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
-import { Socials } from 'src/event/schema/event.schema';
+import { Events, Socials } from 'src/event/schema/event.schema';
 import { emailRegExp } from 'src/util/helper';
 import { STATUS } from 'src/util/types';
 
@@ -77,7 +77,7 @@ export class Vendor {
 
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
-    ref: 'Events',
+    ref: Events.name,
     required: true,
   })
   event: mongoose.Schema.Types.ObjectId;
