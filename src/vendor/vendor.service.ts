@@ -79,8 +79,9 @@ export class VendorService {
   }
 
   async getVendorById(vendorId: string): Promise<Vendor> {
+    console.log(vendorId, 'vendorId: ');
     try {
-      const vendor = await this.vendorModel.findById({ _id: vendorId });
+      const vendor = await this.vendorModel.findById(vendorId).exec();
       return vendor;
     } catch (error) {
       throw new ForbiddenException(FORBIDDEN_MESSAGE);

@@ -150,8 +150,10 @@ export class VendorController {
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   @Get(':vendorId')
   async getVendorById(@Param('vendorId') vendorId: string) {
+    console.log(vendorId, 'vendorId');
     try {
       const vendor = await this.vendorService.getVendorById(vendorId);
+      console.log(vendor, 'vendor');
       return {
         statusCode: 200,
         data: vendor,
