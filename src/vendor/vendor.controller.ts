@@ -148,15 +148,13 @@ export class VendorController {
     description: 'Vendor fetched successfully.',
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
-  @Get(':vendorId')
+  @Get('get_vendor/:vendorId')
   async getVendorById(@Param('vendorId') vendorId: string) {
-    console.log(vendorId, 'vendorId');
     try {
-      const vendor = await this.vendorService.getVendorById(vendorId);
-      console.log(vendor, 'vendor');
+      const data = await this.vendorService.getVendorById(vendorId);
       return {
         statusCode: 200,
-        data: vendor,
+        data,
         message: 'Vendor fetched successfully.',
       };
     } catch (error) {
