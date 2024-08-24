@@ -14,7 +14,7 @@ export class VendorService {
     @InjectModel(Events.name) private eventModel: Model<Events>,
   ) {}
 
-  async registerVendor(dto: VendorDto, eventId: string): Promise<any> {
+  async registerVendor(dto: VendorDto, eventId: string): Promise<Vendor> {
     const eventData = await this.eventModel.findById(eventId);
     if (!eventData) {
       throw new Error('Event not found');
@@ -29,6 +29,27 @@ export class VendorService {
       console.log(createdVendor, 'created vendor');
       const savedVendor = await createdVendor.save();
       return savedVendor;
+    } catch (error) {
+      throw new ForbiddenException(FORBIDDEN_MESSAGE);
+    }
+  }
+
+  async updateVendorStatus(
+    eventId: string,
+    vendorId: string,
+    status: STATUS,
+  ): Promise<Vendor> {
+    const eventData = await this.eventModel.findById(eventId);
+    if (!eventData) {
+      throw new Error('Event not found');
+    }
+    try {
+      const updatedTicket = await this.vendorModel.findOneAndUpdate(
+        { _id: vendorId },
+        { status: status },
+        { new: true, upsert: false, runValidators: true },
+      );
+      return updatedTicket;
     } catch (error) {
       throw new ForbiddenException(FORBIDDEN_MESSAGE);
     }

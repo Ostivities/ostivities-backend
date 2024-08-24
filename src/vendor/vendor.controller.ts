@@ -4,10 +4,11 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  Patch,
   Post,
 } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { IResponse } from 'src/util/types';
+import { IResponse, STATUS } from 'src/util/types';
 import { VendorDto } from './dto/vendor.dto';
 import { VendorService } from './vendor.service';
 
@@ -29,7 +30,6 @@ export class VendorController {
     @Body() dto: VendorDto,
     @Param('eventId') eventId: string,
   ): Promise<IResponse> {
-    console.log(eventId, 'event id');
     try {
       const data = await this.vendorService.registerVendor(dto, eventId);
       console.log(data, 'vendor data');
@@ -42,5 +42,39 @@ export class VendorController {
       console.log(error, 'error');
       return error;
     }
+  }
+
+  @Patch('approve/:eventId/:vendorId')
+  async approveVendor(
+    @Param('vendorId') eventId: string,
+    @Param('vendorId') vendorId: string,
+  ) {
+    const vendor = await this.vendorService.updateVendorStatus(
+      eventId,
+      vendorId,
+      STATUS.APPROVED,
+    );
+    return {
+      statusCode: 200,
+      data: vendor,
+      message: 'Vendor approved successfully.',
+    };
+  }
+
+  @Patch('decline/:eventId/:vendorId')
+  async declineVendor(
+    @Param('vendorId') eventId: string,
+    @Param('vendorId') vendorId: string,
+  ) {
+    const vendor = await this.vendorService.updateVendorStatus(
+      eventId,
+      vendorId,
+      STATUS.DECLINED,
+    );
+    return {
+      statusCode: 200,
+      data: vendor,
+      message: 'Vendor declined successfully.',
+    };
   }
 }

@@ -1,11 +1,13 @@
-import { Prop, SchemaFactory } from '@nestjs/mongoose';
+import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
 import { Events, Socials } from 'src/event/schema/event.schema';
 import { emailRegExp } from 'src/util/helper';
+import { schemaConfig } from 'src/util/schema.config';
 import { STATUS } from 'src/util/types';
 
 export type VendorDocument = HydratedDocument<Vendor>;
 
+@Schema(schemaConfig)
 export class Vendor {
   @Prop({
     required: [true, 'name is required'],
@@ -67,7 +69,7 @@ export class Vendor {
 
   @Prop({
     required: true,
-    type: STATUS,
+    type: String,
     enum: {
       values: Object.values(STATUS),
       message: '{VALUE} is not supported',
