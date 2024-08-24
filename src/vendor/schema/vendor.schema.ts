@@ -1,6 +1,6 @@
 import { Prop, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
-import { Events, Socials } from 'src/event/schema/event.schema';
+import { Socials } from 'src/event/schema/event.schema';
 import { emailRegExp } from 'src/util/helper';
 import { STATUS } from 'src/util/types';
 
@@ -12,6 +12,12 @@ export class Vendor {
     type: String,
   })
   vendor_name: string;
+
+  @Prop({
+    required: false,
+    type: URL,
+  })
+  vendor_logo: string;
 
   @Prop({
     unique: true,
@@ -71,7 +77,7 @@ export class Vendor {
 
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
-    ref: Events.name,
+    ref: 'Events',
     required: true,
   })
   event: mongoose.Schema.Types.ObjectId;

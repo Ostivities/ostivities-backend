@@ -14,6 +14,7 @@ import {
 } from 'src/discount/schema/discount.schema';
 import { Guests, GuestSchema } from 'src/guests/schema/guests.schema';
 import { Ticket, TicketSchema } from 'src/ticket/schema/ticket.schema';
+import { Vendor, VendorSchema } from 'src/vendor/schema/vendor.schema';
 import { EventController } from './event.controller';
 import { eventProviders } from './event.providers';
 import { EventService } from './event.service';
@@ -32,6 +33,7 @@ import { Events, EventSchema } from './schema/event.schema';
       { name: Ticket.name, schema: TicketSchema },
       { name: Guests.name, schema: GuestSchema },
       { name: Coordinator.name, schema: CoordinatorSchema },
+      { name: Vendor.name, schema: VendorSchema },
     ]),
     DatabaseModule,
   ],

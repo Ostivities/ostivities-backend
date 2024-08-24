@@ -13,7 +13,7 @@ export class VendorService {
     @InjectModel(Vendor.name) private vendorModel: Model<Vendor>,
   ) {}
 
-  async createVendor(dto: VendorDto, eventId: string): Promise<Vendor> {
+  async registerVendor(dto: VendorDto, eventId: string): Promise<Vendor> {
     try {
       const eventData = await this.eventModel.findById(eventId);
       if (!eventData) {

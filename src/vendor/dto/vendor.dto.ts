@@ -9,6 +9,7 @@ import {
   IsNotEmpty,
   IsOptional,
   IsString,
+  IsUrl,
   Matches,
   ValidateNested,
 } from 'class-validator';
@@ -63,6 +64,15 @@ export class VendorDto {
   @IsNotEmpty()
   @IsString()
   vendor_address: string;
+
+  @ApiProperty({
+    description: 'vendor image or buisness logo',
+    type: String,
+    required: false,
+  })
+  @IsEmpty()
+  @IsUrl()
+  vendor_logo: string;
 
   @ApiProperty({
     description: 'vendor specialities',
