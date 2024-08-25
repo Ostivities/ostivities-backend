@@ -49,7 +49,7 @@ export class CoordinatorsController {
       const email: EmailDto = {
         name: dto.staff_name,
         email: dto.staff_email,
-        htmlContent: template(),
+        htmlContent: template(dto.staff_name, 123456),
         subject: `Success`,
       };
       await EmailService(email);

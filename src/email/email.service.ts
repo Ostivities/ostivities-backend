@@ -40,7 +40,7 @@ export const EmailService = async (emailDto: EmailDto) => {
       );
     },
     function (error) {
-      console.error(error);
+      console.error(error, 'error');
     },
   );
 };

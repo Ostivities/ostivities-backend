@@ -1,4 +1,4 @@
-export const template = () => {
+export const template = (name: string, token: string | number) => {
   return `
   <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 <html dir="ltr" xmlns="http://www.w3.org/1999/xhtml" xmlns:o="urn:schemas-microsoft-com:office:office" lang="und">
@@ -126,7 +126,7 @@ a[x-apple-data-detectors],
                   <td align="left" style="padding:0;Margin:0;width:580px">
                    <table cellspacing="0" width="100%" role="presentation" cellpadding="0" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:collapse;border-spacing:0px">
                      <tr>
-                      <td align="left" style="padding:0;Margin:0;padding-left:5px"><p class="es-m-txt-j" style="Margin:0;mso-line-height-rule:exactly;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';line-height:30px !important;letter-spacing:0;color:#333333;font-size:16px"><span style="background:#fefdfd"> Hi 👋, </span><strong><span style="background:#fefdfd">*|FNAME|*</span></strong></p></td>
+                      <td align="left" style="padding:0;Margin:0;padding-left:5px"><p class="es-m-txt-j" style="Margin:0;mso-line-height-rule:exactly;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';line-height:30px !important;letter-spacing:0;color:#333333;font-size:16px"><span style="background:#fefdfd"> Hi 👋, </span><strong><span style="background:#fefdfd">${name}</span></strong></p></td>
                      </tr>
                    </table></td>
                  </tr>
@@ -172,7 +172,7 @@ a[x-apple-data-detectors],
                   <td align="center" valign="top" style="padding:0;Margin:0;width:560px">
                    <table cellspacing="0" width="100%" cellpadding="0" style="mso-table-lspace:0pt;mso-table-rspace:0pt;border-collapse:separate;border-spacing:0px;border-radius:5px" role="presentation">
                      <tr>
-                      <td align="center" class="es-m-txt-c" style="padding:0;Margin:0;padding-top:5px;padding-bottom:15px"><h1 style="Margin:0;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';mso-line-height-rule:exactly;letter-spacing:0;font-size:46px;font-style:normal;font-weight:bold;line-height:55px;color:#e20000">786643</h1></td>
+                      <td align="center" class="es-m-txt-c" style="padding:0;Margin:0;padding-top:5px;padding-bottom:15px"><h1 style="Margin:0;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';mso-line-height-rule:exactly;letter-spacing:0;font-size:46px;font-style:normal;font-weight:bold;line-height:55px;color:#e20000">${token}</h1></td>
                      </tr>
                      <tr>
                       <td align="center" style="padding:0;Margin:0"><p class="es-m-txt-j" style="Margin:0;mso-line-height-rule:exactly;font-family:-apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif, 'Apple Color Emoji', 'Segoe UI Emoji', 'Segoe UI Symbol';line-height:30px !important;letter-spacing:0;color:#333333;font-size:16px">Welcome aboard! We can't wait to see the amazing experiences you'll create and enjoy with Ostivities. &nbsp;</p></td>
