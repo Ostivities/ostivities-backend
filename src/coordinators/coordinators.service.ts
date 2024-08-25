@@ -32,6 +32,7 @@ export class CoordinatorsService {
         event: eventData?._id,
       });
       const newStaff = await createdStaff.save();
+
       return newStaff;
     } catch (error) {
       throw new ForbiddenException(FORBIDDEN_MESSAGE);

@@ -17,6 +17,9 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
+import { EmailDto } from 'src/email/dto/email.dto';
+import { EmailService } from 'src/email/email.service';
+import { template } from 'src/templates/welcome';
 import { IResponse } from 'src/util/types';
 import { CoordinatorsService } from './coordinators.service';
 import { CoordinatorDto } from './dto/coordinator.dto';
@@ -43,6 +46,13 @@ export class CoordinatorsController {
   ): Promise<IResponse> {
     try {
       const data = await this.coordinatorService.createStaff(dto, eventId);
+      const email: EmailDto = {
+        name: dto.staff_name,
+        email: dto.staff_email,
+        htmlContent: template(),
+        subject: `Success`,
+      };
+      await EmailService(email);
       return {
         statusCode: HttpStatus.CREATED,
         data: data,
