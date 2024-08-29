@@ -158,7 +158,7 @@ export class AuthController {
     description: 'User profile fetched sccessfully',
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
-  @Get('user')
+  @Get('profile')
   async getUserProfile(
     @GetCurrentUser('id') user: string | any,
   ): Promise<IResponse> {
