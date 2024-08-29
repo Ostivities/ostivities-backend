@@ -255,7 +255,11 @@ export class VerifyAccountDto {
 }
 
 export class UpdateUserDto extends PartialType(
-  OmitType(CreateUserDto, ['terms_and_condition'] as const),
+  OmitType(CreateUserDto, [
+    'terms_and_condition',
+    'password',
+    'email',
+  ] as const),
 ) {
   @ApiProperty({
     description: 'image or logo',

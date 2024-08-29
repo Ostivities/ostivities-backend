@@ -327,7 +327,7 @@ export class AuthService {
     if (!user) {
       throw new ConflictException('User not found');
     }
-    const pwdMatch = await argon.verify(user.hash, dto.password);
+    const pwdMatch = await argon.verify(user.hash, dto.old_password);
     if (!pwdMatch) {
       throw new BadRequestException('Old password is incorrect');
     }
