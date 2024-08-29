@@ -327,16 +327,18 @@ export class AuthService {
     if (!user) {
       throw new ConflictException('User not found');
     }
+    const pwdMatch = await argon.verify(user.hash, dto.password);
+    if (!pwdMatch) {
+      throw new BadRequestException('Old password is incorrect');
+    }
     if (dto.password !== dto.confirm_password) {
       throw new BadRequestException(
         'New password and confirmation do not match',
       );
     }
-    const pwdMatch = await argon.verify(user.hash, dto.password);
-    if (!pwdMatch) {
-      throw new BadRequestException('Old password is incorrect');
-    }
+
     const hash = await argon.hash(dto.password);
+
     try {
       const user = await this.userModel.findByIdAndUpdate(
         { _id: userId },

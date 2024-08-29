@@ -5,6 +5,7 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  Patch,
   Post,
   Put,
   UseGuards,
@@ -26,6 +27,7 @@ import {
   ForgotPasswordDto,
   LoginUserDto,
   ResetPasswordDto,
+  UpdatePasswordDto,
   UpdateUserDto,
   VerifyAccountDto,
 } from './dto/auth.dto';
@@ -182,6 +184,7 @@ export class AuthController {
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
   @ApiParam({ name: 'id', description: 'user id' })
+  @ApiBody({ type: UpdateUserDto })
   @ApiOperation({ summary: 'Update user profile' })
   @ApiResponse({
     status: 200,
@@ -195,6 +198,32 @@ export class AuthController {
       return {
         statusCode: HttpStatus.OK,
         message: 'User profile updated successfully',
+        data,
+      };
+    } catch (error) {
+      return error;
+    }
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @ApiParam({ name: 'id', description: 'user id' })
+  @ApiBody({ type: UpdatePasswordDto })
+  @ApiOperation({ summary: 'change password' })
+  @ApiResponse({
+    status: 200,
+    description: 'User password updated sccessfully',
+  })
+  @Patch('password/:id')
+  async updateUserPassword(
+    @Param('id') id: string,
+    @Body() dto: UpdatePasswordDto,
+  ) {
+    try {
+      const data = await this.authService.updateUserPassword(dto, id);
+      return {
+        statusCode: HttpStatus.OK,
+        message: 'User password updated successfully',
         data,
       };
     } catch (error) {
