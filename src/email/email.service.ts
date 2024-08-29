@@ -24,7 +24,7 @@ export const EmailService = async (emailDto: EmailDto) => {
   };
   sendSmtpEmail.to = [{ email: emailDto.email, name: emailDto.name }];
   sendSmtpEmail.replyTo = {
-    email: process.env.SMTP_SENDER_EMAIL,
+    email: process.env.SMTP_NO_REPLY,
     name: process.env.SMTP_SENDER_NAME,
   };
   //   sendSmtpEmail.headers = { 'Some-Custom-Name': 'unique-id-1234' };
@@ -34,12 +34,12 @@ export const EmailService = async (emailDto: EmailDto) => {
   };
 
   await apiInstance.sendTransacEmail(sendSmtpEmail).then(
-    function (data) {
+    function (data: any) {
       console.log(
         'API called successfully. Returned data: ' + JSON.stringify(data),
       );
     },
-    function (error) {
+    function (error: any) {
       console.error(error, 'error');
     },
   );

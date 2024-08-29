@@ -5,6 +5,7 @@ import { schemaConfig } from 'src/util/schema.config';
 import {
   EVENT_INFO,
   EVENT_MODE,
+  EVENT_TYPE,
   EVENT_TYPES,
   ISupportDocuments,
   TICKET_STOCK,
@@ -301,6 +302,9 @@ export class Events {
 
   @Prop({ enum: EVENT_MODE, required: false })
   mode: EVENT_MODE;
+
+  @Prop({ enum: EVENT_TYPE, required: false })
+  eventMode: EVENT_TYPE;
 
   @Prop({ enum: EVENT_INFO, required: true })
   eventInfo: EVENT_INFO;
