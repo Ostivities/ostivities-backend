@@ -15,6 +15,7 @@ import { SessionModule } from './session/session.module';
 import { SettleAccountsModule } from './settle_accounts/settle_accounts.module';
 import { TicketModule } from './ticket/ticket.module';
 import { VendorModule } from './vendor/vendor.module';
+import { HealthModule } from './health/health.module';
 
 // sudo  mongod --dbpath=/Users/dreezy/data/db
 
@@ -38,6 +39,7 @@ import { VendorModule } from './vendor/vendor.module';
     GuestsModule,
     CoordinatorsModule,
     VendorModule,
+    HealthModule,
   ],
   controllers: [AppController],
   providers: [AppService],
