@@ -4,10 +4,18 @@ import {
   Get,
   HttpCode,
   HttpStatus,
+  Param,
   Post,
+  Put,
   UseGuards,
 } from '@nestjs/common';
-import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import {
+  ApiBody,
+  ApiOperation,
+  ApiParam,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { IResponse } from 'src/util/types';
 import { AuthService } from './auth.service';
 import { Public } from './decorator/public.decorator';
@@ -18,6 +26,7 @@ import {
   ForgotPasswordDto,
   LoginUserDto,
   ResetPasswordDto,
+  UpdateUserDto,
   VerifyAccountDto,
 } from './dto/auth.dto';
 import { JwtAuthGuard } from './guard/jwt-auth.guard';
@@ -168,5 +177,28 @@ export class AuthController {
       message: 'User profile fetched sccessfully',
       data,
     };
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @ApiParam({ name: 'id', description: 'user id' })
+  @ApiOperation({ summary: 'Update user profile' })
+  @ApiResponse({
+    status: 200,
+    description: 'User profile updated sccessfully',
+  })
+  @Put('user/:id')
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  async updateUserProfile(@Param('id') id: string, @Body() dto: UpdateUserDto) {
+    try {
+      const data = await this.authService.updateUserProfile(dto, id);
+      return {
+        statusCode: HttpStatus.OK,
+        message: 'User profile updated successfully',
+        data,
+      };
+    } catch (error) {
+      return error;
+    }
   }
 }

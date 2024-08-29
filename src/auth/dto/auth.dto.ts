@@ -1,10 +1,11 @@
-import { ApiProperty } from '@nestjs/swagger';
+import { ApiProperty, OmitType, PartialType } from '@nestjs/swagger';
 import {
   IsAlpha,
   IsBoolean,
   IsEmail,
   IsEnum,
   IsNotEmpty,
+  IsOptional,
   IsString,
   IsUrl,
   Matches,
@@ -251,4 +252,79 @@ export class VerifyAccountDto {
   @IsString()
   @IsNotEmpty()
   otp: string;
+}
+
+export class UpdateUserDto extends PartialType(
+  OmitType(CreateUserDto, ['terms_and_condition'] as const),
+) {
+  @ApiProperty({
+    description: 'image or logo',
+    type: String,
+    required: false,
+  })
+  @IsOptional()
+  @IsUrl()
+  image?: string;
+}
+
+export class UpdatePasswordDto {
+  @ApiProperty({
+    description: 'Old password',
+    type: String,
+    required: true,
+    maxLength: 20,
+    minLength: 8,
+  })
+  @IsString()
+  @IsNotEmpty()
+  @MinLength(8)
+  @MaxLength(20)
+  @Matches(
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+    {
+      message:
+        'password must contain Min of eight characters, at least one uppercase letter, one lowercase letter, one number and one special character',
+    },
+  )
+  old_password: string;
+
+  @ApiProperty({
+    description: 'New password',
+    type: String,
+    required: true,
+    maxLength: 20,
+    minLength: 8,
+  })
+  @IsString()
+  @IsNotEmpty()
+  @MinLength(8)
+  @MaxLength(20)
+  @Matches(
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+    {
+      message:
+        'password must contain Min of eight characters, at least one uppercase letter, one lowercase letter, one number and one special character',
+    },
+  )
+  password: string;
+
+  @ApiProperty({
+    description: 'Confirm password',
+    type: String,
+    required: true,
+    maxLength: 20,
+    minLength: 8,
+  })
+  @IsString()
+  @IsNotEmpty()
+  @MinLength(8)
+  @MaxLength(20)
+  @Matches(
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[@$!%*?&])[A-Za-z\d@$!%*?&]{8,}$/,
+    {
+      message:
+        'password must contain Min of eight characters, at least one uppercase letter, one lowercase letter, one number and one special character',
+    },
+  )
+  confirm_password: string;
 }

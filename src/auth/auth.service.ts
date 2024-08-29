@@ -21,6 +21,7 @@ import {
   ForgotPasswordDto,
   LoginUserDto,
   ResetPasswordDto,
+  UpdateUserDto,
   VerifyAccountDto,
 } from './dto/auth.dto';
 import { ActivateUser } from './schema/activation.schema';
@@ -296,6 +297,21 @@ export class AuthService {
     try {
       const userData = await this.userModel.findById(user);
       return userData;
+    } catch (error) {
+      throw new ForbiddenException(FORBIDDEN_MESSAGE);
+    }
+  }
+
+  async updateUserProfile(dto: UpdateUserDto, userId: string): Promise<User> {
+    try {
+      const user = await this.userModel.findByIdAndUpdate(
+        { _id: userId },
+        {
+          ...dto,
+        },
+        { new: true },
+      );
+      return user;
     } catch (error) {
       throw new ForbiddenException(FORBIDDEN_MESSAGE);
     }
