@@ -1,5 +1,11 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsAlpha, IsEmail, IsEnum, IsNotEmpty, Matches } from 'class-validator';
+import {
+  IsEmail,
+  IsEnum,
+  IsNotEmpty,
+  IsString,
+  Matches,
+} from 'class-validator';
 import { emailRegExp } from 'src/util/helper';
 import { STAFF_ROLE } from 'src/util/types';
 
@@ -20,7 +26,7 @@ export class CoordinatorDto {
     required: true,
   })
   @IsNotEmpty()
-  @IsAlpha()
+  @IsString()
   staff_name: string;
 
   @ApiProperty({
@@ -30,4 +36,13 @@ export class CoordinatorDto {
   @IsEnum(STAFF_ROLE)
   @IsNotEmpty()
   staff_role: STAFF_ROLE;
+
+  @ApiProperty({
+    description: 'staff phone number',
+    type: String,
+    required: true,
+  })
+  @IsNotEmpty()
+  @IsString()
+  staff_phone_number: string;
 }

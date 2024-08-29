@@ -20,13 +20,7 @@ export class CoordinatorsService {
   async createStaff(
     dto: CoordinatorDto,
     eventId: string,
-    user: string,
   ): Promise<Coordinator> {
-    const userData = await this.userModel.findById(user);
-    if (!userData) {
-      throw new Error('User not found');
-    }
-
     const eventData = await this.eventModel.findById(eventId);
     if (!eventData) {
       throw new Error('Event not found');
@@ -36,36 +30,51 @@ export class CoordinatorsService {
       const createdStaff = new this.coordinatorModel({
         ...dto,
         event: eventData?._id,
-        user: userData?._id,
       });
       const newStaff = await createdStaff.save();
+
       return newStaff;
     } catch (error) {
       throw new ForbiddenException(FORBIDDEN_MESSAGE);
     }
   }
 
-  async getCoordinatorById(id: string, eventId: string): Promise<Coordinator> {
-    const eventData = await this.eventModel.findById(eventId);
-    if (!eventData) {
-      throw new Error('Event not found');
-    }
+  async getCoordinatorById(id: string): Promise<Coordinator> {
     try {
-      const staff = await this.coordinatorModel.findById({ _id: id }).lean();
+      const staff = await this.coordinatorModel.findOne({ _id: id }).lean();
       return staff;
-    } catch (error) {}
+    } catch (error) {
+      throw new ForbiddenException(FORBIDDEN_MESSAGE);
+    }
   }
 
-  async getCoordinatorsByEventId(eventId: string): Promise<Coordinator[]> {
+  async getCoordinatorsByEventId(
+    eventId: string,
+  ): Promise<Coordinator[] | any> {
     const eventData = await this.eventModel.findById(eventId);
     if (!eventData) {
       throw new Error('Event not found');
     }
     try {
       const staffs = await this.coordinatorModel
-        .find({ event: eventId })
-        .populate('event');
-      return staffs;
+        .find({ event: eventData?._id })
+        .populate('event')
+        .exec();
+      const total = await this.coordinatorModel.countDocuments({
+        event: eventData?._id,
+      });
+      return { data: staffs, total };
+    } catch (error) {
+      throw new ForbiddenException(FORBIDDEN_MESSAGE);
+    }
+  }
+
+  async deleteCoordinatorById(id: string): Promise<any> {
+    try {
+      const deletedStaff = await this.coordinatorModel.findByIdAndDelete({
+        _id: id,
+      });
+      return deletedStaff;
     } catch (error) {
       throw new ForbiddenException(FORBIDDEN_MESSAGE);
     }

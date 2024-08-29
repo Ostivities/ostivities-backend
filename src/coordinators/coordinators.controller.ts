@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  Delete,
   Get,
   HttpCode,
   HttpStatus,
@@ -8,9 +9,17 @@ import {
   Post,
   UseGuards,
 } from '@nestjs/common';
-import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
-import { GetCurrentUser } from 'src/auth/decorator/user.decorator';
+import {
+  ApiBody,
+  ApiOperation,
+  ApiParam,
+  ApiResponse,
+  ApiTags,
+} from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
+import { EmailDto } from 'src/email/dto/email.dto';
+import { EmailService } from 'src/email/email.service';
+import { template } from 'src/templates/welcome';
 import { IResponse } from 'src/util/types';
 import { CoordinatorsService } from './coordinators.service';
 import { CoordinatorDto } from './dto/coordinator.dto';
@@ -23,9 +32,10 @@ export class CoordinatorsController {
 
   @HttpCode(HttpStatus.CREATED)
   @ApiBody({ type: CoordinatorDto })
-  @ApiOperation({ summary: 'Create Event' })
+  @ApiParam({ name: 'eventId', description: 'Event ID' })
+  @ApiOperation({ summary: 'Create coordinator' })
   @ApiResponse({
-    status: 201,
+    status: 200,
     description: 'Staff created successfully.',
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
@@ -33,10 +43,16 @@ export class CoordinatorsController {
   async createStaff(
     @Body() dto: CoordinatorDto,
     @Param('eventId') eventId: string,
-    @GetCurrentUser('id') id: string,
   ): Promise<IResponse> {
     try {
-      const data = await this.coordinatorService.createStaff(dto, eventId, id);
+      const data = await this.coordinatorService.createStaff(dto, eventId);
+      const email: EmailDto = {
+        name: dto.staff_name,
+        email: dto.staff_email,
+        htmlContent: template(dto.staff_name, 123456),
+        subject: `Success`,
+      };
+      await EmailService(email);
       return {
         statusCode: HttpStatus.CREATED,
         data: data,
@@ -49,18 +65,17 @@ export class CoordinatorsController {
 
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Coordinator info' })
+  @ApiParam({ name: 'coordinatorId', description: 'Event ID' })
   @ApiResponse({
-    status: 201,
+    status: 200,
     description: 'Staff fetched successfully.',
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
-  @Get('coordnator/:id')
-  async getCoordinatorById(@Param('id') id: string, eventId: string) {
+  @Get(':coordinatorId')
+  async getCoordinatorById(@Param('coordinatorId') coordinatorId: string) {
     try {
-      const data = await this.coordinatorService.getCoordinatorById(
-        id,
-        eventId,
-      );
+      const data =
+        await this.coordinatorService.getCoordinatorById(coordinatorId);
       return {
         statusCode: HttpStatus.OK,
         data: data,
@@ -72,12 +87,13 @@ export class CoordinatorsController {
   }
 
   @ApiOperation({ summary: 'Event Coordinators' })
+  @ApiParam({ name: 'eventId', description: 'Events coordinators' })
   @ApiResponse({
-    status: 201,
+    status: 200,
     description: 'Staffs fetched successfully.',
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
-  @Get('coordnators/:eventId')
+  @Get('get_coordinators/:eventId')
   async getCoordinatorsByEventId(@Param('eventId') eventId: string) {
     try {
       const data =
@@ -86,6 +102,27 @@ export class CoordinatorsController {
         statusCode: HttpStatus.OK,
         data: data,
         message: 'Staffs fetched successfully',
+      };
+    } catch (error) {
+      return error;
+    }
+  }
+
+  @ApiOperation({ summary: 'Delete Coordinators' })
+  @ApiParam({ name: 'id', description: 'Coordinator Id' })
+  @ApiResponse({
+    status: 200,
+    description: 'Staffs deleted successfully.',
+  })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @Delete('delete/:id')
+  async deleteCoordinatorById(@Param('id') id: string) {
+    try {
+      const data = await this.coordinatorService.deleteCoordinatorById(id);
+      return {
+        statusCode: HttpStatus.OK,
+        data: data,
+        message: 'Staff deleted successfully',
       };
     } catch (error) {
       return error;

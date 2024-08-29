@@ -34,6 +34,11 @@ export class TicketService {
         event: eventData?._id,
         user: userData?._id,
       });
+      await this.eventModel.findByIdAndUpdate(
+        { _id: event },
+        { eventMode: dto.ticketType },
+        { new: true, upsert: false, runValidators: true },
+      );
       const savedTicket = await createdTicket.save();
       console.log(savedTicket, 'saved ticket');
       return savedTicket;

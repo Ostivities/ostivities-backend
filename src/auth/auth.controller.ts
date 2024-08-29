@@ -5,11 +5,13 @@ import {
   HttpCode,
   HttpStatus,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
 import { IResponse } from 'src/util/types';
 import { AuthService } from './auth.service';
 import { Public } from './decorator/public.decorator';
+import { GetCurrentUser } from './decorator/user.decorator';
 import {
   ActivateAccountDto,
   CreateUserDto,
@@ -18,6 +20,7 @@ import {
   ResetPasswordDto,
   VerifyAccountDto,
 } from './dto/auth.dto';
+import { JwtAuthGuard } from './guard/jwt-auth.guard';
 
 @Controller('auth')
 @ApiTags('Authentication Service')
@@ -144,6 +147,25 @@ export class AuthController {
     return {
       statusCode: HttpStatus.OK,
       message: 'successful',
+      data,
+    };
+  }
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'User profile' })
+  @ApiResponse({
+    status: 200,
+    description: 'User profile fetched sccessfully',
+  })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @Get('user')
+  async getUserProfile(
+    @GetCurrentUser('id') user: string | any,
+  ): Promise<IResponse> {
+    const data = await this.authService.getUserProfile(user);
+    return {
+      statusCode: HttpStatus.OK,
+      message: 'User profile fetched sccessfully',
       data,
     };
   }

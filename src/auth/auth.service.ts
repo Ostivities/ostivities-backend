@@ -291,4 +291,13 @@ export class AuthService {
       throw new ForbiddenException(FORBIDDEN_MESSAGE);
     }
   }
+
+  async getUserProfile(user: string): Promise<User> {
+    try {
+      const userData = await this.userModel.findById(user);
+      return userData;
+    } catch (error) {
+      throw new ForbiddenException(FORBIDDEN_MESSAGE);
+    }
+  }
 }

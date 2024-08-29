@@ -164,6 +164,7 @@ export class EventService {
     eventType?: string,
     page: number = 1,
     pageSize: number = 10,
+    // eventMode?: EVENT_TYPE,
   ): Promise<Events[]> {
     const filter: any = {};
     const skip = (page - 1) * pageSize;

@@ -17,6 +17,12 @@ export enum TICKET_TYPE {
   FREE = 'FREE',
   PAID = 'PAID',
 }
+
+export enum EVENT_TYPE {
+  FREE = 'FREE',
+  PAID = 'PAID',
+}
+
 export enum TICKET_STOCK {
   LIMITED = 'LIMITED',
   UN_LIMITED = 'UN_LIMITED',

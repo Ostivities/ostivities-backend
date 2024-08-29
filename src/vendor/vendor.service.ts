@@ -39,10 +39,11 @@ export class VendorService {
     vendorId: string,
     status: STATUS,
   ): Promise<Vendor> {
-    const eventData = await this.eventModel.findById(eventId);
+    const eventData = await this.eventModel.findById({ _id: eventId });
     if (!eventData) {
       throw new Error('Event not found');
     }
+
     try {
       const updatedTicket = await this.vendorModel.findOneAndUpdate(
         { _id: vendorId },
@@ -50,6 +51,41 @@ export class VendorService {
         { new: true, upsert: false, runValidators: true },
       );
       return updatedTicket;
+    } catch (error) {
+      throw new ForbiddenException(FORBIDDEN_MESSAGE);
+    }
+  }
+
+  async getAllVendorsByEventId(eventId: string): Promise<Vendor[] | any> {
+    const eventData = await this.eventModel.findById({ _id: eventId });
+    if (!eventData) {
+      throw new Error('Event not found');
+    }
+
+    try {
+      const vendors = await this.vendorModel
+        .find({
+          event: eventData?._id,
+        })
+        .populate('event')
+        .exec();
+      const total = await this.vendorModel.countDocuments({
+        event: eventData?._id,
+      });
+      return { data: vendors, total };
+    } catch (error) {
+      throw new ForbiddenException(FORBIDDEN_MESSAGE);
+    }
+  }
+
+  async getVendorById(vendorId: string): Promise<Vendor> {
+    try {
+      const vendor = await this.vendorModel
+        .findOne({ _id: vendorId })
+        .populate('event')
+        .lean();
+
+      return vendor;
     } catch (error) {
       throw new ForbiddenException(FORBIDDEN_MESSAGE);
     }
