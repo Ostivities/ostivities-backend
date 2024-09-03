@@ -18,7 +18,8 @@
     "test:cov": "jest --coverage",
     "test:debug": "node --inspect-brk -r tsconfig-paths/register -r ts-node/register node_modules/.bin/jest --runInBand",
     "test:e2e": "jest --config ./test/jest-e2e.json",
-    "prisma:generate:studio": "npx prisma generate && npx prisma studio"
+    "prisma:generate:studio": "npx prisma generate && npx prisma studio",
+    "start:test": "node --max-old-space-size=4096 dist/main.js"
   },
   "dependencies": {
     "@getbrevo/brevo": "^2.2.0",
