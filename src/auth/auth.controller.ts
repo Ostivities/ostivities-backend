@@ -4,32 +4,34 @@ import {
   Get,
   HttpCode,
   HttpStatus,
-  // Param,
-  // Patch,
+  Param,
+  Patch,
   Post,
+  Put,
+  UseGuards,
 } from '@nestjs/common';
 import {
   ApiBody,
   ApiOperation,
-  // ApiParam,
+  ApiParam,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
 import { IResponse } from 'src/util/types';
 import { AuthService } from './auth.service';
 import { Public } from './decorator/public.decorator';
-// import { GetCurrentUser } from './decorator/user.decorator';
+import { GetCurrentUser } from './decorator/user.decorator';
 import {
   ActivateAccountDto,
   CreateUserDto,
   ForgotPasswordDto,
   LoginUserDto,
   ResetPasswordDto,
-  // UpdatePasswordDto,
-  // UpdateUserDto,
+  UpdatePasswordDto,
+  UpdateUserDto,
   VerifyAccountDto,
 } from './dto/auth.dto';
-// import { JwtAuthGuard } from './guard/jwt-auth.guard';
+import { JwtAuthGuard } from './guard/jwt-auth.guard';
 
 @Controller('auth')
 @ApiTags('Authentication Service')
@@ -159,73 +161,73 @@ export class AuthController {
       data,
     };
   }
-  // @UseGuards(JwtAuthGuard)
-  // @HttpCode(HttpStatus.OK)
-  // @ApiOperation({ summary: 'User profile' })
-  // @ApiResponse({
-  //   status: 200,
-  //   description: 'User profile fetched sccessfully',
-  // })
-  // @ApiResponse({ status: 403, description: 'Forbidden.' })
-  // @Get('profile')
-  // async getUserProfile(
-  //   @GetCurrentUser('id') user: string | any,
-  // ): Promise<IResponse> {
-  //   const data = await this.authService.getUserProfile(user);
-  //   return {
-  //     statusCode: HttpStatus.OK,
-  //     message: 'User profile fetched sccessfully',
-  //     data,
-  //   };
-  // }
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'User profile' })
+  @ApiResponse({
+    status: 200,
+    description: 'User profile fetched sccessfully',
+  })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @Get('profile')
+  async getUserProfile(
+    @GetCurrentUser('id') user: string | any,
+  ): Promise<IResponse> {
+    const data = await this.authService.getUserProfile(user);
+    return {
+      statusCode: HttpStatus.OK,
+      message: 'User profile fetched sccessfully',
+      data,
+    };
+  }
 
-  // @UseGuards(JwtAuthGuard)
-  // @HttpCode(HttpStatus.OK)
-  // @ApiParam({ name: 'id', description: 'user id' })
-  // @ApiBody({ type: UpdateUserDto })
-  // @ApiOperation({ summary: 'Update user profile' })
-  // @ApiResponse({
-  //   status: 200,
-  //   description: 'User profile updated sccessfully',
-  // })
-  // @Put('user/:id')
-  // @ApiResponse({ status: 403, description: 'Forbidden.' })
-  // async updateUserProfile(@Param('id') id: string, @Body() dto: UpdateUserDto) {
-  //   try {
-  //     const data = await this.authService.updateUserProfile(dto, id);
-  //     return {
-  //       statusCode: HttpStatus.OK,
-  //       message: 'User profile updated successfully',
-  //       data,
-  //     };
-  //   } catch (error) {
-  //     return error;
-  //   }
-  // }
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @ApiParam({ name: 'id', description: 'user id' })
+  @ApiBody({ type: UpdateUserDto })
+  @ApiOperation({ summary: 'Update user profile' })
+  @ApiResponse({
+    status: 200,
+    description: 'User profile updated sccessfully',
+  })
+  @Put('user/:id')
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  async updateUserProfile(@Param('id') id: string, @Body() dto: UpdateUserDto) {
+    try {
+      const data = await this.authService.updateUserProfile(dto, id);
+      return {
+        statusCode: HttpStatus.OK,
+        message: 'User profile updated successfully',
+        data,
+      };
+    } catch (error) {
+      return error;
+    }
+  }
 
-  // @UseGuards(JwtAuthGuard)
-  // @HttpCode(HttpStatus.OK)
-  // @ApiParam({ name: 'id', description: 'user id' })
-  // @ApiBody({ type: UpdatePasswordDto })
-  // @ApiOperation({ summary: 'change password' })
-  // @ApiResponse({
-  //   status: 200,
-  //   description: 'User password updated sccessfully',
-  // })
-  // @Patch('password/:id')
-  // async updateUserPassword(
-  //   @Param('id') id: string,
-  //   @Body() dto: UpdatePasswordDto,
-  // ) {
-  //   try {
-  //     const data = await this.authService.updateUserPassword(dto, id);
-  //     return {
-  //       statusCode: HttpStatus.OK,
-  //       message: 'User password updated successfully',
-  //       data,
-  //     };
-  //   } catch (error) {
-  //     return error;
-  //   }
-  // }
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @ApiParam({ name: 'id', description: 'user id' })
+  @ApiBody({ type: UpdatePasswordDto })
+  @ApiOperation({ summary: 'change password' })
+  @ApiResponse({
+    status: 200,
+    description: 'User password updated sccessfully',
+  })
+  @Patch('password/:id')
+  async updateUserPassword(
+    @Param('id') id: string,
+    @Body() dto: UpdatePasswordDto,
+  ) {
+    try {
+      const data = await this.authService.updateUserPassword(dto, id);
+      return {
+        statusCode: HttpStatus.OK,
+        message: 'User password updated successfully',
+        data,
+      };
+    } catch (error) {
+      return error;
+    }
+  }
 }
