@@ -1,5 +1,4 @@
 import { Controller, Dependencies, Get } from '@nestjs/common';
-import { InjectConnection } from '@nestjs/mongoose';
 import {
   DiskHealthIndicator,
   HealthCheck,
@@ -8,7 +7,6 @@ import {
   MemoryHealthIndicator,
   MongooseHealthIndicator,
 } from '@nestjs/terminus';
-import { Connection } from 'mongoose';
 
 @Controller('health')
 @Dependencies(HealthCheckService, HttpHealthIndicator)
@@ -25,8 +23,6 @@ export class HealthController {
     },
     private readonly disk: DiskHealthIndicator,
     private memory: MemoryHealthIndicator,
-    @InjectConnection(process.env.DATABASE_URL)
-    private mongodbURL: Connection,
     private mongoose: MongooseHealthIndicator,
   ) {}
 
@@ -57,10 +53,7 @@ export class HealthController {
       this.health.check([
         () => this.memory.checkHeap('memory_heap', 4096 * 1024 * 1024),
       ]),
-      this.health.check([
-        async () =>
-          this.mongoose.pingCheck('mongodbURL', { connection: this.check }),
-      ]),
+      this.health.check([async () => this.mongoose.pingCheck('mongoose')]),
     ];
   }
 }
