@@ -21,6 +21,8 @@ import {
   ForgotPasswordDto,
   LoginUserDto,
   ResetPasswordDto,
+  UpdatePasswordDto,
+  UpdateUserDto,
   VerifyAccountDto,
 } from './dto/auth.dto';
 import { ActivateUser } from './schema/activation.schema';
@@ -296,6 +298,56 @@ export class AuthService {
     try {
       const userData = await this.userModel.findById(user);
       return userData;
+    } catch (error) {
+      throw new ForbiddenException(FORBIDDEN_MESSAGE);
+    }
+  }
+
+  async updateUserProfile(dto: UpdateUserDto, userId: string): Promise<User> {
+    try {
+      const user = await this.userModel.findByIdAndUpdate(
+        { _id: userId },
+        {
+          ...dto,
+        },
+        { new: true },
+      );
+      return user;
+    } catch (error) {
+      throw new ForbiddenException(FORBIDDEN_MESSAGE);
+    }
+  }
+  async updateUserPassword(
+    dto: UpdatePasswordDto,
+    userId: string,
+  ): Promise<User> {
+    const user = await this.userModel.findOne({
+      _id: userId,
+    });
+    if (!user) {
+      throw new ConflictException('User not found');
+    }
+    const pwdMatch = await argon.verify(user.hash, dto.old_password);
+    if (!pwdMatch) {
+      throw new BadRequestException('Old password is incorrect');
+    }
+    if (dto.password !== dto.confirm_password) {
+      throw new BadRequestException(
+        'New password and confirmation do not match',
+      );
+    }
+
+    const hash = await argon.hash(dto.password);
+
+    try {
+      const user = await this.userModel.findByIdAndUpdate(
+        { _id: userId },
+        {
+          hash,
+        },
+        { new: true, runValidators: true, upsert: true },
+      );
+      return user;
     } catch (error) {
       throw new ForbiddenException(FORBIDDEN_MESSAGE);
     }
