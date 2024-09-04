@@ -28,6 +28,7 @@ import {
 import { ActivateUser } from './schema/activation.schema';
 import { User } from './schema/auth.schema';
 import { ForgotPasswordModel } from './schema/forgotpassword.schema';
+import { Revoked } from './schema/revoked.schema';
 
 @Injectable()
 export class AuthService {
@@ -40,7 +41,8 @@ export class AuthService {
     @InjectModel(Security.name) private securityModel: Model<Security>,
     @InjectModel(ActivateUser.name)
     private activateAccountModel: Model<ActivateUser>,
-    // private readonly logger = new Logger(AuthService.name),
+    @InjectModel(Revoked.name)
+    private revokedTokenModel: Model<Revoked>,
   ) {}
 
   // REGISTER USER
@@ -348,6 +350,29 @@ export class AuthService {
         { new: true, runValidators: true, upsert: true },
       );
       return user;
+    } catch (error) {
+      throw new ForbiddenException(FORBIDDEN_MESSAGE);
+    }
+  }
+
+  async logout(token: string, expiresAt: Date): Promise<void> {
+    try {
+      const createdRevoked = new this.revokedTokenModel({
+        token,
+        expiresAt,
+      });
+      await createdRevoked.save();
+    } catch (error) {
+      throw new ForbiddenException(FORBIDDEN_MESSAGE);
+    }
+  }
+
+  async checkIfTokenIsRevoked(token: string): Promise<boolean> {
+    try {
+      const tokenExists = await this.revokedTokenModel
+        .findOne({ token })
+        .exec();
+      return !!tokenExists;
     } catch (error) {
       throw new ForbiddenException(FORBIDDEN_MESSAGE);
     }

@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserSchema } from 'src/auth/schema/auth.schema';
+import { Revoked, RevokedSchema } from 'src/auth/schema/revoked.schema';
 import { DatabaseModule } from 'src/database/database.module';
 import { Security, SecuritySchema } from './schema/security.schema';
 import { SecurityController } from './security.controller';
@@ -17,6 +18,7 @@ import { SecurityService } from './security.service';
     MongooseModule.forFeature([
       { name: Security.name, schema: SecuritySchema },
       { name: User.name, schema: UserSchema },
+      { name: Revoked.name, schema: RevokedSchema },
     ]),
     DatabaseModule,
   ],

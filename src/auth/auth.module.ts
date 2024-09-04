@@ -26,6 +26,7 @@ import {
   ForgotPasswordModel,
   ForgotPasswordSchema,
 } from './schema/forgotpassword.schema';
+import { Revoked, RevokedSchema } from './schema/revoked.schema';
 import { JwtStrategy } from './strategy/jwt.strategy';
 
 @Module({
@@ -44,6 +45,7 @@ import { JwtStrategy } from './strategy/jwt.strategy';
       { name: Discounts.name, schema: DiscountsSchema },
       { name: Coordinator.name, schema: CoordinatorSchema },
       { name: Vendor.name, schema: VendorSchema },
+      { name: Revoked.name, schema: RevokedSchema },
     ]),
     DatabaseModule,
   ],

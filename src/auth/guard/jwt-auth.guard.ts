@@ -6,13 +6,18 @@ import {
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
+import { InjectModel } from '@nestjs/mongoose';
 import { Request } from 'express';
+import { Model } from 'mongoose';
+import { Revoked } from '../schema/revoked.schema';
 
 @Injectable()
 export class JwtAuthGuard implements CanActivate {
   constructor(
     private jwtService: JwtService,
     private configService: ConfigService,
+    @InjectModel(Revoked.name)
+    private revokedTokenModel: Model<Revoked>,
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
@@ -20,6 +25,10 @@ export class JwtAuthGuard implements CanActivate {
     const token = this.extractTokenFromHeader(request);
     if (!token) {
       throw new UnauthorizedException();
+    }
+    const tokenExists = await this.revokedTokenModel.findOne({ token }).exec();
+    if (!!tokenExists) {
+      throw new UnauthorizedException('Invalid token');
     }
     try {
       const payload = await this.jwtService.verifyAsync(token, {

@@ -8,6 +8,7 @@ import {
   Patch,
   Post,
   Put,
+  Req,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -17,6 +18,7 @@ import {
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
+import { Request } from 'express';
 import { IResponse } from 'src/util/types';
 import { AuthService } from './auth.service';
 import { Public } from './decorator/public.decorator';
@@ -229,5 +231,16 @@ export class AuthController {
     } catch (error) {
       return error;
     }
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @Post('logout')
+  async logout(@Req() req: Request) {
+    const token = req.headers.authorization.split(' ')[1];
+    const user: any = req.user;
+    const decodedToken = user?.exp as any;
+    const expiresAt = new Date(decodedToken.exp * 1000);
+    await this.authService.logout(token, expiresAt);
+    return { message: 'Logged out successfully' };
   }
 }

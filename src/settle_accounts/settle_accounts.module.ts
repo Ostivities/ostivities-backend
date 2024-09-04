@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserSchema } from 'src/auth/schema/auth.schema';
+import { Revoked, RevokedSchema } from 'src/auth/schema/revoked.schema';
 import { DatabaseModule } from 'src/database/database.module';
 import {
   SettlementAccount,
@@ -22,6 +23,7 @@ import { SettleAccountsService } from './settle_accounts.service';
     MongooseModule.forFeature([
       { name: SettlementAccount.name, schema: SettlementAccountSchema },
       { name: User.name, schema: UserSchema },
+      { name: Revoked.name, schema: RevokedSchema },
     ]),
     DatabaseModule,
   ],
