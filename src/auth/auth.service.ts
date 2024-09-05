@@ -11,6 +11,7 @@ import { InjectModel } from '@nestjs/mongoose';
 import * as argon from 'argon2';
 import * as crypto from 'crypto';
 import { Model } from 'mongoose';
+import { EmailService } from 'src/email/email.service';
 import { SecurityDto } from 'src/security/dto/security.dto';
 import { Security } from 'src/security/schema/security.schema';
 import { otpGenerator } from 'src/util/helper';
@@ -132,6 +133,11 @@ export class AuthService {
       } else {
         const otp = otpGenerator();
         console.log(otp, 'otp generated');
+        await EmailService({
+          subject: 'Activate account',
+          htmlContent: otp,
+          email: dto.email,
+        });
         const activateAccountModelUpdate =
           await this.activateAccountModel.findOneAndUpdate(
             { email: dto.email },
