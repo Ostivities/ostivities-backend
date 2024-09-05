@@ -19,6 +19,7 @@ import { EventController } from './event.controller';
 import { eventProviders } from './event.providers';
 import { EventService } from './event.service';
 import { Events, EventSchema } from './schema/event.schema';
+import { Revoked, RevokedSchema } from 'src/auth/schema/revoked.schema';
 
 @Module({
   imports: [
@@ -34,6 +35,7 @@ import { Events, EventSchema } from './schema/event.schema';
       { name: Guests.name, schema: GuestSchema },
       { name: Coordinator.name, schema: CoordinatorSchema },
       { name: Vendor.name, schema: VendorSchema },
+      { name: Revoked.name, schema: RevokedSchema },
     ]),
     DatabaseModule,
   ],

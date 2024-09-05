@@ -2,6 +2,7 @@ import { Module } from '@nestjs/common';
 import { JwtModule } from '@nestjs/jwt';
 import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserSchema } from 'src/auth/schema/auth.schema';
+import { Revoked, RevokedSchema } from 'src/auth/schema/revoked.schema';
 import { JwtStrategy } from 'src/auth/strategy/jwt.strategy';
 import { DatabaseModule } from 'src/database/database.module';
 import {
@@ -27,6 +28,7 @@ import { TicketService } from './ticket.service';
       { name: User.name, schema: UserSchema },
       { name: Discounts.name, schema: DiscountsSchema },
       { name: Guests.name, schema: GuestSchema },
+      { name: Revoked.name, schema: RevokedSchema },
     ]),
     DatabaseModule,
   ],

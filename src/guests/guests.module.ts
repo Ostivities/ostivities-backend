@@ -1,6 +1,7 @@
 import { Module } from '@nestjs/common';
 import { MongooseModule } from '@nestjs/mongoose';
 import { User, UserSchema } from 'src/auth/schema/auth.schema';
+import { Revoked, RevokedSchema } from 'src/auth/schema/revoked.schema';
 import { DatabaseModule } from 'src/database/database.module';
 import {
   Discounts,
@@ -24,6 +25,7 @@ import { Guests, GuestSchema } from './schema/guests.schema';
       { name: Discounts.name, schema: DiscountsSchema },
       { name: Ticket.name, schema: TicketSchema },
       { name: Guests.name, schema: GuestSchema },
+      { name: Revoked.name, schema: RevokedSchema },
     ]),
   ],
 })
