@@ -248,19 +248,25 @@ export class AuthService {
           throw new ForbiddenException('token as already been sent');
         }
       } else {
+        const otp = otpGenerator();
         const forgottenPasswordModelUpdate =
           await this.forgotPasswordModel.findOneAndUpdate(
             { email: dto.email },
             {
               $set: {
                 email: dto.email,
-                token: (Math.floor(Math.random() * 900000) + 100000).toString(),
+                token: otp,
               },
             },
             { upsert: true, new: true },
           );
 
         if (forgottenPasswordModelUpdate) {
+          await EmailService({
+            subject: 'Reset Password',
+            htmlContent: otp,
+            email: dto.email,
+          });
           return forgottenPasswordModelUpdate;
         }
       }
