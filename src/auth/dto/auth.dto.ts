@@ -148,15 +148,15 @@ export class ForgotPasswordDto {
   )
   email: string;
 
-  @ApiProperty({
-    description: 'Origin URL',
-    type: String,
-    required: true,
-  })
-  @IsString()
-  @IsNotEmpty()
-  @IsUrl()
-  originUrl: string;
+  // @ApiProperty({
+  //   description: 'Origin URL',
+  //   type: String,
+  //   required: true,
+  // })
+  // @IsString()
+  // @IsNotEmpty()
+  // @IsUrl()
+  // originUrl: string;
 }
 
 export class ResetPasswordDto {
