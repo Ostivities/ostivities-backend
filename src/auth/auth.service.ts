@@ -285,16 +285,24 @@ export class AuthService {
 
   // RESET PASSWORD
   async resetPassword(dto: ResetPasswordDto) {
+    const user = await this.userModel.findOne({
+      email: dto.email,
+    });
+
+    if (!user) {
+      throw new BadRequestException(
+        `User with email ${dto.password} not found`,
+      );
+    }
+    const hash = await argon.hash(dto.password);
+
+    if (user.hash === hash) {
+      throw new BadRequestException(
+        `Cannot replace password with old password`,
+      );
+    }
+
     try {
-      const user = await this.userModel.findOne({
-        email: dto.email,
-      });
-
-      if (!user) {
-        throw new ConflictException('User not found');
-      }
-
-      const hash = await argon.hash(dto.password);
       const updatedUser = await this.userModel.findOneAndUpdate(
         { email: dto.email },
         { hash: hash },
