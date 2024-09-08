@@ -184,6 +184,10 @@ export class AuthService {
         throw new BadRequestException(`User with email ${dto.email} not found`);
       }
 
+      if (dto.otp.length !== 6) {
+        throw new BadRequestException(`OTP must not be more than 6 characters`);
+      }
+
       if (userActive.otp !== dto.otp) {
         throw new BadRequestException(`Please enter correct otp`);
       }
