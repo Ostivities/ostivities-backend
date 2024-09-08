@@ -54,6 +54,10 @@ export class AuthService {
     const publicKey = 'pub_' + crypto.randomBytes(16).toString('hex');
     const secretKey = 'pk_' + crypto.randomBytes(16).toString('hex');
 
+    if (!dto.terms_and_condition) {
+      throw new BadRequestException(`Please accept terms and conditions`);
+    }
+
     try {
       const checkIfUserexist = await this.userModel.findOne({
         email: dto.email,
