@@ -1,9 +1,9 @@
 import * as brevo from '@getbrevo/brevo';
-// import { EmailDto } from './dto/email.dto';
+import { EmailDto } from './dto/email.dto';
 
 // emailDto: EmailDto
 
-export const EmailService = async (emailDto: any) => {
+export const EmailService = async (emailDto: EmailDto) => {
   console.log(emailDto);
   const apiInstance: any = new brevo.TransactionalEmailsApi();
 
@@ -19,8 +19,7 @@ export const EmailService = async (emailDto: any) => {
   const sendSmtpEmail = new brevo.SendSmtpEmail();
 
   sendSmtpEmail.subject = `${emailDto.subject}`;
-  // sendSmtpEmail.htmlContent = emailDto.htmlContent;
-  sendSmtpEmail.htmlContent = `<html><head></head><body><p>Hello,</p>${emailDto.htmlContent}</p></body></html>`;
+  sendSmtpEmail.htmlContent = emailDto.htmlContent;
   sendSmtpEmail.sender = {
     name: process.env.SMTP_SENDER_NAME,
     email: process.env.SMTP_SENDER_EMAIL,
