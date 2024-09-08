@@ -229,6 +229,14 @@ export class AuthService {
 
   // CREATE TOKEN
   async resetToken(dto: ForgotPasswordDto) {
+    const user = await this.userModel.findOne({
+      email: dto.email,
+    });
+
+    if (!user) {
+      throw new BadRequestException(`User with ${dto.email} not found`);
+    }
+
     try {
       const forgottenPassword: any = await this.forgotPasswordModel.findOne({
         email: dto.email,
