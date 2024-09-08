@@ -95,11 +95,11 @@ export class User {
   })
   is_active: boolean;
 
-  // @Prop({
-  //   type: SettlementAccountSchema,
-  //   default: {},
-  // })
-  // settlementAcounts: SettlementAccount;
+  @Prop({
+    type: String,
+    required: false,
+  })
+  image: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);
