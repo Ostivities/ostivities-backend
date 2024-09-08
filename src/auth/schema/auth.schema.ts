@@ -100,6 +100,12 @@ export class User {
     required: false,
   })
   image: string;
+
+  @Prop({
+    type: String,
+    required: false,
+  })
+  phone_number: string;
 }
 
 export const UserSchema = SchemaFactory.createForClass(User);

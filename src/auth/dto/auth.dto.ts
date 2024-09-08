@@ -269,6 +269,15 @@ export class UpdateUserDto extends PartialType(
   @IsOptional()
   @IsUrl()
   image?: string;
+
+  @ApiProperty({
+    description: 'phone number',
+    type: String,
+    required: false,
+  })
+  @IsString()
+  @IsOptional()
+  phone_number?: string;
 }
 
 export class UpdatePasswordDto {
