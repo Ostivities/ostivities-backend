@@ -8,8 +8,8 @@ export const schemaConfig = {
     transform: (_, ret) => {
       // TODO: delete all fields not required on the frontend
       delete ret._id;
-      delete ret.password;
-      delete ret.hash;
+      // delete ret.password;
+      // delete ret.hash;
       delete ret.visible;
       delete ret.updatedAt;
       // delete ret.events;
@@ -23,8 +23,8 @@ export const schemaConfig = {
     virtuals: true,
     transform: (_, ret) => {
       // delete ret._id;
-      delete ret.password;
-      delete ret.hash;
+      // delete ret.password;
+      // delete ret.hash;
       delete ret.visible;
       // delete ret.events;
       // delete ret.addressCoordinates;
