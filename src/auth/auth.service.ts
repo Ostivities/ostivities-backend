@@ -54,7 +54,10 @@ export class AuthService {
     const publicKey = 'pub_' + crypto.randomBytes(16).toString('hex');
     const secretKey = 'pk_' + crypto.randomBytes(16).toString('hex');
 
-    if (!dto.terms_and_condition) {
+    if (
+      dto.terms_and_condition === undefined ||
+      dto.terms_and_condition === false
+    ) {
       throw new BadRequestException(`Please accept terms and conditions`);
     }
 
@@ -176,6 +179,10 @@ export class AuthService {
       const userActive: any = await this.activateAccountModel.findOne({
         email: dto.email,
       });
+
+      if (!userActive) {
+        throw new BadRequestException(`User with email ${dto.email} not found`);
+      }
 
       if (userActive.otp !== dto.otp) {
         throw new BadRequestException(`Please enter correct otp`);
