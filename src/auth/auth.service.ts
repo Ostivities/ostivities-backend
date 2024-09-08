@@ -177,6 +177,10 @@ export class AuthService {
         email: dto.email,
       });
 
+      if (!userActive) {
+        throw new BadRequestException(`User with email ${dto.email} not found`);
+      }
+
       if (userActive.otp !== dto.otp) {
         throw new BadRequestException(`Please enter correct otp`);
       }
