@@ -242,6 +242,10 @@ export class AuthService {
         email: dto.email,
       });
 
+      if (forgottenPassword.token) {
+        throw new ForbiddenException('token as already been sent');
+      }
+
       if (forgottenPassword) {
         const currentTime = new Date().getTime();
         const forgottenPasswordTimestamp = new Date(
