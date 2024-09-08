@@ -296,6 +296,15 @@ export class AuthService {
     if (!user) {
       throw new BadRequestException(`User with email ${dto.email} not found`);
     }
+
+    const forgottenPassword: any = await this.forgotPasswordModel.findOne({
+      email: dto.email,
+    });
+
+    if (forgottenPassword.token !== dto.token) {
+      throw new BadRequestException(`${dto.token} is not a valid token`);
+    }
+
     const hash = await argon.hash(dto.password);
     const pwdMatch = await argon.verify(user.hash, dto.password);
 
