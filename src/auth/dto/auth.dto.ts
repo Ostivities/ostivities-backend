@@ -94,10 +94,6 @@ export class CreateUserDto {
   })
   @IsNotEmpty()
   @IsBoolean()
-  @ValidateIf((o) => o.terms_and_condition === true)
-  @Matches(/^true$/, {
-    message: 'Please accept the terms and conditions',
-  })
   terms_and_condition: boolean;
 }
 
