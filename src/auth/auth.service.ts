@@ -14,6 +14,7 @@ import { Model } from 'mongoose';
 import { EmailService } from 'src/email/email.service';
 import { SecurityDto } from 'src/security/dto/security.dto';
 import { Security } from 'src/security/schema/security.schema';
+import { PasswordReset } from 'src/templates/PasswordReset';
 import { VerifyAccountTemplate } from 'src/templates/verifyAcoount';
 import { activationTokenTemplate } from 'src/templates/welcome';
 import { otpGenerator } from 'src/util/helper';
@@ -263,9 +264,9 @@ export class AuthService {
         email: dto.email,
       });
 
-      if (forgottenPassword.token) {
-        throw new ForbiddenException('token as already been sent');
-      }
+      // if (!forgottenPassword) {
+      //   throw new ForbiddenException('token as already been sent');
+      // }
 
       if (forgottenPassword) {
         const currentTime = new Date().getTime();
@@ -295,12 +296,17 @@ export class AuthService {
           );
 
         if (forgottenPasswordModelUpdate) {
-          // await EmailService({
-          //   subject: 'Reset Password',
-          //   htmlContent: otp,
-          //   email: dto.email,
-          // });
-          return forgottenPasswordModelUpdate;
+          const name =
+            user.accountType === ACCOUNT_TYPE.PERSONAL
+              ? user.firstName
+              : user.businessName;
+          await EmailService({
+            subject: 'Password reset',
+            htmlContent: PasswordReset(name, otp),
+            email: dto.email,
+            name: name,
+          });
+          return `OTP sent successfully to ${dto.email}`;
         }
       }
     } catch (error) {
