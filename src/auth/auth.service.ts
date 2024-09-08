@@ -177,7 +177,9 @@ export class AuthService {
         email: dto.email,
       });
 
-      // console.log(userActive, 'user active');
+      if (userActive.otp !== dto.otp) {
+        throw new BadRequestException(`Please enter correct otp`);
+      }
 
       const currentTime = new Date().getMinutes();
       const userActiveTimeStamp = new Date(userActive?.timeStamp).getMinutes();
