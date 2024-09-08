@@ -54,7 +54,10 @@ export class AuthService {
     const publicKey = 'pub_' + crypto.randomBytes(16).toString('hex');
     const secretKey = 'pk_' + crypto.randomBytes(16).toString('hex');
 
-    if (!dto.terms_and_condition) {
+    if (
+      dto.terms_and_condition === undefined ||
+      dto.terms_and_condition === false
+    ) {
       throw new BadRequestException(`Please accept terms and conditions`);
     }
 
