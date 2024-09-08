@@ -243,10 +243,6 @@ export class AuthService {
       throw new ConflictException('User not found');
     }
 
-    // if (user.is_active === false) {
-    //   throw new Error('User not found');
-    // }
-
     const pwdMatch = await argon.verify(user.hash, dto.password);
     if (!pwdMatch) {
       // throw new ForbiddenException(`User with this credentials doesn't exist`);
