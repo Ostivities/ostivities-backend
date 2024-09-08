@@ -290,13 +290,12 @@ export class AuthService {
     });
 
     if (!user) {
-      throw new BadRequestException(
-        `User with email ${dto.password} not found`,
-      );
+      throw new BadRequestException(`User with email ${dto.email} not found`);
     }
     const hash = await argon.hash(dto.password);
+    const pwdMatch = await argon.verify(user.hash, dto.password);
 
-    if (user.hash === hash) {
+    if (pwdMatch) {
       throw new BadRequestException(
         `Cannot replace password with old password`,
       );
