@@ -204,30 +204,7 @@ export class ResetPasswordDto {
   token: string;
 }
 
-export class ActivateAccountDto {
-  @ApiProperty({
-    description: 'email address',
-    type: String,
-    required: true,
-  })
-  @IsString()
-  @IsEmail()
-  @IsNotEmpty()
-  @Matches(
-    /^[a-zA-Z0-9.!#$%&'*+/=?^_`{|}~-]+@[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?(?:.[a-zA-Z0-9](?:[a-zA-Z0-9-]{0,61}[a-zA-Z0-9])?)*$/,
-    { message: 'email must be a valid email' },
-  )
-  email: string;
-
-  // @ApiProperty({
-  //   description: 'OTP',
-  //   type: Number,
-  //   required: true,
-  // })
-  // @IsNumber()
-  // @IsNotEmpty()
-  // otp: number;
-}
+export class ActivateAccountDto extends PartialType(CreateUserDto) {}
 
 export class VerifyAccountDto {
   @ApiProperty({

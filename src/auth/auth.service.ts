@@ -14,6 +14,8 @@ import { Model } from 'mongoose';
 import { EmailService } from 'src/email/email.service';
 import { SecurityDto } from 'src/security/dto/security.dto';
 import { Security } from 'src/security/schema/security.schema';
+import { VerifyAccountTemplate } from 'src/templates/verifyAcoount';
+import { activationTokenTemplate } from 'src/templates/welcome';
 import { otpGenerator } from 'src/util/helper';
 import { ACCOUNT_TYPE } from 'src/util/types';
 import {
@@ -100,7 +102,7 @@ export class AuthService {
         });
         await newSecurityKey.save();
       }
-      await this.generateOtp({ email: dto.email });
+      await this.generateOtp({ ...dto });
       return savedUser;
     } catch (error) {
       throw error;
@@ -132,11 +134,17 @@ export class AuthService {
         }
       } else {
         const otp = otpGenerator();
-        console.log(otp, 'otp generated');
+
+        const name =
+          dto.accountType === ACCOUNT_TYPE.PERSONAL
+            ? dto.firstName
+            : dto.businessName;
+
         await EmailService({
           subject: 'Activate account',
-          htmlContent: otp,
+          htmlContent: activationTokenTemplate(name, otp),
           email: dto.email,
+          name,
         });
         const activateAccountModelUpdate =
           await this.activateAccountModel.findOneAndUpdate(
@@ -176,7 +184,7 @@ export class AuthService {
         timeDifference <= fiveMinutesInMilliseconds &&
         dto.otp === userActive?.otp
       ) {
-        await this.userModel.findOneAndUpdate(
+        const user = await this.userModel.findOneAndUpdate(
           { email: dto.email },
           {
             $set: {
@@ -185,6 +193,19 @@ export class AuthService {
           },
           { upsert: true, new: true, runValidators: true },
         );
+
+        const name =
+          user.accountType === ACCOUNT_TYPE.PERSONAL
+            ? user.firstName
+            : user.businessName;
+
+        await EmailService({
+          subject: 'Welcome',
+          htmlContent: VerifyAccountTemplate(name),
+          email: user.email,
+          name,
+        });
+
         return 'Account activated successfully';
       } else {
         return { message: 'OTP expired' };
@@ -274,11 +295,11 @@ export class AuthService {
           );
 
         if (forgottenPasswordModelUpdate) {
-          await EmailService({
-            subject: 'Reset Password',
-            htmlContent: otp,
-            email: dto.email,
-          });
+          // await EmailService({
+          //   subject: 'Reset Password',
+          //   htmlContent: otp,
+          //   email: dto.email,
+          // });
           return forgottenPasswordModelUpdate;
         }
       }

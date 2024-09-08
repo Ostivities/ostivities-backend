@@ -19,7 +19,7 @@ import {
 import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
 import { EmailDto } from 'src/email/dto/email.dto';
 import { EmailService } from 'src/email/email.service';
-import { template } from 'src/templates/welcome';
+import { activationTokenTemplate } from 'src/templates/welcome';
 import { IResponse } from 'src/util/types';
 import { CoordinatorsService } from './coordinators.service';
 import { CoordinatorDto } from './dto/coordinator.dto';
@@ -49,7 +49,7 @@ export class CoordinatorsController {
       const email: EmailDto = {
         name: dto.staff_name,
         email: dto.staff_email,
-        htmlContent: template(dto.staff_name, 123456),
+        htmlContent: activationTokenTemplate(dto.staff_name, 123456),
         subject: `Success`,
       };
       await EmailService(email);
