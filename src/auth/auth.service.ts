@@ -148,7 +148,7 @@ export class AuthService {
             ? dto.firstName
             : dto.businessName;
 
-        await EmailService({
+        EmailService({
           subject: 'Activate account',
           htmlContent: activationTokenTemplate(name, otp),
           email: dto.email,
@@ -213,7 +213,7 @@ export class AuthService {
             ? user.firstName
             : user.businessName;
 
-        await EmailService({
+        EmailService({
           subject: 'Welcome',
           htmlContent: VerifyAccountTemplate(name),
           email: user.email,
@@ -313,7 +313,7 @@ export class AuthService {
             user.accountType === ACCOUNT_TYPE.PERSONAL
               ? user.firstName
               : user.businessName;
-          await EmailService({
+          EmailService({
             subject: 'Password reset',
             htmlContent: PasswordReset(name, otp),
             email: dto.email,
