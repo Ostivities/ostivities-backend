@@ -226,7 +226,7 @@ export class AuthService {
         return { message: 'OTP expired' };
       }
     } catch (error) {
-      throw error;
+      throw new ForbiddenException(error?.message);
     }
   }
 
