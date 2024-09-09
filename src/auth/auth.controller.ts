@@ -83,10 +83,9 @@ export class AuthController {
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   @Post('verify_otp')
-  async activateAccount(@Body() dto: VerifyAccountDto) {
+  async activateAccount(@Body() dto: VerifyAccountDto): Promise<IResponse> {
     try {
       const data = await this.authService.activateAccount(dto);
-
       return {
         statusCode: HttpStatus.OK,
         message: `${dto.email} verified successfully`,

@@ -66,7 +66,7 @@ export enum APPLICABLE_TICKETS {
 }
 
 export interface IResponse {
-  statusCode: string | any;
+  statusCode?: string | any;
   message?: string | any;
   data?: any;
 }
