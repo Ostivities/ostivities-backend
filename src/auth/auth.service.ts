@@ -172,23 +172,22 @@ export class AuthService {
 
   // ACTIVATE ACCONT
   async activateAccount(dto: VerifyAccountDto): Promise<any> {
+    const userActive: any = await this.activateAccountModel.findOne({
+      email: dto.email,
+    });
+
+    if (!userActive) {
+      throw new BadRequestException(`User with email ${dto.email} not found`);
+    }
+
+    if (dto.otp.length !== 6) {
+      throw new BadRequestException(`OTP must not be more than 6 characters`);
+    }
+
+    if (userActive.otp !== dto.otp) {
+      throw new BadRequestException(`Please enter correct otp`);
+    }
     try {
-      const userActive: any = await this.activateAccountModel.findOne({
-        email: dto.email,
-      });
-
-      if (!userActive) {
-        throw new BadRequestException(`User with email ${dto.email} not found`);
-      }
-
-      if (dto.otp.length !== 6) {
-        throw new BadRequestException(`OTP must not be more than 6 characters`);
-      }
-
-      if (userActive.otp !== dto.otp) {
-        throw new BadRequestException(`Please enter correct otp`);
-      }
-
       const currentTime = new Date().getMinutes();
       const userActiveTimeStamp = new Date(userActive?.timeStamp).getMinutes();
 
