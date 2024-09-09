@@ -119,56 +119,53 @@ export class AuthService {
 
   // GENERATE OTP
   async generateOtp(dto: ActivateAccountDto): Promise<ActivateUser> {
+    const userActive: any = await this.activateAccountModel.findOne({
+      email: dto.email,
+    });
+
+    if (userActive) {
+      const currentTime = new Date().getTime();
+      const activateAccountTimestamp = new Date(
+        userActive?.timeStamp,
+      ).getTime();
+
+      const timeDifference = Math.abs(currentTime - activateAccountTimestamp);
+      const fiveMinutesInMilliseconds = 5 * 60 * 1000;
+
+      if (timeDifference <= fiveMinutesInMilliseconds) {
+        throw new ForbiddenException('token already sent');
+      }
+
+      if (timeDifference > fiveMinutesInMilliseconds) {
+        throw new ForbiddenException('token expired');
+      }
+    }
     try {
-      const userActive: any = await this.activateAccountModel.findOne({
-        email: dto.email,
-      });
+      const otp = otpGenerator();
 
-      if (userActive) {
-        const currentTime = new Date().getTime();
-        const activateAccountTimestamp = new Date(
-          userActive?.timeStamp,
-        ).getTime();
+      const name =
+        dto.accountType === ACCOUNT_TYPE.PERSONAL
+          ? dto.firstName
+          : dto.businessName;
 
-        const timeDifference = Math.abs(currentTime - activateAccountTimestamp);
-        const fiveMinutesInMilliseconds = 5 * 60 * 1000;
+      const activateAccountModelUpdate =
+        await this.activateAccountModel.findOneAndUpdate(
+          { email: dto.email },
+          {
+            email: dto.email,
+            otp,
+          },
+          { upsert: true, new: true },
+        );
 
-        if (timeDifference <= fiveMinutesInMilliseconds) {
-          throw new ForbiddenException('token already sent');
-        }
-
-        if (timeDifference > fiveMinutesInMilliseconds) {
-          throw new ForbiddenException('token expired');
-        }
-      } else {
-        const otp = otpGenerator();
-
-        const name =
-          dto.accountType === ACCOUNT_TYPE.PERSONAL
-            ? dto.firstName
-            : dto.businessName;
-
+      if (activateAccountModelUpdate) {
         EmailService({
           subject: 'Activate account',
           htmlContent: activationTokenTemplate(name, otp),
           email: dto.email,
           name,
         });
-        const activateAccountModelUpdate =
-          await this.activateAccountModel.findOneAndUpdate(
-            { email: dto.email },
-            {
-              $set: {
-                email: dto.email,
-                otp,
-              },
-            },
-            { upsert: true, new: true },
-          );
-
-        if (activateAccountModelUpdate) {
-          return activateAccountModelUpdate;
-        }
+        return activateAccountModelUpdate;
       }
     } catch (error) {}
   }
@@ -245,19 +242,41 @@ export class AuthService {
 
     const pwdMatch = await argon.verify(user.hash, dto.password);
     if (!pwdMatch) {
-      // throw new ForbiddenException(`User with this credentials doesn't exist`);
-      throw new BadRequestException('wrong password');
-    } else {
-      const payload = { ...user };
-      const secret = this.configService.get('JWT_SECRET');
-      const token = await this.jwtService.signAsync(payload, {
-        expiresIn: '24h',
-        secret: secret,
+      throw new BadRequestException('Incorrect password');
+    }
+
+    if (user.is_active === false) {
+      const otp = otpGenerator();
+      await this.activateAccountModel.findOneAndUpdate(
+        { email: dto.email },
+        {
+          otp,
+        },
+        { upsert: true, new: true },
+      );
+      const name =
+        user.accountType === ACCOUNT_TYPE.PERSONAL
+          ? user.firstName
+          : user.businessName;
+      EmailService({
+        subject: 'Activate account',
+        htmlContent: activationTokenTemplate(name, otp),
+        email: dto.email,
+        name,
       });
-      if (user.is_active === false) {
-        return { message: 'kindly verify account', is_active: false };
-      } else {
+
+      return { message: 'kindly verify account', is_active: false };
+    } else {
+      try {
+        const payload = { ...user };
+        const secret = this.configService.get('JWT_SECRET');
+        const token = await this.jwtService.signAsync(payload, {
+          expiresIn: '24h',
+          secret: secret,
+        });
         return { accessToken: token };
+      } catch (error) {
+        throw new ForbiddenException(error?.message);
       }
     }
   }
