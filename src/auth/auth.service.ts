@@ -176,56 +176,57 @@ export class AuthService {
       email: dto.email,
     });
 
+    // Check if the user exists
     if (!userActive) {
       throw new BadRequestException(`User with email ${dto.email} not found`);
     }
 
+    // Validate OTP length
     if (dto.otp.length !== 6) {
-      throw new BadRequestException(`OTP must not be more than 6 characters`);
+      throw new BadRequestException('OTP must be exactly 6 characters long');
     }
 
+    // Check if OTP matches
     if (userActive.otp !== dto.otp) {
-      throw new BadRequestException(`Please enter correct otp`);
+      console.log('ddd');
+      throw new BadRequestException('Incorrect OTP');
     }
+
     try {
-      const currentTime = new Date().getMinutes();
-      const userActiveTimeStamp = new Date(userActive?.timeStamp).getMinutes();
+      const currentTime = Date.now();
+      const userActiveTimeStamp = new Date(userActive?.timeStamp).getTime();
 
-      const fiveMinutesInMilliseconds = 1 * 60 * 1000;
-      const timeDifference = Math.abs(currentTime - userActiveTimeStamp);
+      const fiveMinutesInMilliseconds = 5 * 60 * 1000;
+      const timeDifference = currentTime - userActiveTimeStamp;
 
-      if (
-        timeDifference <= fiveMinutesInMilliseconds &&
-        dto.otp === userActive?.otp
-      ) {
-        const user = await this.userModel.findOneAndUpdate(
-          { email: dto.email },
-          {
-            $set: {
-              is_active: true,
-            },
-          },
-          { upsert: true, new: true, runValidators: true },
-        );
-
-        const name =
-          user.accountType === ACCOUNT_TYPE.PERSONAL
-            ? user.firstName
-            : user.businessName;
-
-        EmailService({
-          subject: 'Welcome',
-          htmlContent: VerifyAccountTemplate(name),
-          email: user.email,
-          name,
-        });
-
-        return 'Account activated successfully';
-      } else {
-        return { message: 'OTP expired' };
+      // Check if OTP is expired
+      if (timeDifference > fiveMinutesInMilliseconds) {
+        throw new BadRequestException('OTP has expired');
       }
+
+      // Activate the user's account
+      const user = await this.userModel.findOneAndUpdate(
+        { email: dto.email },
+        { is_active: true },
+        { new: true, runValidators: true },
+      );
+
+      const name =
+        user.accountType === ACCOUNT_TYPE.PERSONAL
+          ? user.firstName
+          : user.businessName;
+
+      // Send a welcome email
+      await EmailService({
+        subject: 'Welcome',
+        htmlContent: VerifyAccountTemplate(name),
+        email: user.email,
+        name,
+      });
+
+      return { message: 'Account activated successfully' };
     } catch (error) {
-      throw new ForbiddenException(error?.message);
+      throw new ForbiddenException('Account activation failed');
     }
   }
 

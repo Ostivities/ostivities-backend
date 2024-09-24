@@ -7,6 +7,7 @@ import {
   EVENT_MODE,
   EVENT_TYPE,
   EVENT_TYPES,
+  EXHIBITION_SPACE,
   ISupportDocuments,
   TICKET_STOCK,
   TICKET_TYPE,
@@ -311,6 +312,27 @@ export class Events {
 
   @Prop({ required: false, default: false })
   discover: boolean;
+
+  @Prop({ required: false, default: false, type: Boolean })
+  vendor_registration: boolean;
+
+  @Prop({
+    enum: EXHIBITION_SPACE,
+    required: false,
+  })
+  exhibition_space_booking: EXHIBITION_SPACE;
+
+  @Prop({
+    type: Number,
+    required: false,
+  })
+  space_available: number;
+
+  @Prop({
+    type: Number,
+    required: false,
+  })
+  space_fee: number;
 }
 
 export const EventSchema = SchemaFactory.createForClass(Events);

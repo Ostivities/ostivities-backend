@@ -28,6 +28,11 @@ export enum TICKET_STOCK {
   UN_LIMITED = 'UN_LIMITED',
 }
 
+export enum EXHIBITION_SPACE {
+  PAID = 'PAID',
+  FREE = 'FREE',
+}
+
 export enum STAFF_ROLE {
   AGENT = 'AGENT',
   USHER = 'USHER',
