@@ -2,9 +2,11 @@ import { ApiProperty, OmitType, PartialType } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
   IsArray,
+  IsBoolean,
   IsEnum,
   IsMongoId,
   IsNotEmpty,
+  IsNumber,
   IsObject,
   IsOptional,
   IsString,
@@ -12,7 +14,7 @@ import {
   ValidateIf,
   ValidateNested,
 } from 'class-validator';
-import { EVENT_INFO, EVENT_TYPES } from 'src/util/types';
+import { EVENT_INFO, EVENT_TYPES, EXHIBITION_SPACE } from 'src/util/types';
 
 export class ValidateSocials {
   @ApiProperty({
@@ -49,7 +51,7 @@ class SupportDocuments {
     required: false,
   })
   @IsOptional()
-  @IsString()
+  @IsUrl()
   fileUrl: string;
 }
 
@@ -198,6 +200,45 @@ export class EventDto {
   @IsNotEmpty()
   @IsMongoId()
   user: string;
+
+  @ApiProperty({
+    description: 'vendor registration',
+    required: false,
+    type: Boolean,
+  })
+  @IsBoolean()
+  @IsOptional()
+  vendor_registration: boolean;
+
+  @ApiProperty({
+    enum: EXHIBITION_SPACE,
+    description: 'exhibition space available for booking',
+    required: false,
+  })
+  @IsOptional()
+  @IsEnum(EXHIBITION_SPACE)
+  @ValidateIf((o) => o.vendor_registration === true)
+  exhibition_space_booking: EXHIBITION_SPACE;
+
+  @ApiProperty({
+    description: 'space available for booking',
+    required: false,
+    type: Number,
+  })
+  @IsNumber()
+  @IsOptional()
+  @ValidateIf((o) => o.exhibition_space_booking === EXHIBITION_SPACE.PAID)
+  space_available: number;
+
+  @ApiProperty({
+    description: 'space fee',
+    required: false,
+    type: Number,
+  })
+  @IsNumber()
+  @IsOptional()
+  @ValidateIf((o) => o.exhibition_space_booking === EXHIBITION_SPACE.PAID)
+  space_fee: number;
 }
 
 export class CreateEventDto extends OmitType(EventDto, ['user']) {}

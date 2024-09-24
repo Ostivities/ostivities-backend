@@ -86,6 +86,7 @@ export class AuthController {
   async activateAccount(@Body() dto: VerifyAccountDto): Promise<IResponse> {
     try {
       const data = await this.authService.activateAccount(dto);
+      console.log(data, 'jj');
       return {
         statusCode: HttpStatus.OK,
         message: `${dto.email} verified successfully`,
