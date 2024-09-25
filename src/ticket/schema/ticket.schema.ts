@@ -64,9 +64,10 @@ export class Ticket {
     type: Number,
     validate: {
       validator: function (value: string) {
-        return this.ticketEntity === TICKET_ENTITY.COLLECTIVE ? !!value : true;
+        return this.ticketType === TICKET_TYPE.PAID ? !!value : true;
       },
       message: 'group price is required',
+      default: 0,
     },
   })
   groupPrice: number;
@@ -113,6 +114,13 @@ export class Ticket {
     },
   })
   ticketPrice: number;
+
+  @Prop({
+    type: Boolean,
+    required: true,
+    message: 'charge bearer is required',
+  })
+  guestAsChargeBearer: boolean;
 
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
