@@ -133,7 +133,7 @@ export class TicketDto {
     description: 'group price',
     required: true,
   })
-  @ValidateIf((o) => o.ticketEntity === TICKET_ENTITY.COLLECTIVE)
+  @ValidateIf((o) => o.ticketType === TICKET_TYPE.PAID)
   @IsNotEmpty()
   @IsNumber()
   groupPrice: number;
