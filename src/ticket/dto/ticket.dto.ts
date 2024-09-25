@@ -33,7 +33,7 @@ class TicketQuestion implements ITicketQuestions {
     required: true,
   })
   @IsNotEmpty()
-  isCompulsory: boolean;
+  is_compulsory: boolean;
 }
 
 export class TicketDto {

@@ -107,7 +107,7 @@ export interface ISingleEvents {
 
 export interface ITicketQuestions {
   question: string;
-  isCompulsory: boolean;
+  is_compulsory: boolean;
 }
 
 export interface ICollectiveEvents {

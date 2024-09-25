@@ -9,6 +9,15 @@ import { TICKET_ENTITY, TICKET_STOCK, TICKET_TYPE } from 'src/util/types';
 export type UserDocument = HydratedDocument<Ticket>;
 
 @Schema(schemaConfig)
+export class TicketQuestions {
+  @Prop({ type: String, required: false })
+  question: string;
+
+  @Prop({ type: Boolean, required: false })
+  is_compulsory: boolean;
+}
+
+@Schema(schemaConfig)
 export class Ticket {
   // @Prop({
   //   required: false,
@@ -145,6 +154,9 @@ export class Ticket {
     required: false,
   })
   discount: mongoose.Schema.Types.ObjectId;
+
+  @Prop({ required: false, type: [TicketQuestions], default: [] })
+  ticketQuestions: TicketQuestions[];
 }
 
 export const TicketSchema = SchemaFactory.createForClass(Ticket);
