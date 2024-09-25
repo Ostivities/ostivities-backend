@@ -64,7 +64,10 @@ export class Ticket {
     type: Number,
     validate: {
       validator: function (value: string) {
-        return this.ticketType === TICKET_TYPE.PAID ? !!value : true;
+        return this.ticketType === TICKET_TYPE.PAID &&
+          this.ticketEntity === TICKET_ENTITY.COLLECTIVE
+          ? !!value
+          : true;
       },
       message: 'group price is required',
       default: 0,
