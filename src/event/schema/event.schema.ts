@@ -8,7 +8,7 @@ import {
   EVENT_TYPE,
   EVENT_TYPES,
   EXHIBITION_SPACE,
-  ISupportDocuments,
+  // ISupportDocuments,
   TICKET_STOCK,
   TICKET_TYPE,
 } from 'src/util/types';
@@ -249,7 +249,7 @@ export class Events {
     required: false,
     type: SupportingDocs,
   })
-  supportingDocument: ISupportDocuments;
+  supportingDocument: SupportingDocs;
 
   @Prop({
     required: true,
