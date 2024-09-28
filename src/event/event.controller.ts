@@ -147,31 +147,48 @@ export class EventController {
     return { statusCode: HttpStatus.OK, data: data, message: 'Success' };
   }
 
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Add event to discovery' })
-  @ApiParam({ name: 'id', description: 'Event ID' })
-  @ApiResponse({
-    status: 200,
-    description: 'success.',
-  })
-  @ApiResponse({ status: 403, description: 'Forbidden.' })
-  @Put('add_to_discovery/:id')
-  async addEventToDiscovery(@Param('id') id: string): Promise<IResponse> {
-    const data = await this.eventService.addToDiscovery(id);
-    return { statusCode: HttpStatus.OK, data: data, message: 'Success' };
-  }
+  // @HttpCode(HttpStatus.OK)
+  // @ApiOperation({ summary: 'Add event to discovery' })
+  // @ApiParam({ name: 'id', description: 'Event ID' })
+  // @ApiResponse({
+  //   status: 200,
+  //   description: 'success.',
+  // })
+  // @ApiResponse({ status: 403, description: 'Forbidden.' })
+  // @Put('add_to_discovery/:id')
+  // async addEventToDiscovery(@Param('id') id: string): Promise<IResponse> {
+  //   const data = await this.eventService.addToDiscovery(id);
+  //   return { statusCode: HttpStatus.OK, data: data, message: 'Success' };
+  // }
+
+  // @HttpCode(HttpStatus.OK)
+  // @ApiOperation({ summary: 'Remove event from discovery' })
+  // @ApiParam({ name: 'id', description: 'Event ID' })
+  // @ApiResponse({
+  //   status: 200,
+  //   description: 'success.',
+  // })
+  // @ApiResponse({ status: 403, description: 'Forbidden.' })
+  // @Put('remove_discovery/:id')
+  // async removeEventFromDiscovery(@Param('id') id: string): Promise<any> {
+  //   const data = await this.eventService.removeFromDiscovery(id);
+  //   return { statusCode: HttpStatus.OK, data: data, message: 'Success' };
+  // }
 
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Remove event from discovery' })
+  @ApiOperation({ summary: 'update event in discovery' })
   @ApiParam({ name: 'id', description: 'Event ID' })
   @ApiResponse({
     status: 200,
     description: 'success.',
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
-  @Put('remove_discovery/:id')
-  async removeEventFromDiscovery(@Param('id') id: string): Promise<any> {
-    const data = await this.eventService.removeFromDiscovery(id);
+  @Put('update_event_discovery/:id')
+  async updateDiscoveryStatus(
+    @Param('id') id: string,
+    @Body() discover: boolean,
+  ): Promise<any> {
+    const data = await this.eventService.updateDiscoveryStatus(id, discover);
     return { statusCode: HttpStatus.OK, data: data, message: 'Success' };
   }
 

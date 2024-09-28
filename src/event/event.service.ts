@@ -140,6 +140,35 @@ export class EventService {
     }
   }
 
+  async updateDiscoveryStatus(
+    eventId: string,
+    discover: boolean,
+  ): Promise<Events> {
+    const dto: any = { discover };
+    console.log(dto.discover, 'discover');
+    try {
+      const addedEvent = await this.eventModel.findOneAndUpdate(
+        { _id: eventId },
+        { ...dto.discover },
+        { new: true, upsert: false },
+      );
+      console.log(addedEvent);
+
+      if (!addedEvent?.mode || addedEvent?.mode !== 'INACTIVE') {
+        const updateDto = { mode: EVENT_MODE.PUBLIC };
+        await this.eventModel.findOneAndUpdate({ _id: eventId }, updateDto, {
+          new: true,
+          upsert: false,
+        });
+      }
+
+      return addedEvent;
+    } catch (error) {
+      console.log(error, 'error');
+      throw new ForbiddenException(FORBIDDEN_MESSAGE);
+    }
+  }
+
   async addToDiscovery(eventId: string): Promise<Events> {
     const dto = { discover: true };
     try {
