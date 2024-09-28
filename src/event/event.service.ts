@@ -95,6 +95,23 @@ export class EventService {
     }
   }
 
+  async updateEventModeById(
+    eventId: string,
+    mode: EVENT_MODE,
+  ): Promise<Events> {
+    const dto: any = { mode };
+    try {
+      const updatedEvent = await this.eventModel.findOneAndUpdate(
+        { _id: eventId },
+        dto.mode,
+        { new: true, upsert: false },
+      );
+      return updatedEvent;
+    } catch (error) {
+      throw new ForbiddenException(FORBIDDEN_MESSAGE);
+    }
+  }
+
   async publishEventById(eventId: string): Promise<Events> {
     const dto = { mode: EVENT_MODE.PUBLIC };
     try {

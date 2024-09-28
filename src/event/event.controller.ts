@@ -22,7 +22,7 @@ import {
 import { GetCurrentUser } from 'src/auth/decorator/user.decorator';
 import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
 import { PaginationDto } from 'src/util/dto.utils';
-import { IResponse } from 'src/util/types';
+import { EVENT_MODE, IResponse } from 'src/util/types';
 import {
   CreateEventDto,
   StringArrayDto,
@@ -117,31 +117,33 @@ export class EventController {
     }
   }
 
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Publish event' })
-  @ApiParam({ name: 'id', description: 'Event ID' })
-  @ApiResponse({
-    status: 200,
-    description: 'Event published successfully.',
-  })
-  @ApiResponse({ status: 403, description: 'Forbidden.' })
-  @Put('publish_event/:id')
-  async publishEvent(@Param('id') id: string): Promise<IResponse> {
-    const data = await this.eventService.publishEventById(id);
-    return { statusCode: HttpStatus.OK, data: data, message: 'Success' };
-  }
+  // @Put('publish_event/:id')
+  // async publishEvent(@Param('id') id: string): Promise<IResponse> {
+  //   const data = await this.eventService.publishEventById(id);
+  //   return { statusCode: HttpStatus.OK, data: data, message: 'Success' };
+  // }
+
+  // @Put('unpublish_event/:id')
+  // async unpublishEvent(@Param('id') id: string): Promise<IResponse> {
+  //   const data = await this.eventService.unpublishEventById(id);
+  //   return { statusCode: HttpStatus.OK, data: data, message: 'Success' };
+  // }
 
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Unpublish event' })
+  @ApiOperation({ summary: 'update event mode' })
   @ApiParam({ name: 'id', description: 'Event ID' })
+  @ApiBody({ enum: EVENT_MODE })
   @ApiResponse({
     status: 200,
     description: 'success.',
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
-  @Put('unpublish_event/:id')
-  async unpublishEvent(@Param('id') id: string): Promise<IResponse> {
-    const data = await this.eventService.unpublishEventById(id);
+  @Put('update_event_mode/:id')
+  async updateEventModeById(
+    @Param('id') id: string,
+    @Body() mode: EVENT_MODE,
+  ): Promise<IResponse> {
+    const data = await this.eventService.updateEventModeById(id, mode);
     return { statusCode: HttpStatus.OK, data: data, message: 'Success' };
   }
 
