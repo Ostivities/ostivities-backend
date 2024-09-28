@@ -95,6 +95,23 @@ export class EventService {
     }
   }
 
+  async updateEventModeById(
+    eventId: string,
+    mode: EVENT_MODE,
+  ): Promise<Events> {
+    const dto: any = { mode };
+    try {
+      const updatedEvent = await this.eventModel.findOneAndUpdate(
+        { _id: eventId },
+        dto.mode,
+        { new: true, upsert: false },
+      );
+      return updatedEvent;
+    } catch (error) {
+      throw new ForbiddenException(FORBIDDEN_MESSAGE);
+    }
+  }
+
   async publishEventById(eventId: string): Promise<Events> {
     const dto = { mode: EVENT_MODE.PUBLIC };
     try {
@@ -119,6 +136,35 @@ export class EventService {
       );
       return unpublishedEvent;
     } catch (error) {
+      throw new ForbiddenException(FORBIDDEN_MESSAGE);
+    }
+  }
+
+  async updateDiscoveryStatus(
+    eventId: string,
+    discover: boolean,
+  ): Promise<Events> {
+    const dto: any = { discover };
+    console.log(dto.discover, 'discover');
+    try {
+      const addedEvent = await this.eventModel.findOneAndUpdate(
+        { _id: eventId },
+        { ...dto.discover },
+        { new: true, upsert: false },
+      );
+      console.log(addedEvent);
+
+      if (!addedEvent?.mode || addedEvent?.mode !== 'INACTIVE') {
+        const updateDto = { mode: EVENT_MODE.PUBLIC };
+        await this.eventModel.findOneAndUpdate({ _id: eventId }, updateDto, {
+          new: true,
+          upsert: false,
+        });
+      }
+
+      return addedEvent;
+    } catch (error) {
+      console.log(error, 'error');
       throw new ForbiddenException(FORBIDDEN_MESSAGE);
     }
   }
