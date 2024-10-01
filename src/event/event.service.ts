@@ -3,7 +3,7 @@ import { FORBIDDEN_MESSAGE } from '@nestjs/core/guards';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User } from 'src/auth/schema/auth.schema';
-import { EVENT_MODE, EVENT_STATUS } from 'src/util/types';
+import { EVENT_MODE, EVENT_MODES, EVENT_STATUS } from 'src/util/types';
 import { EventDto, StringArrayDto, UpdateEventDto } from './dto/event.dto';
 import { Events } from './schema/event.schema';
 
@@ -25,6 +25,7 @@ export class EventService {
     try {
       const createdEvent = new this.eventModel({
         ...dto,
+        status: EVENT_STATUS.INACTIVE,
       });
       const savedEvent = await createdEvent.save();
       return savedEvent;
@@ -72,9 +73,9 @@ export class EventService {
       if (!userData) {
         throw new Error('User not found');
       }
-
       const events = await this.eventModel
         .find({ user: id })
+        .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit)
         .exec();
@@ -100,6 +101,7 @@ export class EventService {
     mode: EVENT_MODE,
   ): Promise<Events> {
     const dto: any = { mode };
+    console.log(dto.mode);
     try {
       const updatedEvent = await this.eventModel.findOneAndUpdate(
         { _id: eventId },
@@ -207,7 +209,7 @@ export class EventService {
   async discoverEvents(
     eventName?: string,
     state?: string,
-    eventType?: string,
+    eventCat?: EVENT_MODES,
     page: number = 1,
     pageSize: number = 10,
     // eventMode?: EVENT_TYPE,
@@ -219,8 +221,8 @@ export class EventService {
       filter.eventName = eventName;
     } else if (state !== undefined) {
       filter.state = state;
-    } else {
-      filter.discover = true;
+    } else if (eventCat !== undefined) {
+      filter.mode = eventCat;
     }
 
     try {
@@ -235,19 +237,19 @@ export class EventService {
     }
   }
 
-  async deactivateEventByID(eventId: string): Promise<Events> {
-    const dto = { mode: EVENT_STATUS.DEACTIVATED };
-    try {
-      const deactivatedEvent = await this.eventModel.findOneAndUpdate(
-        { _id: eventId },
-        dto,
-        { new: true, upsert: false },
-      );
-      return deactivatedEvent;
-    } catch (error) {
-      throw new ForbiddenException(FORBIDDEN_MESSAGE);
-    }
-  }
+  // async deactivateEventByID(eventId: string): Promise<Events> {
+  //   const dto = { mode: EVENT_STATUS.DEACTIVATED };
+  //   try {
+  //     const deactivatedEvent = await this.eventModel.findOneAndUpdate(
+  //       { _id: eventId },
+  //       dto,
+  //       { new: true, upsert: false },
+  //     );
+  //     return deactivatedEvent;
+  //   } catch (error) {
+  //     throw new ForbiddenException(FORBIDDEN_MESSAGE);
+  //   }
+  // }
 
   async deleteEventsById(id: string): Promise<any> {
     try {

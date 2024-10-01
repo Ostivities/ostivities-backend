@@ -21,8 +21,7 @@ import {
 } from '@nestjs/swagger';
 import { GetCurrentUser } from 'src/auth/decorator/user.decorator';
 import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
-import { PaginationDto } from 'src/util/dto.utils';
-import { EVENT_MODE, IResponse } from 'src/util/types';
+import { EVENT_MODE, EVENT_MODES, IResponse } from 'src/util/types';
 import {
   CreateEventDto,
   StringArrayDto,
@@ -60,13 +59,25 @@ export class EventController {
     description: 'Events retrieved successfully.',
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @ApiQuery({
+    name: 'page',
+    required: true,
+    description: 'Page number',
+    example: 1,
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: true,
+    description: 'Number of items per page',
+    example: 10,
+  })
   @Get('get_user_events')
   async getAllUserEvents(
-    @Query() paginationDto: PaginationDto,
+    @Query('page') page: number,
+    @Query('limit') limit: number,
     @GetCurrentUser('id') id: string,
   ): Promise<IResponse> {
     try {
-      const { page, limit } = paginationDto;
       const data = await this.eventService.getAllUserEventsById(
         page,
         limit,
@@ -195,9 +206,10 @@ export class EventController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Discover events' })
   @ApiQuery({ name: 'eventName', required: false, type: String })
+  @ApiQuery({ name: 'eventCat', required: false, enum: EVENT_MODES })
   @ApiQuery({ name: 'state', required: false, type: String })
-  @ApiQuery({ name: 'page', required: false, type: Number, example: 1 })
-  @ApiQuery({ name: 'pageSize', required: false, type: Number, example: 10 })
+  @ApiQuery({ name: 'page', required: true, type: Number, example: 1 })
+  @ApiQuery({ name: 'pageSize', required: true, type: Number, example: 10 })
   @ApiResponse({
     status: 200,
     description: 'Events listed successfully.',
@@ -207,36 +219,36 @@ export class EventController {
   async discoverEvents(
     @Query('eventName') eventName?: string,
     @Query('state') state?: string,
-    @Query('eventType') eventType?: string,
+    @Query('eventCat') eventCat?: EVENT_MODES,
     @Query('page') page?: number,
     @Query('pageSize') pageSize?: number,
   ): Promise<IResponse> {
     const data = await this.eventService.discoverEvents(
       eventName,
       state,
-      eventType,
+      eventCat,
       page,
       pageSize,
     );
     return { statusCode: HttpStatus.OK, data: data, message: 'Success' };
   }
 
-  @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Delevent event by id' })
-  @ApiParam({ name: 'id', description: 'Event ID' })
-  @ApiResponse({
-    status: 200,
-    description: 'Event deleted successfully.',
-  })
-  @ApiResponse({ status: 403, description: 'Forbidden.' })
-  @Delete('delete_event/:id')
+  // @HttpCode(HttpStatus.OK)
+  // @ApiOperation({ summary: 'Delevent event by id' })
+  // @ApiParam({ name: 'id', description: 'Event ID' })
+  // @ApiResponse({
+  //   status: 200,
+  //   description: 'Event deleted successfully.',
+  // })
+  // @ApiResponse({ status: 403, description: 'Forbidden.' })
+  // @Delete('delete_event/:id')
   async deleteEvent(@Param('id') id: string): Promise<IResponse> {
     const data = await this.eventService.deleteEventsById(id);
     return { statusCode: HttpStatus.OK, data: data, message: 'Success' };
   }
 
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Delete many events' })
+  @ApiOperation({ summary: 'Delete event(s)' })
   @ApiBody({ type: StringArrayDto })
   @ApiResponse({
     status: 200,
