@@ -3,7 +3,7 @@ import { FORBIDDEN_MESSAGE } from '@nestjs/core/guards';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User } from 'src/auth/schema/auth.schema';
-import { EVENT_MODE, EVENT_MODES, EVENT_STATUS } from 'src/util/types';
+import { EVENT_MODE, EVENT_MODES } from 'src/util/types';
 import { EventDto, StringArrayDto, UpdateEventDto } from './dto/event.dto';
 import { Events } from './schema/event.schema';
 
@@ -25,7 +25,7 @@ export class EventService {
     try {
       const createdEvent = new this.eventModel({
         ...dto,
-        status: EVENT_STATUS.INACTIVE,
+        mode: EVENT_MODE.PRIVATE,
       });
       const savedEvent = await createdEvent.save();
       return savedEvent;
@@ -69,7 +69,7 @@ export class EventService {
     id: string,
   ): Promise<Events[] | any> {
     const skip = (page - 1) * limit;
-    console.log(search, 'search');
+
     try {
       const userData = await this.userModel.findById(id);
       if (!userData) {
@@ -110,11 +110,25 @@ export class EventService {
     mode: EVENT_MODE,
   ): Promise<Events> {
     const dto: any = { mode };
-    console.log(dto.mode);
+
     try {
       const updatedEvent = await this.eventModel.findOneAndUpdate(
         { _id: eventId },
         dto.mode,
+        { new: true, upsert: false },
+      );
+      return updatedEvent;
+    } catch (error) {
+      throw new ForbiddenException(FORBIDDEN_MESSAGE);
+    }
+  }
+
+  async closeEventModeById(eventId: string): Promise<Events> {
+    const dto: any = { mode: EVENT_MODE.CLOSED };
+    try {
+      const updatedEvent = await this.eventModel.findOneAndUpdate(
+        { _id: eventId },
+        dto,
         { new: true, upsert: false },
       );
       return updatedEvent;
@@ -223,7 +237,7 @@ export class EventService {
     pageSize: number = 10,
     // eventMode?: EVENT_TYPE,
   ): Promise<Events[]> {
-    const filter: any = {};
+    const filter: any = { discover: true };
     const skip = (page - 1) * pageSize;
 
     if (eventName !== undefined) {
