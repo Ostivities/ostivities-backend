@@ -23,6 +23,11 @@ export enum EVENT_TYPE {
   PAID = 'PAID',
 }
 
+export enum EVENT_MODES {
+  FREE = 'FREE',
+  PAID = 'PAID',
+}
+
 export enum TICKET_STOCK {
   LIMITED = 'LIMITED',
   UN_LIMITED = 'UN_LIMITED',
@@ -137,5 +142,7 @@ export enum EVENT_MODE {
 
 export enum EVENT_STATUS {
   ACTIVE = 'ACTIVE',
-  DEACTIVATED = 'DEACTIVATED',
+  INACTIVE = 'INACTIVE',
+  PENDING = 'PENDING',
+  CLOSED = 'CLOSED',
 }

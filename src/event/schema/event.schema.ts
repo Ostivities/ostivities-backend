@@ -5,6 +5,7 @@ import { schemaConfig } from 'src/util/schema.config';
 import {
   EVENT_INFO,
   EVENT_MODE,
+  EVENT_STATUS,
   EVENT_TYPE,
   EVENT_TYPES,
   EXHIBITION_SPACE,
@@ -333,6 +334,12 @@ export class Events {
     required: false,
   })
   space_fee: number;
+
+  @Prop({
+    enum: EVENT_STATUS,
+    required: false,
+  })
+  status: EVENT_STATUS;
 }
 
 export const EventSchema = SchemaFactory.createForClass(Events);
