@@ -71,16 +71,23 @@ export class EventController {
     description: 'Number of items per page',
     example: 10,
   })
+  @ApiQuery({
+    name: 'search',
+    required: false,
+    description: 'search',
+  })
   @Get('get_user_events')
   async getAllUserEvents(
     @Query('page') page: number,
     @Query('limit') limit: number,
+    @Query('search') search: string,
     @GetCurrentUser('id') id: string,
   ): Promise<IResponse> {
     try {
       const data = await this.eventService.getAllUserEventsById(
         page,
         limit,
+        search,
         id,
       );
       return { statusCode: HttpStatus.OK, data: data, message: 'Success' };

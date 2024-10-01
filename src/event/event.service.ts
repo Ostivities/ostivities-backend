@@ -66,6 +66,7 @@ export class EventService {
     page: number,
     limit: number,
     id: string,
+    search: any,
   ): Promise<Events[] | any> {
     const skip = (page - 1) * limit;
     try {
@@ -73,8 +74,20 @@ export class EventService {
       if (!userData) {
         throw new Error('User not found');
       }
+
+      const query: any = { user: id };
+
+      if (search) {
+        query['$or'] = [
+          { eventName: { $regex: search, $options: 'i' } },
+          { location: { $regex: search, $options: 'i' } },
+          { status: { $regex: search, $options: 'i' } },
+          { createdAt: { $regex: search } },
+        ];
+      }
+
       const events = await this.eventModel
-        .find({ user: id })
+        .find({ ...query })
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit)
