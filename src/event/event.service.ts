@@ -65,29 +65,25 @@ export class EventService {
   async getAllUserEventsById(
     page: number,
     limit: number,
-    id: string,
     search: any,
+    id: string,
   ): Promise<Events[] | any> {
     const skip = (page - 1) * limit;
+    console.log(search, 'search');
     try {
       const userData = await this.userModel.findById(id);
       if (!userData) {
         throw new Error('User not found');
       }
 
-      const query: any = { user: id };
-
-      if (search) {
-        query['$or'] = [
-          { eventName: { $regex: search, $options: 'i' } },
-          { location: { $regex: search, $options: 'i' } },
-          { status: { $regex: search, $options: 'i' } },
-          { createdAt: { $regex: search } },
-        ];
-      }
-
       const events = await this.eventModel
-        .find({ ...query })
+        .find({ user: userData?._id })
+        .or([
+          { eventName: { $regex: search, $options: 'i' } },
+          { eventType: { $regex: search, $options: 'i' } },
+          { mode: { $regex: search, $options: 'i' } },
+          // { created_at: { $regex: search, $options: 'i' } },
+        ])
         .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit)
