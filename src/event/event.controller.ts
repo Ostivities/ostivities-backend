@@ -164,6 +164,20 @@ export class EventController {
     const data = await this.eventService.updateEventModeById(id, mode);
     return { statusCode: HttpStatus.OK, data: data, message: 'Success' };
   }
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'close event' })
+  @ApiParam({ name: 'id', description: 'Event ID' })
+  @ApiBody({ enum: EVENT_MODE })
+  @ApiResponse({
+    status: 200,
+    description: 'success.',
+  })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @Put('close_event/:id')
+  async closeEventModeById(@Param('id') id: string): Promise<IResponse> {
+    const data = await this.eventService.closeEventModeById(id);
+    return { statusCode: HttpStatus.OK, data: data, message: 'Success' };
+  }
 
   // @HttpCode(HttpStatus.OK)
   // @ApiOperation({ summary: 'Add event to discovery' })
