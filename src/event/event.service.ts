@@ -228,6 +228,7 @@ export class EventService {
     try {
       const events = await this.eventModel
         .find(filter)
+        .sort({ createdAt: -1 })
         .skip(skip)
         .limit(pageSize)
         .exec();
