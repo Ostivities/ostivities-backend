@@ -292,6 +292,7 @@ export class EventService {
       const event = await this.eventModel.deleteMany(
         {
           _id: { $in: ids['ids'] },
+          mode: EVENT_MODE.PRIVATE,
         },
         { new: true, upsert: false },
       );
