@@ -1,7 +1,7 @@
 import { ForbiddenException, Injectable } from '@nestjs/common';
 import { FORBIDDEN_MESSAGE } from '@nestjs/core/guards';
 import { InjectModel } from '@nestjs/mongoose';
-import { Model } from 'mongoose';
+import { Model, Types } from 'mongoose';
 import { User } from 'src/auth/schema/auth.schema';
 import { EVENT_MODE, EVENT_MODES } from 'src/util/types';
 import { EventDto, StringArrayDto, UpdateEventDto } from './dto/event.dto';
@@ -288,14 +288,18 @@ export class EventService {
   }
 
   async deleteManyEventsById(ids: StringArrayDto): Promise<any> {
+    console.log(ids, 'ids');
+    const validIds = ids['ids'].filter((id) => Types.ObjectId.isValid(id));
+    // const eventsToDelete = await this.eventModel.find({
+    //   _id: { $in: validIds },
+    // });
+
     try {
-      const event = await this.eventModel.deleteMany(
-        {
-          _id: { $in: ids['ids'] },
-          mode: EVENT_MODE.PRIVATE,
-        },
-        { new: true, upsert: false },
-      );
+      const event = await this.eventModel.deleteMany({
+        _id: { $in: validIds },
+        // mode: EVENT_MODE.PRIVATE,
+      });
+      console.log(event, 'jj');
       return event;
     } catch (error) {
       throw new ForbiddenException(FORBIDDEN_MESSAGE);

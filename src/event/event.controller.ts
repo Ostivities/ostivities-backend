@@ -29,7 +29,6 @@ import {
 } from './dto/event.dto';
 import { EventService } from './event.service';
 
-@UseGuards(JwtAuthGuard)
 @Controller('events')
 @ApiTags('Event Service')
 export class EventController {
@@ -44,6 +43,7 @@ export class EventController {
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   @Post('create')
+  @UseGuards(JwtAuthGuard)
   async createEvents(
     @Body() dto: CreateEventDto,
     @GetCurrentUser('id') id: string,
@@ -77,6 +77,7 @@ export class EventController {
     description: 'search',
   })
   @Get('get_user_events')
+  @UseGuards(JwtAuthGuard)
   async getAllUserEvents(
     @Query('page') page: number,
     @Query('limit') limit: number,
@@ -120,6 +121,7 @@ export class EventController {
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   @Put('update_event/:id')
+  @UseGuards(JwtAuthGuard)
   async updateEvent(
     @Param('id') id: string,
     @Body() dto: UpdateEventDto,
@@ -157,6 +159,7 @@ export class EventController {
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   @Put('update_event_mode/:id')
+  @UseGuards(JwtAuthGuard)
   async updateEventModeById(
     @Param('id') id: string,
     @Body() mode: EVENT_MODE,
@@ -174,6 +177,7 @@ export class EventController {
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   @Put('close_event/:id')
+  @UseGuards(JwtAuthGuard)
   async closeEventModeById(@Param('id') id: string): Promise<IResponse> {
     const data = await this.eventService.closeEventModeById(id);
     return { statusCode: HttpStatus.OK, data: data, message: 'Success' };
@@ -216,6 +220,7 @@ export class EventController {
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   @Put('update_event_discovery/:id')
+  @UseGuards(JwtAuthGuard)
   async updateDiscoveryStatus(
     @Param('id') id: string,
     @Body() discover: boolean,
@@ -263,6 +268,7 @@ export class EventController {
   // })
   // @ApiResponse({ status: 403, description: 'Forbidden.' })
   // @Delete('delete_event/:id')
+  @UseGuards(JwtAuthGuard)
   async deleteEvent(@Param('id') id: string): Promise<IResponse> {
     const data = await this.eventService.deleteEventsById(id);
     return { statusCode: HttpStatus.OK, data: data, message: 'Success' };
@@ -277,6 +283,7 @@ export class EventController {
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   @Delete('delete_events')
+  @UseGuards(JwtAuthGuard)
   async deleteManyEvents(@Body() ids: StringArrayDto): Promise<IResponse> {
     const data = await this.eventService.deleteManyEventsById(ids);
     return { statusCode: HttpStatus.OK, data: data, message: 'Success' };
