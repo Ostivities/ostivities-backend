@@ -233,11 +233,12 @@ export class EventService {
   }
 
   async discoverEvents(
+    page: number,
+    pageSize: number,
     eventName?: string,
     state?: string,
     eventCat?: EVENT_MODES,
-    page: number = 1,
-    pageSize: number = 10,
+
     // eventMode?: EVENT_TYPE,
   ): Promise<Events[]> {
     const filter: any = { discover: true };
