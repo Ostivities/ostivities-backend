@@ -250,11 +250,11 @@ export class EventController {
     @Query('pageSize') pageSize?: number,
   ): Promise<IResponse> {
     const data = await this.eventService.discoverEvents(
+      page,
+      pageSize,
       eventName,
       state,
       eventCat,
-      page,
-      pageSize,
     );
     return { statusCode: HttpStatus.OK, data: data, message: 'Success' };
   }
