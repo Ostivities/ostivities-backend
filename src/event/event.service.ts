@@ -98,7 +98,10 @@ export class EventService {
 
   async getEventsById(id: string): Promise<Events> {
     try {
-      const event = await this.eventModel.findOne({ _id: id }).lean();
+      const event = await this.eventModel
+        .findOne({ _id: id })
+        .populate({ path: 'user', select: 'firstName lastName' })
+        .exec();
       return event;
     } catch (error) {
       throw new ForbiddenException(FORBIDDEN_MESSAGE);
