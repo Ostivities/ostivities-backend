@@ -340,6 +340,13 @@ export class Events {
     required: false,
   })
   status: EVENT_STATUS;
+
+  @Prop({
+    required: false,
+    default: false,
+    type: Boolean,
+  })
+  enable_registration: boolean;
 }
 
 export const EventSchema = SchemaFactory.createForClass(Events);

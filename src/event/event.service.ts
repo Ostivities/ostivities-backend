@@ -4,7 +4,13 @@ import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { User } from 'src/auth/schema/auth.schema';
 import { EVENT_MODE, EVENT_MODES } from 'src/util/types';
-import { EventDto, StringArrayDto, UpdateEventDto } from './dto/event.dto';
+import {
+  EventDto,
+  StringArrayDto,
+  UpdateEventDiscoveryDto,
+  UpdateEventDto,
+  UpdateEventRegistrationDto,
+} from './dto/event.dto';
 import { Events } from './schema/event.schema';
 
 @Injectable()
@@ -168,29 +174,19 @@ export class EventService {
     }
   }
 
-  async updateDiscoveryStatus(
-    eventId: string,
-    discover: boolean,
-  ): Promise<Events> {
-    const dto: any = { discover };
-    console.log(dto.discover, 'discover');
+  async updateDiscoveryStatus(dto: UpdateEventDiscoveryDto): Promise<any> {
+    const validIds = dto.ids.filter((id: string) => Types.ObjectId.isValid(id));
     try {
-      const addedEvent = await this.eventModel.findOneAndUpdate(
-        { _id: eventId },
-        { ...dto.discover },
+      const updateStatus = await this.eventModel.updateMany(
+        { _id: { $in: validIds } },
+        {
+          discover: dto.discover,
+          mode: dto.discover === true ? EVENT_MODE.PUBLIC : EVENT_MODE.PRIVATE,
+        },
         { new: true, upsert: false },
       );
-      console.log(addedEvent);
 
-      if (!addedEvent?.mode || addedEvent?.mode !== 'INACTIVE') {
-        const updateDto = { mode: EVENT_MODE.PUBLIC };
-        await this.eventModel.findOneAndUpdate({ _id: eventId }, updateDto, {
-          new: true,
-          upsert: false,
-        });
-      }
-
-      return addedEvent;
+      return updateStatus;
     } catch (error) {
       console.log(error, 'error');
       throw new ForbiddenException(FORBIDDEN_MESSAGE);
@@ -292,19 +288,29 @@ export class EventService {
   }
 
   async deleteManyEventsById(ids: StringArrayDto): Promise<any> {
-    console.log(ids, 'ids');
     const validIds = ids['ids'].filter((id) => Types.ObjectId.isValid(id));
-    // const eventsToDelete = await this.eventModel.find({
-    //   _id: { $in: validIds },
-    // });
 
     try {
       const event = await this.eventModel.deleteMany({
         _id: { $in: validIds },
-        // mode: EVENT_MODE.PRIVATE,
       });
       console.log(event, 'jj');
       return event;
+    } catch (error) {
+      throw new ForbiddenException(FORBIDDEN_MESSAGE);
+    }
+  }
+
+  async updateEventRegistration(
+    dto: UpdateEventRegistrationDto,
+  ): Promise<Events> {
+    try {
+      const updatedEvent = await this.eventModel.findOneAndUpdate(
+        { _id: dto.id },
+        { enable_registration: dto.enable_registration },
+        { new: true, upsert: false },
+      );
+      return updatedEvent;
     } catch (error) {
       throw new ForbiddenException(FORBIDDEN_MESSAGE);
     }

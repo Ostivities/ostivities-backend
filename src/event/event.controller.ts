@@ -25,7 +25,9 @@ import { EVENT_MODE, EVENT_MODES, IResponse } from 'src/util/types';
 import {
   CreateEventDto,
   StringArrayDto,
+  UpdateEventDiscoveryDto,
   UpdateEventDto,
+  UpdateEventRegistrationDto,
 } from './dto/event.dto';
 import { EventService } from './event.service';
 
@@ -212,20 +214,19 @@ export class EventController {
   // }
 
   @HttpCode(HttpStatus.OK)
+  @ApiBody({ type: UpdateEventDiscoveryDto })
   @ApiOperation({ summary: 'update event in discovery' })
-  @ApiParam({ name: 'id', description: 'Event ID' })
   @ApiResponse({
     status: 200,
     description: 'success.',
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
-  @Put('update_event_discovery/:id')
+  @Put('update_event_discovery')
   @UseGuards(JwtAuthGuard)
   async updateDiscoveryStatus(
-    @Param('id') id: string,
-    @Body() discover: boolean,
+    @Body() dto: UpdateEventDiscoveryDto,
   ): Promise<any> {
-    const data = await this.eventService.updateDiscoveryStatus(id, discover);
+    const data = await this.eventService.updateDiscoveryStatus(dto);
     return { statusCode: HttpStatus.OK, data: data, message: 'Success' };
   }
 
@@ -271,6 +272,23 @@ export class EventController {
   @UseGuards(JwtAuthGuard)
   async deleteEvent(@Param('id') id: string): Promise<IResponse> {
     const data = await this.eventService.deleteEventsById(id);
+    return { statusCode: HttpStatus.OK, data: data, message: 'Success' };
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @ApiBody({ type: UpdateEventRegistrationDto })
+  @ApiOperation({ summary: 'Update event registration' })
+  @ApiResponse({
+    status: 200,
+    description: 'Event registration updated successfully.',
+  })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @Put('update_event_registraion')
+  @UseGuards(JwtAuthGuard)
+  async updateEventRegistration(
+    @Body() dto: UpdateEventRegistrationDto,
+  ): Promise<IResponse> {
+    const data = await this.eventService.updateEventRegistration(dto);
     return { statusCode: HttpStatus.OK, data: data, message: 'Success' };
   }
 
