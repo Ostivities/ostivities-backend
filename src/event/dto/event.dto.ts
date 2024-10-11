@@ -1,4 +1,4 @@
-import { ApiProperty, OmitType, PartialType } from '@nestjs/swagger';
+import { ApiProperty, OmitType, PartialType, PickType } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
   IsArray,
@@ -14,7 +14,12 @@ import {
   ValidateIf,
   ValidateNested,
 } from 'class-validator';
-import { EVENT_INFO, EVENT_TYPES, EXHIBITION_SPACE } from 'src/util/types';
+import {
+  EVENT_INFO,
+  EVENT_MODE,
+  EVENT_TYPES,
+  EXHIBITION_SPACE,
+} from 'src/util/types';
 
 export class ValidateSocials {
   @ApiProperty({
@@ -252,4 +257,40 @@ export class StringArrayDto {
   @IsArray()
   @IsNotEmpty()
   ids: string[];
+}
+
+export class UpdateEventDiscoveryDto extends PickType(StringArrayDto, ['ids']) {
+  @ApiProperty({ type: Boolean, description: 'discover' })
+  @IsBoolean()
+  @IsNotEmpty()
+  discover: boolean;
+}
+
+export class UpdateEventModeDto extends PickType(StringArrayDto, ['ids']) {
+  @ApiProperty({
+    enum: EVENT_MODE,
+    description: 'event mode',
+  })
+  @IsEnum(EVENT_MODE)
+  @IsNotEmpty()
+  mode: EVENT_MODE;
+}
+
+export class UpdateEventRegistrationDto {
+  @ApiProperty({
+    type: String,
+    required: true,
+    description: 'event id',
+  })
+  @IsMongoId()
+  @IsNotEmpty()
+  id: string;
+
+  @ApiProperty({
+    type: Boolean,
+    description: 'enable / disable registration of an event',
+  })
+  @IsBoolean()
+  @IsNotEmpty()
+  enable_registration: boolean;
 }

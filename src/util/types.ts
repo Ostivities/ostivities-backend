@@ -152,3 +152,7 @@ export enum EVENT_STATUS {
   PENDING = 'PENDING',
   CLOSED = 'CLOSED',
 }
+
+export enum TEMPLATE {
+  TO_GUEST = '',
+}
