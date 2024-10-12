@@ -27,6 +27,7 @@ import {
   StringArrayDto,
   UpdateEventDiscoveryDto,
   UpdateEventDto,
+  UpdateEventModeDto,
   UpdateEventRegistrationDto,
 } from './dto/event.dto';
 import { EventService } from './event.service';
@@ -152,21 +153,19 @@ export class EventController {
   // }
 
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'update event mode' })
-  @ApiParam({ name: 'id', description: 'Event ID' })
-  @ApiBody({ enum: EVENT_MODE })
+  @ApiBody({ type: UpdateEventModeDto })
+  @ApiOperation({ summary: 'Update event mode' })
   @ApiResponse({
     status: 200,
-    description: 'success.',
+    description: 'Event mode updated successfully.',
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
-  @Put('update_event_mode/:id')
+  @Put('update_event_mode')
   @UseGuards(JwtAuthGuard)
   async updateEventModeById(
-    @Param('id') id: string,
-    @Body() mode: EVENT_MODE,
+    @Body() dto: UpdateEventModeDto,
   ): Promise<IResponse> {
-    const data = await this.eventService.updateEventModeById(id, mode);
+    const data = await this.eventService.updateEventModeById(dto);
     return { statusCode: HttpStatus.OK, data: data, message: 'Success' };
   }
   @HttpCode(HttpStatus.OK)
@@ -244,11 +243,11 @@ export class EventController {
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   @Get('discovery')
   async discoverEvents(
+    @Query('page') page: number,
+    @Query('pageSize') pageSize: number,
     @Query('eventName') eventName?: string,
     @Query('state') state?: string,
     @Query('eventCat') eventCat?: EVENT_MODES,
-    @Query('page') page?: number,
-    @Query('pageSize') pageSize?: number,
   ): Promise<IResponse> {
     const data = await this.eventService.discoverEvents(
       page,

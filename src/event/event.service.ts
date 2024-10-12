@@ -9,6 +9,7 @@ import {
   StringArrayDto,
   UpdateEventDiscoveryDto,
   UpdateEventDto,
+  UpdateEventModeDto,
   UpdateEventRegistrationDto,
 } from './dto/event.dto';
 import { Events } from './schema/event.schema';
@@ -114,19 +115,19 @@ export class EventService {
     }
   }
 
-  async updateEventModeById(
-    eventId: string,
-    mode: EVENT_MODE,
-  ): Promise<Events> {
-    const dto: any = { mode };
-
+  async updateEventModeById(dto: UpdateEventModeDto): Promise<any> {
+    const validIds = dto.ids.filter((id: string) => Types.ObjectId.isValid(id));
     try {
-      const updatedEvent = await this.eventModel.findOneAndUpdate(
-        { _id: eventId },
-        dto.mode,
+      const updateStatus = await this.eventModel.updateMany(
+        { _id: { $in: validIds } },
+        {
+          mode: dto.mode,
+          discover: dto.mode === EVENT_MODE.PUBLIC ? true : false,
+        },
         { new: true, upsert: false },
       );
-      return updatedEvent;
+
+      return updateStatus;
     } catch (error) {
       throw new ForbiddenException(FORBIDDEN_MESSAGE);
     }
@@ -181,7 +182,7 @@ export class EventService {
         { _id: { $in: validIds } },
         {
           discover: dto.discover,
-          mode: dto.discover === true ? EVENT_MODE.PUBLIC : EVENT_MODE.PRIVATE,
+          // mode: dto.discover === true ? EVENT_MODE.PUBLIC : EVENT_MODE.PRIVATE,
         },
         { new: true, upsert: false },
       );
@@ -247,6 +248,8 @@ export class EventService {
     } else if (eventCat !== undefined) {
       filter.mode = eventCat;
     }
+
+    console.log(filter, 'filter');
 
     try {
       const events = await this.eventModel

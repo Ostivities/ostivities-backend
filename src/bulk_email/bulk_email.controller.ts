@@ -23,8 +23,7 @@ export class BulkEmailController {
     @GetCurrentUser('id') userId: string,
   ) {
     try {
-      const data = await this.bulkEmailService.sendBulkEmail(dto, userId);
-      console.log(data, 'data');
+      await this.bulkEmailService.sendBulkEmail(dto, userId);
       return { statusCode: HttpStatus.OK, message: 'Email sent' };
     } catch (error) {
       console.log(error, 'error-here');

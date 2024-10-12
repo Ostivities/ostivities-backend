@@ -9,12 +9,12 @@ import { BulkEmailDto } from './dto/email.dto';
 export class BulkEmailService {
   constructor(@InjectModel(User.name) private userModel: Model<User>) {}
   async sendBulkEmail(dto: BulkEmailDto, userId: string): Promise<any> {
-    try {
-      const userData = await this.userModel.findById(userId);
-      if (!userData) {
-        throw new Error('User not found');
-      }
+    const userData = await this.userModel.findById(userId);
+    if (!userData) {
+      throw new Error('User not found');
+    }
 
+    try {
       const apiInstance: any = new brevo.TransactionalEmailsApi();
 
       const apiKey = apiInstance.authentications['apiKey'];
@@ -41,20 +41,14 @@ export class BulkEmailService {
 
       // sendSmtpEmail.attachment = dto.email_attachment;
 
-      const data = await apiInstance.sendTransacEmail(sendSmtpEmail);
-      console.log(data, 'data here');
-      return data;
-
-      // await apiInstance.sendTransacEmail(sendSmtpEmail).then(
-      //   function (data: any) {
-      //     console.log(
-      //       'API called successfully. Returned data: ' + JSON.stringify(data),
-      //     );
-      //   },
-      //   function (error: any) {
-      //     console.error(error, 'error');
-      //   },
-      // );
+      await apiInstance.sendTransacEmail(sendSmtpEmail).then(
+        function (data: any) {
+          console.log('API called successfully. Returned data: ', data);
+        },
+        function (error: any) {
+          console.error(error, 'error');
+        },
+      );
     } catch (error) {
       return error;
     }
