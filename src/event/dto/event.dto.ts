@@ -244,6 +244,15 @@ export class EventDto {
   @IsOptional()
   @ValidateIf((o) => o.exhibition_space_booking === EXHIBITION_SPACE.PAID)
   space_fee: number;
+
+  @ApiProperty({
+    type: String,
+    description: 'unique key',
+    required: true,
+  })
+  @IsNotEmpty()
+  @IsString()
+  unique_key: string;
 }
 
 export class CreateEventDto extends OmitType(EventDto, ['user']) {}

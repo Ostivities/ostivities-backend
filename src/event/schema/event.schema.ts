@@ -347,6 +347,12 @@ export class Events {
     type: Boolean,
   })
   enable_registration: boolean;
+
+  @Prop({
+    required: true,
+    type: String,
+  })
+  unique_key: string;
 }
 
 export const EventSchema = SchemaFactory.createForClass(Events);

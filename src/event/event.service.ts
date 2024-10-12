@@ -115,6 +115,18 @@ export class EventService {
     }
   }
 
+  async getEventsByUniqueKey(id: string): Promise<Events> {
+    try {
+      const event = await this.eventModel
+        .findOne({ unique_key: id })
+        .populate({ path: 'user', select: 'firstName lastName' })
+        .exec();
+      return event;
+    } catch (error) {
+      throw new ForbiddenException(FORBIDDEN_MESSAGE);
+    }
+  }
+
   async updateEventModeById(dto: UpdateEventModeDto): Promise<any> {
     const validIds = dto.ids.filter((id: string) => Types.ObjectId.isValid(id));
     try {

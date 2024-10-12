@@ -113,6 +113,19 @@ export class EventController {
     const data = await this.eventService.getEventsById(id);
     return { statusCode: HttpStatus.OK, data: data, message: 'Success' };
   }
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Get an event' })
+  @ApiParam({ name: 'Unique Key', description: 'Event Unique Key' })
+  @ApiResponse({
+    status: 200,
+    description: 'Event retrieved successfully.',
+  })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @Get('get_user_event_by_unique_key/:id')
+  async getEventByUniqueKey(@Param('id') id: string): Promise<IResponse> {
+    const data = await this.eventService.getEventsByUniqueKey(id);
+    return { statusCode: HttpStatus.OK, data: data, message: 'Success' };
+  }
 
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Update event' })
