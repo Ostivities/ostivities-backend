@@ -109,6 +109,7 @@ export class EventController {
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   @Get('get_user_event/:id')
+  @UseGuards(JwtAuthGuard)
   async getEvent(@Param('id') id: string): Promise<IResponse> {
     const data = await this.eventService.getEventsById(id);
     return { statusCode: HttpStatus.OK, data: data, message: 'Success' };
@@ -295,7 +296,7 @@ export class EventController {
     description: 'Event registration updated successfully.',
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
-  @Put('update_event_registraion')
+  @Put('update_event_registration')
   @UseGuards(JwtAuthGuard)
   async updateEventRegistration(
     @Body() dto: UpdateEventRegistrationDto,
