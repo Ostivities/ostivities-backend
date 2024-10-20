@@ -1,13 +1,16 @@
 import { ApiProperty } from '@nestjs/swagger';
+import { Type } from 'class-transformer';
 import {
   IsAlpha,
   IsBoolean,
+  IsDecimal,
   IsEmail,
-  IsEmpty,
   IsEnum,
+  IsInt,
   IsMongoId,
   IsNotEmpty,
   IsNumber,
+  IsOptional,
   IsString,
   Matches,
   ValidateNested,
@@ -63,24 +66,128 @@ class PersonalInformation {
   phoneNumber: string;
 }
 
-export class GuestDto {
-  // @ApiProperty({
-  //   type: String,
-  //   description: 'event Id',
-  //   required: true,
-  // })
-  // @IsNotEmpty()
-  // @IsMongoId()
-  // event: string;
+class AttendeesInformation {
+  @ApiProperty({
+    description: 'First name',
+    type: String,
+    required: true,
+  })
+  @IsNotEmpty()
+  @IsAlpha()
+  firstName: string;
+
+  @ApiProperty({
+    description: 'Last name',
+    type: String,
+    required: true,
+  })
+  @IsNotEmpty()
+  @IsAlpha()
+  lastName: string;
+
+  @ApiProperty({
+    description: 'Email address',
+    type: String,
+    required: false,
+  })
+  @IsEmail()
+  @IsOptional()
+  @Matches(emailRegExp, { message: 'email must be a valid email' })
+  email: string;
+
+  @ApiProperty({
+    description: 'Phone number',
+    type: String,
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  phoneNumber: string;
+}
+
+class AdditionalInformation {
+  @ApiProperty({
+    type: String,
+    description: 'question',
+    required: true,
+  })
+  @IsOptional()
+  question: string;
 
   @ApiProperty({
     type: String,
-    description: 'ticket Id',
+    description: 'question',
+    required: false,
+  })
+  @IsNotEmpty()
+  answer: string;
+}
+
+class TicketInformation {
+  @ApiProperty({
+    type: String,
+    description: 'event Id',
     required: true,
   })
   @IsNotEmpty()
   @IsMongoId()
-  ticket: string;
+  ticket_id: string;
+
+  @ApiProperty({
+    type: String,
+    description: 'ticket name',
+    required: true,
+  })
+  @IsNotEmpty()
+  @IsString()
+  ticket_name: string;
+
+  @ApiProperty({
+    description: 'ticket qty',
+    type: Number,
+    required: true,
+  })
+  @IsNotEmpty()
+  @IsInt()
+  quantity: number;
+
+  @ApiProperty({
+    description: 'Email address',
+    type: String,
+    required: true,
+  })
+  @IsNotEmpty()
+  @IsDecimal()
+  total_amount: number;
+}
+
+export class GuestDto {
+  @ApiProperty({
+    type: String,
+    description: 'event Id',
+    required: true,
+  })
+  @IsNotEmpty()
+  @IsMongoId()
+  event: string;
+
+  @ApiProperty({
+    type: String,
+    description: 'event unique code',
+    required: true,
+  })
+  @IsNotEmpty()
+  @IsString()
+  event_unique_code: string;
+
+  @ApiProperty({
+    type: [TicketInformation],
+    description: 'ticket information',
+    required: true,
+  })
+  @ValidateNested({ each: true })
+  @Type(() => TicketInformation)
+  ticket_information: TicketInformation[];
 
   @ApiProperty({
     description: 'Personal Information',
@@ -90,6 +197,26 @@ export class GuestDto {
   @ValidateNested()
   @IsNotEmpty()
   peronal_information: PersonalInformation;
+
+  @ApiProperty({
+    description: 'Attendees Information',
+    type: [AttendeesInformation],
+    required: false,
+  })
+  @ValidateNested({ each: true })
+  @Type(() => AttendeesInformation)
+  @IsOptional()
+  attendees_information: AttendeesInformation[];
+
+  @ApiProperty({
+    description: 'Additional Information',
+    type: [AdditionalInformation],
+    required: false,
+  })
+  @ValidateNested({ each: true })
+  @Type(() => AdditionalInformation)
+  @IsOptional()
+  additional_information: AdditionalInformation[];
 
   @ApiProperty({
     description: 'service fee',
@@ -115,22 +242,17 @@ export class GuestDto {
     required: false,
   })
   @IsString()
-  @IsEmpty()
+  @IsOptional()
   disocuntCode: string;
 
   @ApiProperty({
-    description: 'Quantity',
+    description: 'total purchased',
     type: Number,
     required: true,
-    default: 1,
   })
   @IsNumber()
   @IsNotEmpty()
-  quantity: number = 1;
-
-  // @IsNumber()
-  // @IsNotEmpty()
-  // orderNo: number;
+  total_purchased: number;
 
   @ApiProperty({
     enum: PAYMENT_METHODS,

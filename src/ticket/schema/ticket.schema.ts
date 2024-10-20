@@ -169,6 +169,18 @@ export class Ticket {
     type: String,
   })
   discountCode: string;
+
+  @Prop({ required: false, type: Number, default: 0 })
+  ticket_sold: number;
+
+  @Prop({
+    required: false,
+    type: Number,
+    default: function () {
+      return this.ticketQty;
+    },
+  })
+  ticket_available: number;
 }
 
 export const TicketSchema = SchemaFactory.createForClass(Ticket);

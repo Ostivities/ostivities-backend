@@ -39,7 +39,13 @@ export class GuestsController {
     @Body() dto: GuestDto,
   ): Promise<IResponse> {
     try {
-      const data = await this.guestService.register({ ...dto }, eventId);
+      const data = await this.guestService.register(
+        {
+          ...dto,
+          event: eventId,
+        },
+        eventId,
+      );
       return {
         statusCode: HttpStatus.OK,
         data: data,
@@ -84,15 +90,16 @@ export class GuestsController {
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   @Get('ticket/:ticketId')
   async getGuestsByTicketId(@Param('ticketId') ticketId: string) {
-    try {
-      const data = await this.guestService.getGuestsByTicketId(ticketId);
-      return {
-        statusCode: HttpStatus.OK,
-        data: data,
-        message: 'Guests fetched successful',
-      };
-    } catch (error) {
-      return error;
-    }
+    console.log(ticketId);
+    // try {
+    //   const data = await this.guestService.getGuestsByTicketId(ticketId);
+    //   return {
+    //     statusCode: HttpStatus.OK,
+    //     data: data,
+    //     message: 'Guests fetched successful',
+    //   };
+    // } catch (error) {
+    //   return error;
+    // }
   }
 }

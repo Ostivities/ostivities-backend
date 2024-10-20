@@ -351,6 +351,7 @@ export class Events {
   @Prop({
     required: true,
     type: String,
+    unique: true,
   })
   unique_key: string;
 }
