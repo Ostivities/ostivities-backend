@@ -155,8 +155,20 @@ export class Ticket {
   })
   discount: mongoose.Schema.Types.ObjectId;
 
+  @Prop({
+    type: Boolean,
+    required: false,
+  })
+  discount_applicable: boolean;
+
   @Prop({ required: false, type: [TicketQuestions], default: [] })
   ticketQuestions: TicketQuestions[];
+
+  @Prop({
+    required: false,
+    type: String,
+  })
+  discountCode: string;
 }
 
 export const TicketSchema = SchemaFactory.createForClass(Ticket);

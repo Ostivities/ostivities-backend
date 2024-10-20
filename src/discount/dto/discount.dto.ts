@@ -5,6 +5,7 @@ import {
   IsEnum,
   IsMongoId,
   IsNotEmpty,
+  IsNumber,
   IsString,
   ValidateIf,
 } from 'class-validator';
@@ -20,6 +21,15 @@ export class DiscountDto {
   @IsNotEmpty()
   @IsString()
   discountCode: string;
+
+  @ApiProperty({
+    type: Number,
+    description: 'discount number',
+    required: true,
+  })
+  @IsNotEmpty()
+  @IsNumber()
+  discount_value: number;
 
   @ApiProperty({
     enum: DISCOUNT_TYPES,
@@ -86,6 +96,49 @@ export class DiscountDto {
 }
 
 export class CreateDiscountDto extends DiscountDto {}
+
+export class ApplyDiscountDto {
+  @ApiProperty({
+    type: [String],
+    description: 'ticket(s)',
+    required: true,
+  })
+  @IsNotEmpty()
+  @ValidateIf((obj) => Array.isArray(obj.ticket))
+  @IsArray()
+  @ArrayNotEmpty()
+  @IsMongoId({ each: true })
+  ticket: [Types.ObjectId];
+
+  @ApiProperty({
+    type: String,
+    description: 'event id',
+    required: true,
+  })
+  @IsNotEmpty()
+  @IsString()
+  @IsMongoId()
+  event: string;
+
+  @ApiProperty({
+    type: String,
+    description: 'discount code',
+    required: true,
+  })
+  @IsNotEmpty()
+  @IsString()
+  discount_code: string;
+
+  @ApiProperty({
+    type: String,
+    description: 'guest id',
+    required: true,
+  })
+  @IsNotEmpty()
+  @IsString()
+  @IsMongoId()
+  guest: string;
+}
 
 export class UpdateDiscountDto extends PartialType(
   OmitType(DiscountDto, ['discountCode'] as const),

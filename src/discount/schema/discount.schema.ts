@@ -16,6 +16,12 @@ export class Discounts {
   discountCode: string;
 
   @Prop({
+    required: [true, 'discount value is required'],
+    type: Number,
+  })
+  discount_value: number;
+
+  @Prop({
     required: [true, 'discount type is required'],
     type: String,
     enum: {
