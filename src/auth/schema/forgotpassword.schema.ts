@@ -20,8 +20,8 @@ export class ForgotPasswordModel {
   })
   email: string;
 
-  @Prop({ default: Date.now })
-  timeStamp: Date;
+  @Prop({ type: Date, required: true })
+  expiresAt: Date;
 
   @Prop({
     required: [true, 'token is required'],

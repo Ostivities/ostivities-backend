@@ -152,7 +152,7 @@ export class AuthController {
     const data = await this.authService.resetPassword(dto);
     return {
       statusCode: HttpStatus.OK,
-      message: 'successful',
+      message: 'Password changed successfully',
       data,
     };
   }

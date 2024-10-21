@@ -291,58 +291,50 @@ export class AuthService {
       throw new BadRequestException(`User with ${dto.email} not found`);
     }
 
-    try {
-      const forgottenPassword: any = await this.forgotPasswordModel.findOne({
+    const forgottenPassword = await this.forgotPasswordModel.findOne({
+      email: dto.email,
+    });
+
+    if (forgottenPassword) {
+      const otp = otpGenerator();
+      const expiryDate = new Date();
+      expiryDate.setMinutes(expiryDate.getMinutes() + 30);
+      await this.forgotPasswordModel.updateOne({
+        token: otp,
+        expiresAt: expiryDate,
         email: dto.email,
       });
-
-      // if (!forgottenPassword) {
-      //   throw new ForbiddenException('token as already been sent');
-      // }
-
-      if (forgottenPassword) {
-        const currentTime = new Date().getTime();
-        const forgottenPasswordTimestamp = new Date(
-          forgottenPassword?.timeStamp,
-        ).getTime();
-
-        const timeDifference = Math.abs(
-          currentTime - forgottenPasswordTimestamp,
-        );
-        const fifteenMinutesInMilliseconds = 15 * 60 * 1000;
-        if (timeDifference < fifteenMinutesInMilliseconds) {
-          throw new ForbiddenException('token as already been sent');
-        }
-      } else {
-        const otp = otpGenerator();
-        const forgottenPasswordModelUpdate =
-          await this.forgotPasswordModel.findOneAndUpdate(
-            { email: dto.email },
-            {
-              $set: {
-                email: dto.email,
-                token: otp,
-              },
-            },
-            { upsert: true, new: true },
-          );
-
-        if (forgottenPasswordModelUpdate) {
-          const name =
-            user.accountType === ACCOUNT_TYPE.PERSONAL
-              ? user.firstName
-              : user.businessName;
-          EmailService({
-            subject: 'Password reset',
-            htmlContent: PasswordReset(name, otp),
-            email: dto.email,
-            name: name,
-          });
-          return `OTP sent successfully to ${dto.email}`;
-        }
-      }
-    } catch (error) {
-      throw error;
+      const name =
+        user.accountType === ACCOUNT_TYPE.PERSONAL
+          ? user.firstName
+          : user.businessName;
+      EmailService({
+        subject: 'Password reset',
+        htmlContent: PasswordReset(name, otp),
+        email: dto.email,
+        name: name,
+      });
+      return `OTP sent successfully to ${dto.email}`;
+    } else {
+      const otp = otpGenerator();
+      const expiry = new Date();
+      expiry.setMinutes(expiry.getMinutes() + 30);
+      await new this.forgotPasswordModel({
+        token: otp,
+        expiresAt: expiry,
+        email: dto.email,
+      }).save();
+      const name =
+        user.accountType === ACCOUNT_TYPE.PERSONAL
+          ? user.firstName
+          : user.businessName;
+      EmailService({
+        subject: 'Password reset',
+        htmlContent: PasswordReset(name, otp),
+        email: dto.email,
+        name: name,
+      });
+      return `OTP sent successfully to ${dto.email}`;
     }
   }
 
@@ -379,7 +371,14 @@ export class AuthService {
         { hash: hash },
         { upsert: false, new: true },
       );
-      return updatedUser;
+
+      if (updatedUser) {
+        await this.forgotPasswordModel.findOneAndDelete({
+          email: dto.email,
+        });
+      }
+
+      return { message: 'Password changed successfully' };
     } catch (error) {
       throw error;
     }
