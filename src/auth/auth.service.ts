@@ -453,14 +453,14 @@ export class AuthService {
     }
   }
 
-  async logout(token: string, expiresAt: Date): Promise<Revoked> {
+  async logout(token: string, expiresAt: Date): Promise<any> {
     try {
       const createdRevoked = await new this.revokedTokenModel({
         token,
         expiresAt,
       }).save();
-      const revoked = await createdRevoked.save();
-      return revoked;
+      await createdRevoked.save();
+      return { message: 'logout successful' };
     } catch (error) {
       throw new ForbiddenException(FORBIDDEN_MESSAGE);
     }

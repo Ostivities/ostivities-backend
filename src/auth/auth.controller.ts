@@ -237,6 +237,12 @@ export class AuthController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'logout/invalidate token' })
+  @ApiResponse({
+    status: 200,
+    description: 'Logged out successfully',
+  })
   @Post('logout')
   async logout(@Req() req: Request) {
     const token = req.headers.authorization.split(' ')[1];
