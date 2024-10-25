@@ -6,6 +6,7 @@ import { Revoked, RevokedSchema } from 'src/auth/schema/revoked.schema';
 import { JwtStrategy } from 'src/auth/strategy/jwt.strategy';
 import { DatabaseModule } from 'src/database/database.module';
 import { Events, EventSchema } from 'src/event/schema/event.schema';
+import { Guests, GuestSchema } from 'src/guests/schema/guests.schema';
 import { Ticket, TicketSchema } from 'src/ticket/schema/ticket.schema';
 import { DiscountController } from './discount.controller';
 import { discountProviders } from './discount.provider';
@@ -26,6 +27,7 @@ import { Discounts, DiscountsSchema } from './schema/discount.schema';
       { name: User.name, schema: UserSchema },
       { name: Discounts.name, schema: DiscountsSchema },
       { name: Revoked.name, schema: RevokedSchema },
+      { name: Guests.name, schema: GuestSchema },
     ]),
     DatabaseModule,
   ],

@@ -11,6 +11,7 @@ import {
   Req,
   UseGuards,
 } from '@nestjs/common';
+import { JwtService } from '@nestjs/jwt';
 import {
   ApiBody,
   ApiOperation,
@@ -38,7 +39,10 @@ import { JwtAuthGuard } from './guard/jwt-auth.guard';
 @Controller('auth')
 @ApiTags('Authentication Service')
 export class AuthController {
-  constructor(private authService: AuthService) {}
+  constructor(
+    private authService: AuthService,
+    private readonly jwtService: JwtService,
+  ) {}
 
   @Public()
   @HttpCode(HttpStatus.CREATED)
@@ -148,7 +152,7 @@ export class AuthController {
     const data = await this.authService.resetPassword(dto);
     return {
       statusCode: HttpStatus.OK,
-      message: 'successful',
+      message: 'Password changed successfully',
       data,
     };
   }
@@ -233,11 +237,16 @@ export class AuthController {
   }
 
   @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'logout/invalidate token' })
+  @ApiResponse({
+    status: 200,
+    description: 'Logged out successfully',
+  })
   @Post('logout')
   async logout(@Req() req: Request) {
     const token = req.headers.authorization.split(' ')[1];
-    const user: any = req.user;
-    const decodedToken = user?.exp as any;
+    const decodedToken = this.jwtService.decode(token) as any;
     const expiresAt = new Date(decodedToken.exp * 1000);
     await this.authService.logout(token, expiresAt);
     return { message: 'Logged out successfully' };

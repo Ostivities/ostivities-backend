@@ -6,6 +6,7 @@ export enum ACCOUNT_TYPE {
 export enum PAYMENT_METHODS {
   TRANSFER = 'TRANSFER',
   CARD = 'CARD',
+  FREE = 'FREE',
 }
 
 export enum TICKET_ENTITY {

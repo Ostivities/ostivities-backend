@@ -5,15 +5,12 @@ import { PassportStrategy } from '@nestjs/passport';
 import { Model } from 'mongoose';
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { User } from '../schema/auth.schema';
-import { Revoked } from '../schema/revoked.schema';
 
 @Injectable()
 export class JwtStrategy extends PassportStrategy(Strategy, 'jwt') {
   constructor(
     private config: ConfigService,
     @InjectModel(User.name) private userModel: Model<User>,
-    @InjectModel(Revoked.name)
-    private revokedTokenModel: Model<Revoked>,
   ) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),

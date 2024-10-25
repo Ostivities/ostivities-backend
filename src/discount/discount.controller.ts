@@ -14,7 +14,7 @@ import { GetCurrentUser } from 'src/auth/decorator/user.decorator';
 import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
 import { IResponse } from 'src/util/types';
 import { DiscountService } from './discount.service';
-import { CreateDiscountDto } from './dto/discount.dto';
+import { ApplyDiscountDto, CreateDiscountDto } from './dto/discount.dto';
 
 @UseGuards(JwtAuthGuard)
 @ApiTags('Discount Service')
@@ -49,6 +49,24 @@ export class DiscountController {
       };
     } catch (error) {
       console.log(error, 'error');
+      return error;
+    }
+  }
+
+  @HttpCode(HttpStatus.CREATED)
+  @ApiBody({ type: ApplyDiscountDto })
+  @ApiOperation({ summary: 'Apply discount code' })
+  @ApiResponse({
+    status: 200,
+    description: 'Discount code applied successfully.',
+  })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @Post('apply_discount_code')
+  async applyDiscount(@Body() dto: ApplyDiscountDto) {
+    try {
+      const data = await this.discountService.applyDiscount(dto);
+      return data;
+    } catch (error) {
       return error;
     }
   }

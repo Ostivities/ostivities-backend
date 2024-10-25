@@ -33,6 +33,7 @@ export class TicketService {
         ...dto,
         event: eventData?._id,
         user: userData?._id,
+        discount_applicable: false,
       });
       await this.eventModel.findByIdAndUpdate(
         { _id: event },
@@ -40,7 +41,6 @@ export class TicketService {
         { new: true, upsert: false, runValidators: true },
       );
       const savedTicket = await createdTicket.save();
-      console.log(savedTicket, 'saved ticket');
       return savedTicket;
     } catch (error) {
       return error;
