@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  ForbiddenException,
   Get,
   HttpCode,
   HttpStatus,
@@ -52,7 +53,8 @@ export class GuestsController {
         message: 'Registration was successful',
       };
     } catch (error) {
-      return error;
+      console.log(error, 'error');
+      throw new ForbiddenException(error?.message);
     }
   }
 

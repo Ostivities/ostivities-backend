@@ -25,43 +25,64 @@ export class GuestsService {
     const order_number = `ORD-${generateOrderNumber()}`;
     const eventData = await this.eventModel.findById(eventId);
     if (!eventData) {
-      throw new Error('Event not found');
+      throw new ForbiddenException('Event not found');
     }
 
     if (dto.ticket_information.length > 0) {
       for (const ticket_information of dto.ticket_information) {
-        const ticket = await this.ticketModel.findById(
-          ticket_information.ticket_id,
-        );
+        const ticket = await this.ticketModel.findOne({
+          _id: ticket_information.ticket_id,
+        });
         if (!ticket) {
-          throw new Error(`${ticket_information.ticket_name} not found`);
+          throw new ForbiddenException(
+            `${ticket_information.ticket_name} not found`,
+          );
         }
         if (ticket.ticketQty < ticket_information.quantity) {
-          throw new Error(
+          console.log(ticket.ticketQty, 'Q1');
+          console.log(ticket_information.quantity, 'Q2');
+          throw new ForbiddenException(
             `Not enough tickets available for ${ticket_information.ticket_name}`,
           );
         }
 
         if (ticket.ticketQty <= 0) {
-          throw new Error(`${ticket_information.ticket_name} sold out`);
+          throw new ForbiddenException(
+            `${ticket_information.ticket_name} sold out`,
+          );
         }
 
         // calculate ticket quantity left
-        ticket.ticketQty -= ticket_information.quantity;
-        ticket.ticket_sold += ticket_information.quantity;
-        if (ticket.ticketQty - ticket.ticket_sold === 0) {
-          ticket.ticket_available = 0;
-        } else {
-          ticket.ticket_available += ticket.ticketQty - ticket.ticket_sold;
-        }
-
-        await ticket.save();
+        const newTicketQty = ticket.ticketQty - ticket_information.quantity;
+        const newTicketSold = ticket.ticket_sold + ticket_information.quantity;
+        const ticket_available =
+          newTicketQty === 0 ? 0 : ticket.ticketQty - newTicketSold;
+        console.log(
+          { newTicketQty, newTicketSold, ticket_available },
+          'check loop',
+        );
+        // if (ticket.ticketQty - ticket.ticket_sold === 0) {
+        //   ticket.ticket_available = 0;
+        // } else {
+        //   ticket.ticket_available += ticket.ticketQty - ticket.ticket_sold;
+        // }
+        await this.ticketModel.findOneAndUpdate(
+          { _id: ticket_information.ticket_id },
+          {
+            $set: {
+              // ticketQty: newTicketQty,
+              ticket_sold: newTicketSold,
+              ticket_available: ticket_available,
+            },
+          },
+          { new: true },
+        );
       }
     }
 
     const newRegistration = new this.guestModel({
       ...dto,
-      order_number,
+      order_number: order_number.toString(),
       event: eventData?._id,
     });
     const savedGuest = await newRegistration.save();
@@ -93,6 +114,7 @@ export class GuestsService {
         }
       }
     }
+    console.log(savedGuest, 'saved guest');
     return savedGuest;
   }
 

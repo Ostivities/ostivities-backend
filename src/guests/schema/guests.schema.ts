@@ -24,7 +24,6 @@ class PersonalInformation {
   lastName: string;
 
   @Prop({
-    unique: true,
     required: [true, 'email is required'],
     validate: {
       validator: function (v: string) {
@@ -35,12 +34,6 @@ class PersonalInformation {
     },
   })
   email: string;
-
-  @Prop({
-    type: Boolean,
-    required: [true, 'terms and condition is required'],
-  })
-  terms_and_condition: boolean;
 
   @Prop({
     type: String,
@@ -64,7 +57,6 @@ class AttendeesInformation {
   lastName: string;
 
   @Prop({
-    unique: true,
     required: [false, 'email is required'],
     validate: {
       validator: function (v: string) {
@@ -95,6 +87,7 @@ export class AdditionalInformation {
   answer: string;
 }
 
+@Schema(schemaConfig)
 export class TicketInformation {
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
@@ -177,7 +170,7 @@ export class Guests {
 
   @Prop({
     required: true,
-    type: Number,
+    type: String,
   })
   order_number: string;
 

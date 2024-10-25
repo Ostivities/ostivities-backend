@@ -2,8 +2,6 @@ import { ApiProperty } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import {
   IsAlpha,
-  IsBoolean,
-  IsDecimal,
   IsEmail,
   IsEnum,
   IsInt,
@@ -48,17 +46,8 @@ class PersonalInformation {
   email: string;
 
   @ApiProperty({
-    description: 'Terms and conditions',
-    type: Boolean,
-    required: true,
-  })
-  @IsNotEmpty()
-  @IsBoolean()
-  terms_and_condition: boolean;
-
-  @ApiProperty({
     description: 'Phone number',
-    type: Boolean,
+    type: String,
     required: true,
   })
   @IsNotEmpty()
@@ -152,12 +141,12 @@ class TicketInformation {
   quantity: number;
 
   @ApiProperty({
-    description: 'Email address',
-    type: String,
+    description: 'amount',
+    type: Number,
     required: true,
   })
   @IsNotEmpty()
-  @IsDecimal()
+  @IsNumber()
   total_amount: number;
 }
 
@@ -194,9 +183,10 @@ export class GuestDto {
     type: PersonalInformation,
     required: true,
   })
-  @ValidateNested()
+  @ValidateNested({ each: true })
   @IsNotEmpty()
-  peronal_information: PersonalInformation;
+  @Type(() => PersonalInformation)
+  personal_information: PersonalInformation;
 
   @ApiProperty({
     description: 'Attendees Information',
