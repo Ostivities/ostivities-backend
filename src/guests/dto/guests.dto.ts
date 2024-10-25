@@ -92,6 +92,24 @@ class AttendeesInformation {
   @IsOptional()
   @IsString()
   phoneNumber: string;
+
+  @ApiProperty({
+    type: String,
+    description: 'ticket name',
+    required: true,
+  })
+  @IsOptional()
+  @IsString()
+  ticket_name: string;
+
+  @ApiProperty({
+    type: String,
+    description: 'ticket name',
+    required: true,
+  })
+  @IsOptional()
+  @IsString()
+  ticket_price: string;
 }
 
 class AdditionalInformation {
@@ -148,6 +166,15 @@ class TicketInformation {
   @IsNotEmpty()
   @IsNumber()
   total_amount: number;
+
+  @ApiProperty({
+    description: 'ticket price',
+    type: Number,
+    required: true,
+  })
+  @IsNotEmpty()
+  @IsNumber()
+  ticket_price: number;
 }
 
 export class GuestDto {

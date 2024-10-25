@@ -354,6 +354,27 @@ export class Events {
     unique: true,
   })
   unique_key: string;
+
+  @Prop({
+    type: Number,
+    required: false,
+    default: 0,
+  })
+  total_ticket_sold: number;
+
+  @Prop({
+    type: Number,
+    required: false,
+    default: 0,
+  })
+  total_space_booked: number;
+
+  @Prop({
+    type: Number,
+    required: false,
+    default: 0,
+  })
+  total_sales_revenue: number;
 }
 
 export const EventSchema = SchemaFactory.createForClass(Events);

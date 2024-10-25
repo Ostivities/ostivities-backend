@@ -26,11 +26,11 @@ import { GuestsService } from './guests.service';
 export class GuestsController {
   constructor(private guestService: GuestsService) {}
 
-  @HttpCode(HttpStatus.CREATED)
+  @HttpCode(HttpStatus.OK)
   @ApiBody({ type: GuestDto })
   @ApiOperation({ summary: 'Register guest' })
   @ApiResponse({
-    status: 201,
+    status: 200,
     description: 'Registration was successful.',
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
@@ -77,7 +77,7 @@ export class GuestsController {
         message: 'Guests fetched successful',
       };
     } catch (error) {
-      return error;
+      throw new ForbiddenException(error?.message);
     }
   }
 

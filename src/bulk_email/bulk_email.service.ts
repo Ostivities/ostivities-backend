@@ -9,9 +9,11 @@ import { BulkEmailDto } from './dto/email.dto';
 export class BulkEmailService {
   constructor(@InjectModel(User.name) private userModel: Model<User>) {}
   async sendBulkEmail(dto: BulkEmailDto, userId?: string): Promise<any> {
-    const userData = await this.userModel.findById(userId);
-    if (!userData) {
-      throw new Error('User not found');
+    if (userId) {
+      const userData = await this.userModel.findById(userId);
+      if (!userData) {
+        throw new Error('User not found');
+      }
     }
 
     try {

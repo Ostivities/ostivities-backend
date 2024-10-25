@@ -1,6 +1,7 @@
 import {
   Body,
   Controller,
+  ForbiddenException,
   Get,
   HttpCode,
   HttpStatus,
@@ -55,8 +56,12 @@ export class AuthController {
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   @Post('register')
   async signUp(@Body() dto: CreateUserDto): Promise<IResponse> {
-    const data = await this.authService.register(dto);
-    return { statusCode: HttpStatus.CREATED, data, message: 'Success' };
+    try {
+      const data = await this.authService.register(dto);
+      return { statusCode: HttpStatus.CREATED, data, message: 'Success' };
+    } catch (error) {
+      throw new ForbiddenException(error?.message);
+    }
   }
 
   @Public()

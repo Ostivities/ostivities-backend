@@ -76,6 +76,18 @@ class AttendeesInformation {
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: Ticket.name })
   ticket: mongoose.Schema.Types.ObjectId;
+
+  @Prop({
+    type: String,
+    required: false,
+  })
+  ticket_name: string;
+
+  @Prop({
+    type: Number,
+    required: false,
+  })
+  ticket_price: number;
 }
 
 @Schema(schemaConfig)
