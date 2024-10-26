@@ -15,6 +15,9 @@ import { EVENT_TYPE } from 'src/util/types';
 import { GuestDto } from './dto/guests.dto';
 import { Guests } from './schema/guests.schema';
 
+// Net sales Revenue = Sales revenue - Fees
+// Sales revenue = fee + ticket price*qty
+
 @Injectable()
 export class GuestsService {
   constructor(
@@ -36,6 +39,8 @@ export class GuestsService {
 
     if (dto.ticket_information.length > 0) {
       let total_sales_revenue = 0;
+      let ticket_sales_revenue = 0;
+      let ticket_net_sales_revenue = 0;
       for (const ticket_information of dto.ticket_information) {
         const ticket = await this.ticketModel.findOne({
           _id: ticket_information.ticket_id,
@@ -64,30 +69,43 @@ export class GuestsService {
         // calculate ticket quantity left
         const newTicketQty = ticket.ticketQty - ticket_information.quantity;
         const newTicketSold = ticket.ticket_sold + ticket_information.quantity;
-        const ticket_available =
-          newTicketQty === 0 ? 0 : ticket.ticketQty - newTicketSold;
+
+        // const ticket_available =
+        //   newTicketQty === 0 ? 0 : ticket.ticketQty - newTicketSold;
 
         total_sales_revenue +=
           eventData.total_sales_revenue + dto.total_amount_paid;
+
+        ticket_sales_revenue +=
+          dto.fees +
+          ticket_information.total_amount +
+          ticket.ticket_sales_revenue;
+
+        ticket_net_sales_revenue +=
+          ticket_sales_revenue - dto.fees + ticket.ticket_net_sales_revenue;
 
         if (ticket.ticketQty - ticket.ticket_sold === 0) {
           ticket.ticket_available = 0;
         } else {
           ticket.ticket_available += ticket.ticketQty - ticket.ticket_sold;
         }
-        const updatedTicket = await this.ticketModel.findOneAndUpdate(
+        await this.ticketModel.findOneAndUpdate(
           { _id: ticket_information.ticket_id },
           {
             $set: {
               // ticketQty: newTicketQty,
               ticket_sold: newTicketSold,
               ticket_available: newTicketQty,
+              // map fees from fees api
+              fees: dto.fees,
+              ticket_sales_revenue,
+              ticket_net_sales_revenue,
             },
           },
           { new: true },
         );
 
-        const updated_event = await this.eventModel.findOneAndUpdate(
+        await this.eventModel.findOneAndUpdate(
           { _id: eventData?._id },
           {
             $set: {
@@ -97,17 +115,19 @@ export class GuestsService {
           },
           { new: true },
         );
-        console.log(
-          {
-            newTicketQty,
-            newTicketSold,
-            ticket_available,
-            updatedTicket,
-            updated_event,
-            total_sales_revenue,
-          },
-          'new values',
-        );
+        // console.log(
+        //   {
+        //     newTicketQty,
+        //     newTicketSold,
+        //     ticket_available,
+        //     updatedTicket,
+        //     updated_event,
+        //     total_sales_revenue,
+        //     ticket_sales_revenue,
+        //     ticket_net_sales_revenue,
+        //   },
+        //   'new values',
+        // );
       }
     }
 

@@ -4,19 +4,20 @@ import { MulterModule } from '@nestjs/platform-express';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { AuthModule } from './auth/auth.module';
+import { BulkEmailModule } from './bulk_email/bulk_email.module';
 import { CoordinatorsModule } from './coordinators/coordinators.module';
 import { DatabaseModule } from './database/database.module';
 import { DiscountModule } from './discount/discount.module';
 import { EventModule } from './event/event.module';
+import { FeesModule } from './fees/fees.module';
 import { FileUploadModule } from './file-upload/file-upload.module';
 import { GuestsModule } from './guests/guests.module';
+import { HealthModule } from './health/health.module';
 import { SecurityModule } from './security/security.module';
 import { SessionModule } from './session/session.module';
 import { SettleAccountsModule } from './settle_accounts/settle_accounts.module';
 import { TicketModule } from './ticket/ticket.module';
 import { VendorModule } from './vendor/vendor.module';
-import { HealthModule } from './health/health.module';
-import { BulkEmailModule } from './bulk_email/bulk_email.module';
 
 // sudo  mongod --dbpath=/Users/dreezy/data/db
 
@@ -42,6 +43,7 @@ import { BulkEmailModule } from './bulk_email/bulk_email.module';
     VendorModule,
     HealthModule,
     BulkEmailModule,
+    FeesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

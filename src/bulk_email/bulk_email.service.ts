@@ -45,7 +45,8 @@ export class BulkEmailService {
 
       await apiInstance.sendTransacEmail(sendSmtpEmail).then(
         function (data: any) {
-          console.log('API called successfully. Returned data: ', data);
+          return data;
+          // console.log('API called successfully. Returned data: ', data);
         },
         function (error: any) {
           console.error(error, 'error');
