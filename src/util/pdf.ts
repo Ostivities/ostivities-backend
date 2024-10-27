@@ -10,13 +10,15 @@ const documentDefinitions = {
   content: [
     {
       image: OSTIVITIES_LOGO,
-      margin: [5, 2, 10, 60],
+      margin: [5, 2, 10, 30],
+      fit: [100, 100],
       style: 'header',
     },
     {
       image: TICKET_BANNER,
+      fit: [500, 500],
     },
-    { text: '{{event_name}}', margin: [5, 50, 10, 40], style: 'header' },
+    { text: '{{event_name}}', margin: [5, 50, 10, 30], style: 'header' },
     {
       stack: [
         //  FIRST ROW
@@ -28,7 +30,11 @@ const documentDefinitions = {
               //   text: 'Order Number',
               stack: [
                 { text: 'Order Number', margin: [5, 2, 10, 8] },
-                { text: '{{order_number}}', margin: [5, 2, 10, 8] },
+                {
+                  text: '{{order_number}}',
+                  margin: [5, 2, 10, 8],
+                  color: '#e20000',
+                },
               ],
               marginBottom: 25,
             },
@@ -39,7 +45,11 @@ const documentDefinitions = {
               text: 'Second column',
               stack: [
                 { text: 'Order Date', margin: [5, 2, 10, 8] },
-                { text: '{{order_date}}', margin: [5, 2, 10, 8] },
+                {
+                  text: '{{order_date}}',
+                  margin: [5, 2, 10, 8],
+                  color: '#e20000',
+                },
               ],
             },
           ],
@@ -54,7 +64,11 @@ const documentDefinitions = {
               //   text: 'Order Number',
               stack: [
                 { text: 'Event Date & Time', margin: [5, 2, 10, 8] },
-                { text: '{{event_date_time}}', margin: [5, 2, 10, 8] },
+                {
+                  text: '{{event_date_time}}',
+                  margin: [5, 2, 10, 8],
+                  color: '#e20000',
+                },
               ],
               marginBottom: 25,
             },
@@ -65,7 +79,11 @@ const documentDefinitions = {
               text: 'Second column',
               stack: [
                 { text: 'Event Address', margin: [5, 2, 10, 8] },
-                { text: '{{event_address}}', margin: [5, 2, 10, 8] },
+                {
+                  text: '{{event_address}}',
+                  margin: [5, 2, 10, 8],
+                  color: '#e20000',
+                },
               ],
               marginBottom: 25,
             },
@@ -83,14 +101,22 @@ const documentDefinitions = {
                 {
                   stack: [
                     { text: 'Ticket Type', margin: [5, 2, 10, 8] },
-                    { text: '{{ticket_type}}', margin: [5, 2, 10, 8] },
+                    {
+                      text: '{{ticket_type}}',
+                      margin: [5, 2, 10, 8],
+                      color: '#e20000',
+                    },
                   ],
                   marginBottom: 25,
                 },
                 {
                   stack: [
                     { text: 'Order By', margin: [5, 2, 10, 8] },
-                    { text: '{{buyer_name}}', margin: [5, 2, 10, 8] },
+                    {
+                      text: '{{buyer_name}}',
+                      margin: [5, 2, 10, 8],
+                      color: '#e20000',
+                    },
                   ],
                 },
               ],
