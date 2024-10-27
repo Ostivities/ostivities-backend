@@ -14,7 +14,7 @@ export class Fees {
 
   @Prop({
     type: [Number, String],
-    required: true,
+    required: false,
   })
   service_charge: string | number;
 }
