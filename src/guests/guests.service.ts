@@ -14,6 +14,10 @@ import { generateOrderNumber, getFormattedDate } from 'src/util/helper';
 import { EVENT_TYPE } from 'src/util/types';
 import { GuestDto } from './dto/guests.dto';
 import { Guests } from './schema/guests.schema';
+import { pdfGenerator } from '../util/pdf';
+import { PdfDto } from '../util/dto/pdf.dto';
+import { OSTIVITIES_LOGO } from '../util/logo';
+import { TICKET_BANNER } from '../util/ticketBanner';
 
 // Net sales Revenue = Sales revenue - Fees
 // Sales revenue = fee + ticket price*qty
@@ -115,19 +119,6 @@ export class GuestsService {
           },
           { new: true },
         );
-        // console.log(
-        //   {
-        //     newTicketQty,
-        //     newTicketSold,
-        //     ticket_available,
-        //     updatedTicket,
-        //     updated_event,
-        //     total_sales_revenue,
-        //     ticket_sales_revenue,
-        //     ticket_net_sales_revenue,
-        //   },
-        //   'new values',
-        // );
       }
     }
 
@@ -138,7 +129,13 @@ export class GuestsService {
     });
     const savedGuest = await newRegistration.save();
     // SEND EMAIL TO PRY BUYER
+    // GENERATE PDF AND SEND TO BUYER
     if (dto.ticket_information.length > 0 && dto.personal_information) {
+      const total_pages: number = dto.ticket_information.reduce(
+        (sum, ticket) => sum + ticket.quantity,
+        0,
+      );
+
       const orderPurchase: CreateOrderEmailDto = {
         name: `${dto.personal_information.firstName} ${dto.personal_information.lastName}`,
         event_name: eventData.eventName,
@@ -146,13 +143,54 @@ export class GuestsService {
         event_date_time: eventData.startDate,
         order_number: order_number.toString(),
         order_date: getFormattedDate(),
-        order_discount: `0`, // to be changed later
+        order_discount: `0`,
         order_subtotal: dto.total_amount_paid?.toString(),
         order_fees: `0`,
         host_email: eventData?.user?.email,
         tickets: dto.ticket_information as any,
       };
 
+      const content: PdfDto['content'] = dto.ticket_information.map(
+        (ticket) => {
+          const {
+            order_number,
+            order_date,
+            event_date_time,
+            event_address,
+            event_name,
+            name,
+          } = orderPurchase;
+
+          return {
+            order_number,
+            order_date,
+            event_date_time,
+            event_address,
+            event_name,
+            buyer_name: name,
+            ticket_type: ticket.ticket_type,
+            qr_code: `${process.env.OSTIVITIES_ORIGIN_URL}/check_in_portal/${savedGuest._id}/${eventData?._id}`,
+            ostivities_logo: OSTIVITIES_LOGO,
+            ticket_banner: TICKET_BANNER,
+          };
+        },
+      );
+
+      const pdfDto: PdfDto = {
+        order_date: getFormattedDate(),
+        buyer_name: `${dto.personal_information.firstName} ${dto.personal_information.lastName}`,
+        event_address: eventData.address,
+        event_date_time: eventData.startDate,
+        event_name: eventData.eventName,
+        order_number: order_number.toString(),
+        event_id: eventData?._id,
+        buyer_id: savedGuest?._id as unknown as string,
+        total_pages,
+        content,
+      };
+      const pdfBase64 = await pdfGenerator(pdfDto);
+
+      //   EMAIL CALL HERE
       await this.emailService.sendBulkEmail({
         sender_name: process.env.SMTP_SENDER_NAME,
         sender_email: process.env.SMTP_SALES_SENDER_EMAIL,
@@ -165,14 +203,35 @@ export class GuestsService {
         ],
         email_subject: `Order`,
         email_content: TicketOrderPurchase(orderPurchase),
-        email_attachment: [],
+        email_attachment: [
+          {
+            content: pdfBase64,
+            name: `${order_number}.pdf`,
+          },
+        ],
       });
     }
+
     // SEND EMAIL TO ATTENDEES
-    if (dto.attendees_information.length > 0) {
+    if (dto?.attendees_information && dto?.attendees_information.length > 0) {
+      console.log('call second');
       // SEND ATTENDEES EMAIL
       for (const attendee_information of dto.attendees_information) {
         if (attendee_information.email) {
+          // REGISTER EACH ATTENDEE
+          const pdfDto: PdfDto = {
+            order_date: getFormattedDate(),
+            buyer_name: `${attendee_information.firstName} ${attendee_information.lastName}`,
+            event_address: eventData.address,
+            event_date_time: eventData.startDate,
+            event_name: eventData.eventName,
+            order_number: order_number.toString(),
+            event_id: eventData?._id,
+            buyer_id: '',
+            total_pages: 0,
+            content: [],
+          };
+          const pdfBase64 = await pdfGenerator(pdfDto);
           const orderPurchase: CreateOrderEmailDto = {
             name: `${attendee_information.firstName} ${attendee_information.lastName}`,
             event_name: eventData.eventName,
@@ -191,21 +250,31 @@ export class GuestsService {
             order_qty: dto.total_purchased?.toString(),
             host_email: eventData?.user?.email,
           };
-          const payload: BulkEmailDto = {
-            sender_name: process.env.SMTP_SENDER_NAME,
-            sender_email: process.env.SMTP_SALES_SENDER_EMAIL,
-            reply_to: process.env.SMTP_SALES_SENDER_EMAIL,
-            receipients: [
-              {
-                name: `${attendee_information.firstName} ${attendee_information.lastName}`,
-                email: attendee_information.email,
-              },
-            ],
-            email_subject: `Order`,
-            email_content: TicketPurchase(orderPurchase),
-            email_attachment: [],
-          };
-          await this.emailService.sendBulkEmail(payload);
+
+          if (pdfBase64) {
+            const payload: BulkEmailDto = {
+              sender_name: process.env.SMTP_SENDER_NAME,
+              sender_email: process.env.SMTP_SALES_SENDER_EMAIL,
+              reply_to: process.env.SMTP_SALES_SENDER_EMAIL,
+              receipients: [
+                {
+                  name: `${attendee_information.firstName} ${attendee_information.lastName}`,
+                  email: attendee_information.email,
+                },
+              ],
+              email_subject: `Order`,
+              email_content: TicketPurchase(orderPurchase),
+            };
+            await this.emailService.sendBulkEmail({
+              ...payload,
+              email_attachment: [
+                {
+                  content: pdfBase64,
+                  name: `${order_number}.pdf`,
+                },
+              ],
+            });
+          }
         }
       }
     }

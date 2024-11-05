@@ -1,0 +1,63 @@
+const generatePageContent = (data: PdfDto['content']) => {
+  return {
+    content: [
+
+      {
+        columns: [
+          {
+            stack: [
+              { text: 'Ticket Details', margin: [5, 2, 10, 15], style: 'header' },
+              { text: 'Ticket Type', margin: [5, 2, 10, 8] },
+              {
+                text: data.ticket_type,
+                margin: [5, 2, 10, 8],
+                color: '#e20000',
+              },
+              {
+                stack: [
+                  { text: 'Order By', margin: [5, 20, 10, 8] },
+                  {
+                    text: data.buyer_name,
+                    margin: [5, 2, 10, 8],
+                    color: '#e20000',
+                  },
+                ],
+              },
+            ],
+          },
+          {
+            stack: [
+              { qr: data.qr_code, fit: '200' },
+            ],
+          },
+        ],
+      },
+    ],
+    styles: {
+      header: {
+        fontSize: 18,
+        bold: true,
+      },
+      bigger: {
+        fontSize: 15,
+        italics: true,
+      },
+    },
+    defaultStyle: {
+      columnGap: 20,
+    },
+    pageBreak: 'after', // Ensures each entry goes on a new page
+  };
+};
+
+
+
+ const content = dataArray.map(data => generatePageContent(data));
+
+  // Define the document with the pages generated from dataArray
+  const documentDefinition = {
+    content,
+    defaultStyle: {
+      fontSize: 12,
+    },
+  };

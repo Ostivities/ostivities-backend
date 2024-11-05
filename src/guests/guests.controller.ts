@@ -53,7 +53,6 @@ export class GuestsController {
         message: 'Registration was successful',
       };
     } catch (error) {
-      console.log(error, 'error');
       throw new ForbiddenException(error?.message);
     }
   }

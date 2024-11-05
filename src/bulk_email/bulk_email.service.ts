@@ -1,5 +1,5 @@
 import * as brevo from '@getbrevo/brevo';
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User } from 'src/auth/schema/auth.schema';
@@ -41,7 +41,10 @@ export class BulkEmailService {
         subject: dto.email_subject,
       };
 
-      // sendSmtpEmail.attachment = dto.email_attachment;
+      // console.log(dto.email_attachment, 'attachment');
+      if (dto.email_attachment && dto.email_attachment.length > 0) {
+        sendSmtpEmail.attachment = dto.email_attachment;
+      }
 
       await apiInstance.sendTransacEmail(sendSmtpEmail).then(
         function (data: any) {
@@ -50,6 +53,7 @@ export class BulkEmailService {
         },
         function (error: any) {
           console.error(error, 'error');
+          throw new ForbiddenException(error.message);
         },
       );
     } catch (error) {

@@ -175,6 +175,15 @@ class TicketInformation {
   @IsNotEmpty()
   @IsNumber()
   ticket_price: number;
+
+  @ApiProperty({
+    type: String,
+    description: 'ticket type',
+    required: true,
+  })
+  @IsNotEmpty()
+  @IsString()
+  ticket_type: string;
 }
 
 export class GuestDto {
@@ -223,7 +232,7 @@ export class GuestDto {
   @ValidateNested({ each: true })
   @Type(() => AttendeesInformation)
   @IsOptional()
-  attendees_information: AttendeesInformation[];
+  attendees_information?: AttendeesInformation[];
 
   @ApiProperty({
     description: 'Additional Information',
@@ -233,7 +242,7 @@ export class GuestDto {
   @ValidateNested({ each: true })
   @Type(() => AdditionalInformation)
   @IsOptional()
-  additional_information: AdditionalInformation[];
+  additional_information?: AdditionalInformation[];
 
   @ApiProperty({
     description: 'service fee',
@@ -260,7 +269,7 @@ export class GuestDto {
   })
   @IsString()
   @IsOptional()
-  disocuntCode: string;
+  discountCode: string;
 
   @ApiProperty({
     description: 'total purchased',
