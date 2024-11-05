@@ -1,5 +1,5 @@
 import * as brevo from '@getbrevo/brevo';
-import { Injectable } from '@nestjs/common';
+import { ForbiddenException, Injectable } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
 import { User } from 'src/auth/schema/auth.schema';
@@ -9,9 +9,11 @@ import { BulkEmailDto } from './dto/email.dto';
 export class BulkEmailService {
   constructor(@InjectModel(User.name) private userModel: Model<User>) {}
   async sendBulkEmail(dto: BulkEmailDto, userId?: string): Promise<any> {
-    const userData = await this.userModel.findById(userId);
-    if (!userData) {
-      throw new Error('User not found');
+    if (userId) {
+      const userData = await this.userModel.findById(userId);
+      if (!userData) {
+        throw new Error('User not found');
+      }
     }
 
     try {
@@ -39,14 +41,19 @@ export class BulkEmailService {
         subject: dto.email_subject,
       };
 
-      // sendSmtpEmail.attachment = dto.email_attachment;
+      // console.log(dto.email_attachment, 'attachment');
+      if (dto.email_attachment && dto.email_attachment.length > 0) {
+        sendSmtpEmail.attachment = dto.email_attachment;
+      }
 
       await apiInstance.sendTransacEmail(sendSmtpEmail).then(
         function (data: any) {
-          console.log('API called successfully. Returned data: ', data);
+          return data;
+          // console.log('API called successfully. Returned data: ', data);
         },
         function (error: any) {
           console.error(error, 'error');
+          throw new ForbiddenException(error.message);
         },
       );
     } catch (error) {

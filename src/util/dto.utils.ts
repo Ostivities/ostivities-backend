@@ -7,3 +7,5 @@ export class PaginationDto {
   @IsString()
   limit: string;
 }
+
+export class PdfDto {}

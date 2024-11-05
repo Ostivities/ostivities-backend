@@ -42,7 +42,16 @@ class Attachments {
   })
   @IsNotEmpty()
   @IsString()
-  name: string;
+  name?: string;
+
+  @ApiProperty({
+    description: 'pdf content',
+    type: String,
+    required: true,
+  })
+  @IsNotEmpty()
+  @IsString()
+  content?: string;
 
   @ApiProperty({
     description: 'absolute',
@@ -51,7 +60,7 @@ class Attachments {
   })
   @IsUrl()
   @IsNotEmpty()
-  url: string;
+  url?: string;
 }
 
 export class BulkEmailDto {
@@ -122,5 +131,5 @@ export class BulkEmailDto {
   @ValidateNested({ each: true })
   @Type(() => Attachments)
   @IsOptional()
-  email_attachment: Attachments[];
+  email_attachment?: Attachments[];
 }

@@ -181,6 +181,27 @@ export class Ticket {
     },
   })
   ticket_available: number;
+
+  @Prop({
+    required: false,
+    type: Number,
+    default: 0,
+  })
+  fees: number;
+
+  @Prop({
+    required: false,
+    type: Number,
+    default: 0,
+  })
+  ticket_sales_revenue: number;
+
+  @Prop({
+    required: false,
+    type: Number,
+    default: 0,
+  })
+  ticket_net_sales_revenue: number;
 }
 
 export const TicketSchema = SchemaFactory.createForClass(Ticket);
