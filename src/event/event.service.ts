@@ -13,12 +13,14 @@ import {
   UpdateEventRegistrationDto,
 } from './dto/event.dto';
 import { Events } from './schema/event.schema';
+import { Ticket } from '../ticket/schema/ticket.schema';
 
 @Injectable()
 export class EventService {
   constructor(
     @InjectModel(Events.name) private eventModel: Model<Events>,
     @InjectModel(User.name) private userModel: Model<User>,
+    @InjectModel(Ticket.name) private ticketModel: Model<Ticket>,
   ) {}
 
   async createEvent(dto: EventDto): Promise<Events> {
@@ -37,7 +39,7 @@ export class EventService {
       const savedEvent = await createdEvent.save();
       return savedEvent;
     } catch (error) {
-      throw new ForbiddenException(FORBIDDEN_MESSAGE);
+      throw new ForbiddenException(error.message);
     }
   }
 
@@ -129,6 +131,16 @@ export class EventService {
 
   async updateEventModeById(dto: UpdateEventModeDto): Promise<any> {
     const validIds = dto.ids.filter((id: string) => Types.ObjectId.isValid(id));
+
+    const [eventId] = dto.ids;
+    const tickets = await this.ticketModel.find({ event: eventId });
+
+    if (!tickets || tickets.length === 0) {
+      throw new ForbiddenException(
+        'Event does not have ticket(s), only event with ticket(s) can be published',
+      );
+    }
+
     try {
       const updateStatus = await this.eventModel.updateMany(
         { _id: { $in: validIds } },
@@ -183,7 +195,7 @@ export class EventService {
       );
       return unpublishedEvent;
     } catch (error) {
-      throw new ForbiddenException(FORBIDDEN_MESSAGE);
+      throw new ForbiddenException(error.message);
     }
   }
 

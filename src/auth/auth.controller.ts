@@ -75,11 +75,15 @@ export class AuthController {
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   @Post('generate_otp')
   async generateOtp(@Body() dto: ActivateAccountDto) {
-    await this.authService.generateOtp(dto);
-    return {
-      statusCode: HttpStatus.OK,
-      message: `OTP sent to ${dto.email}`,
-    };
+    try {
+      await this.authService.generateOtp(dto);
+      return {
+        statusCode: HttpStatus.OK,
+        message: `OTP sent to ${dto.email}`,
+      };
+    } catch (e) {
+      throw new ForbiddenException(e.message);
+    }
   }
 
   @Public()
@@ -102,7 +106,7 @@ export class AuthController {
         data,
       };
     } catch (error) {
-      return error;
+      throw new ForbiddenException(error?.message);
     }
   }
 
@@ -117,11 +121,15 @@ export class AuthController {
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   @Post('login')
   async login(@Body() dto: LoginUserDto): Promise<IResponse> {
-    const data = await this.authService.login(dto);
-    return {
-      statusCode: HttpStatus.OK,
-      data,
-    };
+    try {
+      const data = await this.authService.login(dto);
+      return {
+        statusCode: HttpStatus.OK,
+        data,
+      };
+    } catch (error) {
+      throw new ForbiddenException(error?.message);
+    }
   }
 
   @Public()
@@ -135,12 +143,16 @@ export class AuthController {
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   @Post('reset_token')
   async resetToken(@Body() dto: ForgotPasswordDto): Promise<IResponse> {
-    const data = await this.authService.resetToken({ ...dto });
-    return {
-      statusCode: HttpStatus.OK,
-      message: 'successful',
-      data,
-    };
+    try {
+      const data = await this.authService.resetToken({ ...dto });
+      return {
+        statusCode: HttpStatus.OK,
+        message: 'successful',
+        data,
+      };
+    } catch (e) {
+      throw new ForbiddenException(e.message);
+    }
   }
 
   @Public()
@@ -154,12 +166,16 @@ export class AuthController {
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   @Post('reset_password')
   async resetPassword(@Body() dto: ResetPasswordDto): Promise<IResponse> {
-    const data = await this.authService.resetPassword(dto);
-    return {
-      statusCode: HttpStatus.OK,
-      message: 'Password changed successfully',
-      data,
-    };
+    try {
+      const data = await this.authService.resetPassword(dto);
+      return {
+        statusCode: HttpStatus.OK,
+        message: 'Password changed successfully',
+        data,
+      };
+    } catch (e) {
+      throw new ForbiddenException(e.message);
+    }
   }
 
   @Get('users')
@@ -183,12 +199,16 @@ export class AuthController {
   async getUserProfile(
     @GetCurrentUser('id') user: string | any,
   ): Promise<IResponse> {
-    const data = await this.authService.getUserProfile(user);
-    return {
-      statusCode: HttpStatus.OK,
-      message: 'User profile fetched sccessfully',
-      data,
-    };
+    try {
+      const data = await this.authService.getUserProfile(user);
+      return {
+        statusCode: HttpStatus.OK,
+        message: 'User profile fetched sccessfully',
+        data,
+      };
+    } catch (e) {
+      throw new ForbiddenException(e.message);
+    }
   }
 
   @UseGuards(JwtAuthGuard)
@@ -198,7 +218,7 @@ export class AuthController {
   @ApiOperation({ summary: 'Update user profile' })
   @ApiResponse({
     status: 200,
-    description: 'User profile updated sccessfully',
+    description: 'User profile updated successfully',
   })
   @Put('user/:id')
   @ApiResponse({ status: 403, description: 'Forbidden.' })
@@ -211,7 +231,7 @@ export class AuthController {
         data,
       };
     } catch (error) {
-      return error;
+      throw new ForbiddenException(error.message);
     }
   }
 
@@ -237,7 +257,7 @@ export class AuthController {
         data,
       };
     } catch (error) {
-      return error;
+      throw new ForbiddenException(error.message);
     }
   }
 

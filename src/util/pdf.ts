@@ -93,9 +93,9 @@ export const pdfGenerator = async (dto: PdfDto): Promise<string> => {
                 margin: [5, 2, 10, 15],
                 style: 'header',
               },
-              { text: 'Ticket Type', margin: [5, 2, 10, 8], bold: true },
+              { text: 'Ticket Name', margin: [5, 2, 10, 8], bold: true },
               {
-                text: data.ticket_type,
+                text: data.ticket_name,
                 margin: [5, 2, 10, 8],
                 color: '#e20000',
               },
