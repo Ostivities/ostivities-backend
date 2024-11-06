@@ -172,6 +172,7 @@ export class GuestsService {
             qr_code: `${process.env.OSTIVITIES_ORIGIN_URL}/check_in_portal/${savedGuest._id}/${eventData?._id}`,
             ostivities_logo: OSTIVITIES_LOGO,
             ticket_banner: TICKET_BANNER,
+            ticket_name: ticket.ticket_name,
           };
         },
       );

@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Delete,
+  ForbiddenException,
   Get,
   HttpCode,
   HttpStatus,
@@ -51,8 +52,12 @@ export class EventController {
     @Body() dto: CreateEventDto,
     @GetCurrentUser('id') id: string,
   ): Promise<IResponse> {
-    const data = await this.eventService.createEvent({ ...dto, user: id });
-    return { statusCode: HttpStatus.CREATED, data: data, message: 'Success' };
+    try {
+      const data = await this.eventService.createEvent({ ...dto, user: id });
+      return { statusCode: HttpStatus.CREATED, data: data, message: 'Success' };
+    } catch (error) {
+      throw new ForbiddenException(error?.message);
+    }
   }
 
   @HttpCode(HttpStatus.OK)
@@ -96,7 +101,7 @@ export class EventController {
       );
       return { statusCode: HttpStatus.OK, data: data, message: 'Success' };
     } catch (error) {
-      return error;
+      throw new ForbiddenException(error?.message);
     }
   }
 
@@ -111,9 +116,14 @@ export class EventController {
   @Get('get_user_event/:id')
   @UseGuards(JwtAuthGuard)
   async getEvent(@Param('id') id: string): Promise<IResponse> {
-    const data = await this.eventService.getEventsById(id);
-    return { statusCode: HttpStatus.OK, data: data, message: 'Success' };
+    try {
+      const data = await this.eventService.getEventsById(id);
+      return { statusCode: HttpStatus.OK, data: data, message: 'Success' };
+    } catch (error) {
+      throw new ForbiddenException(error?.message);
+    }
   }
+
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get an event' })
   @ApiParam({ name: 'Unique Key', description: 'Event Unique Key' })
@@ -124,8 +134,12 @@ export class EventController {
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   @Get('get_user_event_by_unique_key/:id')
   async getEventByUniqueKey(@Param('id') id: string): Promise<IResponse> {
-    const data = await this.eventService.getEventsByUniqueKey(id);
-    return { statusCode: HttpStatus.OK, data: data, message: 'Success' };
+    try {
+      const data = await this.eventService.getEventsByUniqueKey(id);
+      return { statusCode: HttpStatus.OK, data: data, message: 'Success' };
+    } catch (error) {
+      throw new ForbiddenException(error?.message);
+    }
   }
 
   @HttpCode(HttpStatus.OK)
@@ -150,7 +164,7 @@ export class EventController {
       });
       return { statusCode: HttpStatus.OK, data, message: 'Success' };
     } catch (error) {
-      return error;
+      throw new ForbiddenException(error?.message);
     }
   }
 
@@ -179,8 +193,12 @@ export class EventController {
   async updateEventModeById(
     @Body() dto: UpdateEventModeDto,
   ): Promise<IResponse> {
-    const data = await this.eventService.updateEventModeById(dto);
-    return { statusCode: HttpStatus.OK, data: data, message: 'Success' };
+    try {
+      const data = await this.eventService.updateEventModeById(dto);
+      return { statusCode: HttpStatus.OK, data: data, message: 'Success' };
+    } catch (error) {
+      throw new ForbiddenException(error.message);
+    }
   }
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'close event' })
@@ -239,8 +257,12 @@ export class EventController {
   async updateDiscoveryStatus(
     @Body() dto: UpdateEventDiscoveryDto,
   ): Promise<any> {
-    const data = await this.eventService.updateDiscoveryStatus(dto);
-    return { statusCode: HttpStatus.OK, data: data, message: 'Success' };
+    try {
+      const data = await this.eventService.updateDiscoveryStatus(dto);
+      return { statusCode: HttpStatus.OK, data: data, message: 'Success' };
+    } catch (error) {
+      throw new ForbiddenException(error?.message);
+    }
   }
 
   @HttpCode(HttpStatus.OK)
@@ -263,14 +285,18 @@ export class EventController {
     @Query('state') state?: string,
     @Query('eventCat') eventCat?: EVENT_MODES,
   ): Promise<IResponse> {
-    const data = await this.eventService.discoverEvents(
-      page,
-      pageSize,
-      eventName,
-      state,
-      eventCat,
-    );
-    return { statusCode: HttpStatus.OK, data: data, message: 'Success' };
+    try {
+      const data = await this.eventService.discoverEvents(
+        page,
+        pageSize,
+        eventName,
+        state,
+        eventCat,
+      );
+      return { statusCode: HttpStatus.OK, data: data, message: 'Success' };
+    } catch (error) {
+      throw new ForbiddenException(error.message);
+    }
   }
 
   // @HttpCode(HttpStatus.OK)
@@ -301,8 +327,12 @@ export class EventController {
   async updateEventRegistration(
     @Body() dto: UpdateEventRegistrationDto,
   ): Promise<IResponse> {
-    const data = await this.eventService.updateEventRegistration(dto);
-    return { statusCode: HttpStatus.OK, data: data, message: 'Success' };
+    try {
+      const data = await this.eventService.updateEventRegistration(dto);
+      return { statusCode: HttpStatus.OK, data: data, message: 'Success' };
+    } catch (error) {
+      throw new ForbiddenException(error?.message);
+    }
   }
 
   @HttpCode(HttpStatus.OK)
@@ -316,7 +346,11 @@ export class EventController {
   @Delete('delete_events')
   @UseGuards(JwtAuthGuard)
   async deleteManyEvents(@Body() ids: StringArrayDto): Promise<IResponse> {
-    const data = await this.eventService.deleteManyEventsById(ids);
-    return { statusCode: HttpStatus.OK, data: data, message: 'Success' };
+    try {
+      const data = await this.eventService.deleteManyEventsById(ids);
+      return { statusCode: HttpStatus.OK, data: data, message: 'Success' };
+    } catch (error) {
+      throw new ForbiddenException(error?.message);
+    }
   }
 }

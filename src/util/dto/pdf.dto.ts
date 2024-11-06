@@ -31,6 +31,10 @@ class PdfContent {
 
   @IsNotEmpty()
   @IsString()
+  ticket_name: string;
+
+  @IsNotEmpty()
+  @IsString()
   ticket_type: string;
 
   @IsNotEmpty()
