@@ -111,7 +111,7 @@ export class EventService {
         .findOne({ _id: id })
         .populate({
           path: 'user',
-          select: 'firstName lastName accountType businessName',
+          select: 'firstName lastName email accountType businessName',
         })
         .exec();
       return event;
