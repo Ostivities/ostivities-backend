@@ -109,7 +109,10 @@ export class EventService {
     try {
       const event = await this.eventModel
         .findOne({ _id: id })
-        .populate({ path: 'user', select: 'firstName lastName' })
+        .populate({
+          path: 'user',
+          select: 'firstName lastName accountType businessName',
+        })
         .exec();
       return event;
     } catch (error) {
