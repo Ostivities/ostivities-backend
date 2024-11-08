@@ -1379,7 +1379,7 @@ export const TicketOrderPurchase = (dto: CreateOrderEmailDto) => {
                                         font-size: 14px;
                                       "
                                     >
-                                      <strong>{{event_name}}</strong>
+                                      <strong>${dto.event_name}</strong>
                                     </p>
                                   </td>
                                 </tr>
@@ -1471,7 +1471,7 @@ export const TicketOrderPurchase = (dto: CreateOrderEmailDto) => {
                                         font-size: 14px;
                                       "
                                     >
-                                      <strong> ${dto.event_date_time}</strong>
+                                      <strong>${dto.event_date_time}</strong>
                                     </p>
                                   </td>
                                 </tr>

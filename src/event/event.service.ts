@@ -36,8 +36,7 @@ export class EventService {
         ...dto,
         mode: EVENT_MODE.PRIVATE,
       });
-      const savedEvent = await createdEvent.save();
-      return savedEvent;
+      return await createdEvent.save();
     } catch (error) {
       throw new ForbiddenException(error.message);
     }
@@ -59,12 +58,11 @@ export class EventService {
     }
 
     try {
-      const updatedEvent = await this.eventModel.findByIdAndUpdate(
-        { _id: id },
-        dto,
-        { new: true, runValidators: true, upsert: true },
-      );
-      return updatedEvent;
+      return await this.eventModel.findByIdAndUpdate({ _id: id }, dto, {
+        new: true,
+        runValidators: true,
+        upsert: true,
+      });
     } catch (error) {
       console.log(error);
       throw new ForbiddenException(FORBIDDEN_MESSAGE);
@@ -82,7 +80,7 @@ export class EventService {
     try {
       const userData = await this.userModel.findById(id);
       if (!userData) {
-        throw new Error('User not found');
+        throw new ForbiddenException('User not found');
       }
 
       const events = await this.eventModel
@@ -107,14 +105,13 @@ export class EventService {
 
   async getEventsById(id: string): Promise<Events> {
     try {
-      const event = await this.eventModel
+      return await this.eventModel
         .findOne({ _id: id })
         .populate({
           path: 'user',
           select: 'firstName lastName email accountType businessName',
         })
         .exec();
-      return event;
     } catch (error) {
       throw new ForbiddenException(FORBIDDEN_MESSAGE);
     }
@@ -335,12 +332,11 @@ export class EventService {
     dto: UpdateEventRegistrationDto,
   ): Promise<Events> {
     try {
-      const updatedEvent = await this.eventModel.findOneAndUpdate(
+      return await this.eventModel.findOneAndUpdate(
         { _id: dto.id },
         { enable_registration: dto.enable_registration },
         { new: true, upsert: false },
       );
-      return updatedEvent;
     } catch (error) {
       throw new ForbiddenException(FORBIDDEN_MESSAGE);
     }

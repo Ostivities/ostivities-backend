@@ -254,6 +254,15 @@ export class GuestDto {
   fees: number;
 
   @ApiProperty({
+    description: 'discount',
+    type: Number,
+    required: true,
+  })
+  @IsNumber()
+  @IsNotEmpty()
+  discount: number;
+
+  @ApiProperty({
     description: 'Total amount paid',
     type: Number,
     required: true,
