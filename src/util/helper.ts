@@ -47,3 +47,14 @@ export const getFormattedDate = (): string => {
 
   return `${day}${getOrdinalSuffix(day)} ${month} ${year}`;
 };
+
+export const formatNumber = (value: number | string): string => {
+  const number = typeof value === 'number' ? value : parseFloat(value);
+  if (isNaN(number)) return '0.00';
+
+  // Format number with two decimal places and comma separators
+  return number.toLocaleString('en-US', {
+    minimumFractionDigits: 2,
+    maximumFractionDigits: 2,
+  });
+};

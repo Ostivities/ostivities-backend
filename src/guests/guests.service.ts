@@ -10,7 +10,11 @@ import { CreateOrderEmailDto } from 'src/templates/dto/ticketpurchase.dto';
 import { TicketPurchase } from 'src/templates/ticketPurchase';
 import { TicketOrderPurchase } from 'src/templates/ticketReceipt';
 import { Ticket } from 'src/ticket/schema/ticket.schema';
-import { generateOrderNumber, getFormattedDate } from 'src/util/helper';
+import {
+  formatNumber,
+  generateOrderNumber,
+  getFormattedDate,
+} from 'src/util/helper';
 import { EVENT_TYPE } from 'src/util/types';
 import { GuestDto } from './dto/guests.dto';
 import { Guests } from './schema/guests.schema';
@@ -144,8 +148,8 @@ export class GuestsService {
         order_number: order_number.toString(),
         order_date: getFormattedDate(),
         order_discount: dto.discount.toString(),
-        order_subtotal: dto.total_amount_paid?.toString(),
-        order_fees: dto.fees?.toString(),
+        order_subtotal: formatNumber(dto.total_amount_paid?.toString()),
+        order_fees: formatNumber(dto.fees?.toString()),
         host_email: eventData?.user?.email,
         tickets: dto.ticket_information as any,
       };
