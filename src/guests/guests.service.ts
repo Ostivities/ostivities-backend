@@ -143,9 +143,9 @@ export class GuestsService {
         event_date_time: eventData.startDate,
         order_number: order_number.toString(),
         order_date: getFormattedDate(),
-        order_discount: `0`,
+        order_discount: dto.discount.toString(),
         order_subtotal: dto.total_amount_paid?.toString(),
-        order_fees: `0`,
+        order_fees: dto.fees?.toString(),
         host_email: eventData?.user?.email,
         tickets: dto.ticket_information as any,
       };
