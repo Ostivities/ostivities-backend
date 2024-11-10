@@ -119,15 +119,15 @@ class AdditionalInformation {
     required: true,
   })
   @IsOptional()
-  question: string;
+  question?: string;
 
   @ApiProperty({
     type: String,
     description: 'question',
     required: false,
   })
-  @IsNotEmpty()
-  answer: string;
+  @IsOptional()
+  answer?: string;
 }
 
 class TicketInformation {

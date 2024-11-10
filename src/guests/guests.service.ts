@@ -250,9 +250,9 @@ export class GuestsService {
                 ? `0`
                 : attendee_information.ticket_price,
             order_discount: `0`, // to be changed later
-            order_subtotal: dto.total_amount_paid?.toString(),
-            order_fees: `0`,
-            order_qty: dto.total_purchased?.toString(),
+            order_subtotal: formatNumber(dto.total_amount_paid?.toString()),
+            order_fees: formatNumber(dto.fees?.toString()),
+            order_qty: formatNumber(dto.total_purchased?.toString()),
             host_email: eventData?.user?.email,
           };
 
