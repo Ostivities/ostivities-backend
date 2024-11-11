@@ -154,35 +154,32 @@ export class GuestsService {
         tickets: dto.ticket_information as any,
       };
 
-      const content: PdfDto['content'] = Array.from(
-        { length: dto.total_purchased }, // Replace userInput with the actual user-specified value
-        (_, index) => {
-          const ticket =
-            dto.ticket_information[index % dto.ticket_information.length];
+      const content: PdfDto['content'] = dto.ticket_information.flatMap(
+        (ticket) =>
+          Array.from({ length: ticket.quantity }, () => {
+            const {
+              order_number,
+              order_date,
+              event_date_time,
+              event_address,
+              event_name,
+              name,
+            } = orderPurchase;
 
-          const {
-            order_number,
-            order_date,
-            event_date_time,
-            event_address,
-            event_name,
-            name,
-          } = orderPurchase;
-
-          return {
-            order_number,
-            order_date,
-            event_date_time,
-            event_address,
-            event_name,
-            buyer_name: name,
-            ticket_type: ticket.ticket_type,
-            qr_code: `${process.env.OSTIVITIES_ORIGIN_URL}/check_in_portal/${savedGuest._id}/${eventData?._id}`,
-            ostivities_logo: OSTIVITIES_LOGO,
-            ticket_banner: TICKET_BANNER,
-            ticket_name: ticket.ticket_name,
-          };
-        },
+            return {
+              order_number,
+              order_date,
+              event_date_time,
+              event_address,
+              event_name,
+              buyer_name: name,
+              ticket_type: ticket.ticket_type,
+              qr_code: `${process.env.OSTIVITIES_ORIGIN_URL}/check_in_portal/${savedGuest._id}/${eventData?._id}`,
+              ostivities_logo: OSTIVITIES_LOGO,
+              ticket_banner: TICKET_BANNER,
+              ticket_name: ticket.ticket_name,
+            };
+          }),
       );
 
       // const content: PdfDto['content'] = dto.ticket_information.map(
