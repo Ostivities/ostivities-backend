@@ -121,7 +121,10 @@ export class EventService {
     try {
       const event = await this.eventModel
         .findOne({ unique_key: id })
-        .populate({ path: 'user', select: 'firstName lastName email' })
+        .populate({
+          path: 'user',
+          select: 'firstName lastName email accountType businessName',
+        })
         .exec();
       return event;
     } catch (error) {

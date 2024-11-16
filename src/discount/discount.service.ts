@@ -48,10 +48,12 @@ export class DiscountService {
         await this.ticketModel.updateMany(
           { _id: { $in: dto.ticket } },
           {
+            $push: {
+              discountCode: { $each: dto.discountCode },
+            },
             $set: {
               discount: newDiscount._id,
               discount_applicable: true,
-              discountCode: dto.discountCode,
             },
           },
         );
