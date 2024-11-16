@@ -189,7 +189,7 @@ export class EventController {
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   @Put('update_event_mode')
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   async updateEventModeById(
     @Body() dto: UpdateEventModeDto,
   ): Promise<IResponse> {
@@ -253,7 +253,7 @@ export class EventController {
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   @Put('update_event_discovery')
-  @UseGuards(JwtAuthGuard)
+  // @UseGuards(JwtAuthGuard)
   async updateDiscoveryStatus(
     @Body() dto: UpdateEventDiscoveryDto,
   ): Promise<any> {
