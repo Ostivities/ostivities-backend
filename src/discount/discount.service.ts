@@ -45,18 +45,20 @@ export class DiscountService {
       const newDiscount = await discount.save();
 
       if (dto.ticket && dto.ticket.length > 0) {
-        await this.ticketModel.updateMany(
-          { _id: { $in: dto.ticket } },
-          {
-            $push: {
-              discountCode: { $each: dto.discountCode },
+        for (const ticket_information of dto.ticket) {
+          await this.ticketModel.findOneAndUpdate(
+            { _id: { $in: ticket_information._id } },
+            {
+              $push: {
+                discountCode: { $each: dto.discountCode },
+              },
+              $set: {
+                discount: newDiscount._id,
+                discount_applicable: true,
+              },
             },
-            $set: {
-              discount: newDiscount._id,
-              discount_applicable: true,
-            },
-          },
-        );
+          );
+        }
       }
 
       return newDiscount;

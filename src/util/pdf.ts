@@ -22,11 +22,11 @@ export const pdfGenerator = async (dto: PdfDto): Promise<string> => {
     const pageContent: any = [
       {
         image: data.ostivities_logo,
-        margin: [5, 2, 10, 30],
+        margin: [5, 2, 10, 15],
         fit: [100, 100],
         style: 'header',
       },
-      '\n\n',
+      '\n',
       {
         image: data.ticket_banner,
         fit: [500, 500],
