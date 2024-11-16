@@ -166,9 +166,9 @@ export class Ticket {
 
   @Prop({
     required: false,
-    type: String,
+    type: [String],
   })
-  discountCode: string;
+  discountCode: string[];
 
   @Prop({ required: false, type: Number, default: 0 })
   ticket_sold: number;
