@@ -38,9 +38,11 @@ export class GuestsService {
 
   async register(dto: GuestDto, eventId: string): Promise<any> {
     const order_number = `ORD${generateOrderNumber()}`;
+
     const eventData: any = await this.eventModel
       .findById(eventId)
       .populate({ path: 'user', select: 'email' });
+
     if (!eventData) {
       throw new ForbiddenException('Event not found');
     }
