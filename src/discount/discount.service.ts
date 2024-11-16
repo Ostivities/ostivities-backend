@@ -26,13 +26,14 @@ export class DiscountService {
   async createDiscount(dto: CreateDiscountDto): Promise<Discounts> {
     const { event, user } = dto;
     const userData = await this.userModel.findById(user);
+
     if (!userData) {
-      throw new Error('User not found');
+      throw new ForbiddenException('User not found');
     }
 
     const eventData = await this.eventModel.findById(event);
     if (!eventData) {
-      throw new Error('Event not found');
+      throw new ForbiddenException('Event not found');
     }
     try {
       const discount = new this.discountModel({

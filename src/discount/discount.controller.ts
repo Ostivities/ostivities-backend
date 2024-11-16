@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Delete,
+  ForbiddenException,
   Get,
   HttpCode,
   HttpStatus,
@@ -48,8 +49,7 @@ export class DiscountController {
         message: 'Discount created successfully',
       };
     } catch (error) {
-      console.log(error, 'error');
-      return error;
+      throw new ForbiddenException(error?.message);
     }
   }
 

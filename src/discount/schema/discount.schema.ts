@@ -72,7 +72,7 @@ export class Discounts {
 
   @Prop({
     type: mongoose.Schema.Types.ObjectId,
-    ref: Events.name,
+    ref: Events?.name,
     required: true,
   })
   event: mongoose.Schema.Types.ObjectId;
