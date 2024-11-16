@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Delete,
+  ForbiddenException,
   Get,
   HttpCode,
   HttpStatus,
@@ -48,8 +49,7 @@ export class DiscountController {
         message: 'Discount created successfully',
       };
     } catch (error) {
-      console.log(error, 'error');
-      return error;
+      throw new ForbiddenException(error?.message);
     }
   }
 
@@ -67,7 +67,7 @@ export class DiscountController {
       const data = await this.discountService.applyDiscount(dto);
       return data;
     } catch (error) {
-      return error;
+      throw new ForbiddenException(error?.message);
     }
   }
 
@@ -88,7 +88,7 @@ export class DiscountController {
         message: 'Discount deleted sucessfully',
       };
     } catch (error) {
-      return error;
+      throw new ForbiddenException(error?.message);
     }
   }
 
@@ -110,7 +110,7 @@ export class DiscountController {
         message: 'Discount fetched successfully',
       };
     } catch (error) {
-      return error;
+      throw new ForbiddenException(error?.message);
     }
   }
   @HttpCode(HttpStatus.OK)
@@ -130,7 +130,7 @@ export class DiscountController {
         message: 'Discount fetched successfully',
       };
     } catch (error) {
-      return error;
+      throw new ForbiddenException(error?.message);
     }
   }
 }

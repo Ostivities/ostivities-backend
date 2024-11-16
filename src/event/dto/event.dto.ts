@@ -253,6 +253,15 @@ export class EventDto {
   @IsNotEmpty()
   @IsString()
   unique_key: string;
+
+  @ApiProperty({
+    type: String,
+    description: 'map coordinates',
+    required: false,
+  })
+  @IsOptional()
+  @IsString()
+  event_coordinates?: string;
 }
 
 export class CreateEventDto extends OmitType(EventDto, ['user']) {}
