@@ -149,11 +149,11 @@ export class Ticket {
   event: mongoose.Schema.Types.ObjectId;
 
   @Prop({
-    type: mongoose.Schema.Types.ObjectId,
+    type: [mongoose.Schema.Types.ObjectId],
     ref: Discounts.name,
     required: false,
   })
-  discount: mongoose.Schema.Types.ObjectId;
+  discount: mongoose.Schema.Types.ObjectId[];
 
   @Prop({
     type: Boolean,
@@ -167,8 +167,9 @@ export class Ticket {
   @Prop({
     required: false,
     type: [String],
+    default: [],
   })
-  discountCode: string[];
+  discountCode: [];
 
   @Prop({ required: false, type: Number, default: 0 })
   ticket_sold: number;

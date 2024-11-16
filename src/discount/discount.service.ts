@@ -31,10 +31,26 @@ export class DiscountService {
       throw new ForbiddenException('User not found');
     }
 
-    const eventData = await this.eventModel.findById(event);
-    if (!eventData) {
-      throw new ForbiddenException('Event not found');
+    console.log(dto.ticket, 'ticket array');
+
+    const ticketIds = dto.ticket.map((ticket) => ticket);
+
+    console.log(ticketIds, 'ticket ids');
+
+    const validTickets = await this.ticketModel.find({
+      _id: { $in: ticketIds },
+    });
+
+    const validTicketIds = validTickets.map((ticket) => ticket._id.toString());
+
+    const invalidTicketIds = ticketIds.filter(
+      (id) => !validTicketIds.includes(id as unknown as any),
+    );
+
+    if (invalidTicketIds.length > 0) {
+      throw new Error(`Invalid ticket IDs: ${invalidTicketIds.join(', ')}`);
     }
+
     try {
       const discount = new this.discountModel({
         ...dto,
@@ -45,25 +61,23 @@ export class DiscountService {
       const newDiscount = await discount.save();
 
       if (dto.ticket && dto.ticket.length > 0) {
-        for (const ticket_information of dto.ticket) {
-          await this.ticketModel.findOneAndUpdate(
-            { _id: { $in: ticket_information._id } },
-            {
-              $push: {
-                discountCode: { $each: dto.discountCode },
-              },
-              $set: {
-                discount: newDiscount._id,
-                discount_applicable: true,
-              },
+        await this.ticketModel.updateMany(
+          { _id: { $in: dto.ticket } },
+          {
+            $addToSet: {
+              discountCode: dto.discountCode,
+              discount: newDiscount._id,
             },
-          );
-        }
+            $set: {
+              discount_applicable: true,
+            },
+          },
+        );
       }
 
       return newDiscount;
     } catch (error) {
-      throw new ForbiddenException(FORBIDDEN_MESSAGE);
+      throw new ForbiddenException(error?.message);
     }
   }
   async applyDiscount(dto: ApplyDiscountDto): Promise<any> {
