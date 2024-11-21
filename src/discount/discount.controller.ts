@@ -17,7 +17,6 @@ import { IResponse } from 'src/util/types';
 import { DiscountService } from './discount.service';
 import { ApplyDiscountDto, CreateDiscountDto } from './dto/discount.dto';
 
-@UseGuards(JwtAuthGuard)
 @ApiTags('Discount Service')
 @Controller('discount')
 export class DiscountController {
@@ -32,6 +31,7 @@ export class DiscountController {
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   @Post('create/:eventId')
+  @UseGuards(JwtAuthGuard)
   async createDiscount(
     @Body() dto: CreateDiscountDto,
     @Param('eventId') eventId: string,
@@ -62,6 +62,7 @@ export class DiscountController {
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   @Post('apply_discount_code')
+  @UseGuards(JwtAuthGuard)
   async applyDiscount(@Body() dto: ApplyDiscountDto) {
     try {
       const data = await this.discountService.applyDiscount(dto);
@@ -79,6 +80,7 @@ export class DiscountController {
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   @Delete('delete/:discountId')
+  @UseGuards(JwtAuthGuard)
   async deleteDiscount(@Param('discountId') discountId: string) {
     try {
       const data = await this.discountService.deleteDiscount(discountId);
