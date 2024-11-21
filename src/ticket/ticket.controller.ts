@@ -23,7 +23,6 @@ import { IResponse } from 'src/util/types';
 import { CreateTicketDto, UpdateTicketDto } from './dto/ticket.dto';
 import { TicketService } from './ticket.service';
 
-@UseGuards(JwtAuthGuard)
 @Controller('ticket')
 @ApiTags('Ticket Service')
 export class TicketController {
@@ -38,6 +37,7 @@ export class TicketController {
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   @Post('create_ticket')
+  @UseGuards(JwtAuthGuard)
   async createTicket(
     @Body() dto: CreateTicketDto,
     @GetCurrentUser('id') id: string | any,
@@ -67,6 +67,7 @@ export class TicketController {
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   @Put('update_ticket/:id')
+  @UseGuards(JwtAuthGuard)
   async updateTicket(
     @Param('id') id: string,
     @Body() dto: UpdateTicketDto,
@@ -92,6 +93,7 @@ export class TicketController {
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   @Get('get_ticket/:id')
+  @UseGuards(JwtAuthGuard)
   async getTicket(@Param('id') id: string): Promise<IResponse> {
     try {
       const data = await this.ticketService.getTicketById(id);
@@ -132,6 +134,7 @@ export class TicketController {
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   @Delete('delete_ticket/:id')
+  @UseGuards(JwtAuthGuard)
   async deleteTicketById(@Param('id') id: string): Promise<IResponse> {
     try {
       const data = await this.ticketService.deleteTicketById(id);
