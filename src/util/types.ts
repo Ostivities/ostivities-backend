@@ -157,3 +157,21 @@ export enum EVENT_STATUS {
 export enum TEMPLATE {
   TO_GUEST = '',
 }
+
+export interface IBanks {
+  id: number;
+  name: string;
+  slug: string;
+  code: string;
+  longcode: string;
+  gateway: string;
+  pay_with_bank: boolean;
+  supports_transfer: boolean;
+  active: boolean;
+  country: string;
+  currency: string;
+  type: string;
+  is_deleted: boolean;
+  createdAt: string; // ISO date string
+  updatedAt: string; // ISO date string
+}
