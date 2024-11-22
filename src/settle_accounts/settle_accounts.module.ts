@@ -11,6 +11,7 @@ import {
 import { SettleAccountsController } from './settle_accounts.controller';
 import { settlementProviders } from './settle_accounts.provider';
 import { SettleAccountsService } from './settle_accounts.service';
+import { HttpModule } from '@nestjs/axios';
 
 @Module({
   providers: [SettleAccountsService, SettlementAccount, ...settlementProviders],
@@ -26,6 +27,7 @@ import { SettleAccountsService } from './settle_accounts.service';
       { name: Revoked.name, schema: RevokedSchema },
     ]),
     DatabaseModule,
+    HttpModule,
   ],
 })
 export class SettleAccountsModule {}
