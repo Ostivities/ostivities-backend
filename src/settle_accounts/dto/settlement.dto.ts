@@ -1,5 +1,5 @@
-import { ApiProperty } from '@nestjs/swagger';
-import { IsMongoId, IsNotEmpty, IsNumber, IsString } from 'class-validator';
+import { ApiProperty, PartialType } from '@nestjs/swagger';
+import { IsMongoId, IsNotEmpty, IsString } from 'class-validator';
 
 export class SettlementDto {
   @ApiProperty({
@@ -43,7 +43,7 @@ export class SettlementDto {
   bank_name: string;
 }
 
-export class UpdateSettlementDto extends SettlementDto {}
+export class UpdateSettlementDto extends PartialType(SettlementDto) {}
 
 export class ValidateAccountDto {
   @ApiProperty({

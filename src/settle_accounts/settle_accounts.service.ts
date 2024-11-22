@@ -48,6 +48,11 @@ export class SettleAccountsService {
     userId: string,
     dto: UpdateSettlementDto,
   ): Promise<SettlementAccount> {
+    const { user } = dto;
+    const userData = await this.userModel.findById(user);
+    if (!userData) {
+      throw new Error('User not found');
+    }
     try {
       const settlement = await this.settlementModel.findOneAndUpdate(
         { user: userId },

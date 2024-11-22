@@ -9,29 +9,28 @@ export type UserDocument = HydratedDocument<SettlementAccount>;
 export class SettlementAccount {
   @Prop({
     type: String,
-    required: [false, 'account name is required'],
-    default: '',
+    required: true,
   })
   account_name: string;
 
   @Prop({
     type: String,
-    required: [false, 'account number is required'],
-    default: '',
+    required: true,
+
+    unique: true,
   })
   account_number: string;
 
   @Prop({
     type: String,
-    required: [false, 'bank code is required'],
-    default: '',
+    required: true,
+    unique: true,
   })
   bank_code: string;
 
   @Prop({
     type: String,
-    required: [false, 'bank name is required'],
-    default: '',
+    required: true,
   })
   bank_name: string;
 
@@ -46,8 +45,3 @@ export class SettlementAccount {
 
 export const SettlementAccountSchema =
   SchemaFactory.createForClass(SettlementAccount);
-
-// account_name: 'WOODCORE POOLER SETTLEMENT CLIENT';
-// account_number: '0113375218';
-// bank_code: '000013';
-// bank_name: 'GTBank';
