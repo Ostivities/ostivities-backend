@@ -66,7 +66,7 @@ export class DiscountService {
           {
             $addToSet: {
               discountCode: dto.discountCode,
-              discount: newDiscount._id,
+              // discount: newDiscount._id,
             },
             $set: {
               discount_applicable: true,
