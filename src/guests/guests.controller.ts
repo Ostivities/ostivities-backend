@@ -60,7 +60,6 @@ export class GuestsController {
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get all guests' })
-  @ApiParam({ name: 'event id', description: 'Event ID' })
   @ApiResponse({
     status: 200,
     description: 'Guests fetched successfully.',
@@ -73,7 +72,7 @@ export class GuestsController {
       return {
         statusCode: HttpStatus.OK,
         data: data,
-        message: 'Guests fetched successful',
+        message: 'Guests fetched successfully',
       };
     } catch (error) {
       throw new ForbiddenException(error?.message);

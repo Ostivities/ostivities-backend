@@ -318,14 +318,13 @@ export class GuestsService {
   }
 
   async getGuestsByEventId(eventId: string): Promise<Guests[]> {
+    console.log(eventId, 'event id');
     const eventData = await this.eventModel.findById(eventId);
     if (!eventData) {
       throw new Error('Event not found');
     }
     try {
-      const event = await this.guestModel
-        .find({ event: eventId })
-        .populate('ticket');
+      const event = await this.guestModel.find({ event: eventId }).exec();
       return event;
     } catch (error) {
       throw new ForbiddenException(FORBIDDEN_MESSAGE);
