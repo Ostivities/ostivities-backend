@@ -193,6 +193,15 @@ export class Guests {
   total_purchased: number;
 
   @Prop({
+    required: false,
+    enum: {
+      values: ['CHECKED_IN', 'NOT_CHECKED_IN'],
+      message: '{VALUE} is not supported',
+    },
+  })
+  check_in_status: string;
+
+  @Prop({
     required: true,
     enum: {
       values: [

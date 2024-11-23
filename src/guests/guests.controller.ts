@@ -7,6 +7,7 @@ import {
   HttpStatus,
   Param,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import {
@@ -66,9 +67,17 @@ export class GuestsController {
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   @Get('event/:eventId')
-  async getGuestsByEventId(@Param('eventId') eventId: string) {
+  async getGuestsByEventId(
+    @Param('eventId') eventId: string,
+    @Query('page') page: number,
+    @Query('limit') limit: number,
+  ) {
     try {
-      const data = await this.guestService.getGuestsByEventId(eventId);
+      const data = await this.guestService.getGuestsByEventId(
+        eventId,
+        page,
+        limit,
+      );
       return {
         statusCode: HttpStatus.OK,
         data: data,
