@@ -29,6 +29,11 @@ export enum EVENT_MODES {
   PAID = 'PAID',
 }
 
+export enum CHECK_IN_STATUS {
+  CHECKED_IN = 'CHECKED_IN',
+  NOT_CHECKED_IN = 'NOT_CHECKED_IN',
+}
+
 export enum TICKET_STOCK {
   LIMITED = 'LIMITED',
   UN_LIMITED = 'UN_LIMITED',

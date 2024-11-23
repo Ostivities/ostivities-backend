@@ -317,15 +317,28 @@ export class GuestsService {
     return savedGuest;
   }
 
-  async getGuestsByEventId(eventId: string): Promise<Guests[]> {
+  async getGuestsByEventId(
+    eventId: string,
+    page: number = 1,
+    limit: number = 10,
+  ): Promise<any> {
     console.log(eventId, 'event id');
     const eventData = await this.eventModel.findById(eventId);
     if (!eventData) {
       throw new Error('Event not found');
     }
+    const skip = (page - 1) * limit;
     try {
-      const event = await this.guestModel.find({ event: eventId }).exec();
-      return event;
+      const guests = await this.guestModel
+        .find({ event: eventId })
+        .skip(skip)
+        .limit(limit)
+        .exec();
+
+      const total = await this.guestModel.countDocuments({ event: eventId });
+      const pages = Math.ceil(total / limit);
+
+      return { guests, total, pages };
     } catch (error) {
       throw new ForbiddenException(FORBIDDEN_MESSAGE);
     }
