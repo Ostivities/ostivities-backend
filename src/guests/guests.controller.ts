@@ -73,7 +73,7 @@ export class GuestsController {
       return {
         statusCode: HttpStatus.OK,
         data: data,
-        message: 'Guests fetched successful',
+        message: 'Guests fetched successfully',
       };
     } catch (error) {
       throw new ForbiddenException(error?.message);
