@@ -60,7 +60,6 @@ export class GuestsController {
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get all guests' })
-  @ApiParam({ name: 'event id', description: 'Event ID' })
   @ApiResponse({
     status: 200,
     description: 'Guests fetched successfully.',
