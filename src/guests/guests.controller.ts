@@ -7,13 +7,14 @@ import {
   HttpStatus,
   Param,
   Post,
+  Put,
   Query,
   UseGuards,
 } from '@nestjs/common';
 import {
   ApiBody,
   ApiOperation,
-  ApiParam,
+  ApiQuery,
   ApiResponse,
   ApiTags,
 } from '@nestjs/swagger';
@@ -61,6 +62,18 @@ export class GuestsController {
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get all guests' })
+  @ApiQuery({
+    name: 'page',
+    required: true,
+    description: 'Page number',
+    example: 1,
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: true,
+    description: 'Number of items per page',
+    example: 10,
+  })
   @ApiResponse({
     status: 200,
     description: 'Guests fetched successfully.',
@@ -90,25 +103,42 @@ export class GuestsController {
 
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Get all guests' })
-  @ApiParam({ name: 'ticket id', description: 'Event ID' })
+  @ApiOperation({ summary: 'Get guest info and ticket information' })
   @ApiResponse({
     status: 200,
     description: 'Guests fetched successfully.',
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
-  @Get('ticket/:ticketId')
-  async getGuestsByTicketId(@Param('ticketId') ticketId: string) {
-    console.log(ticketId);
-    // try {
-    //   const data = await this.guestService.getGuestsByTicketId(ticketId);
-    //   return {
-    //     statusCode: HttpStatus.OK,
-    //     data: data,
-    //     message: 'Guests fetched successful',
-    //   };
-    // } catch (error) {
-    //   return error;
-    // }
+  @Get(':event_unique_key/:guest_id/:ticket_id')
+  async getGuestsTicketInformation(
+    @Param('event_unique_key') eventUniqueKey: string,
+    @Param('guest_id') guestId: string,
+    @Param('ticket_id') ticketId: string,
+  ) {
+    try {
+      const data = await this.guestService.getGuestsTicketInformation(
+        eventUniqueKey,
+        guestId,
+        ticketId,
+      );
+      return {
+        statusCode: HttpStatus.OK,
+        data: data,
+        message: 'Guests fetched successfully',
+      };
+    } catch (error) {
+      return error;
+    }
   }
+
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Guest check in' })
+  @ApiResponse({
+    status: 200,
+    description: 'Guest(s) checked successfully.',
+  })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @Put('check_in/:guest_id')
+  async guestCheckin() {}
 }

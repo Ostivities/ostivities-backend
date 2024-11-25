@@ -3,7 +3,7 @@ import mongoose, { HydratedDocument } from 'mongoose';
 import { Events } from 'src/event/schema/event.schema';
 import { emailRegExp } from 'src/util/helper';
 import { schemaConfig } from 'src/util/schema.config';
-import { STAFF_ROLE } from 'src/util/types';
+import { ACCOUNT_TYPE, STAFF_ROLE } from 'src/util/types';
 
 export type CoordinatorDocument = HydratedDocument<Coordinator>;
 
@@ -37,6 +37,16 @@ export class Coordinator {
     },
   })
   staff_role: STAFF_ROLE;
+
+  @Prop({
+    validate: {
+      validator: function (value: string) {
+        return this.staff_role === STAFF_ROLE.AGENT ? !!value : true;
+      },
+      message: 'password is required for agent role',
+    },
+  })
+  password: string;
 
   @Prop({
     required: [true, 'phone number is required'],

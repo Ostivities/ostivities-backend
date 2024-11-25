@@ -15,7 +15,7 @@ import {
   generateOrderNumber,
   getFormattedDate,
 } from 'src/util/helper';
-import { EVENT_TYPE } from 'src/util/types';
+import { CHECK_IN_STATUS, EVENT_TYPE } from 'src/util/types';
 import { GuestDto } from './dto/guests.dto';
 import { Guests } from './schema/guests.schema';
 import { pdfGenerator } from '../util/pdf';
@@ -132,6 +132,7 @@ export class GuestsService {
       ...dto,
       order_number: order_number.toString(),
       event: eventData?._id,
+      check_in_status: CHECK_IN_STATUS.NOT_CHECKED_IN,
     });
     const savedGuest = await newRegistration.save();
     // SEND EMAIL TO PRY BUYER
@@ -323,14 +324,17 @@ export class GuestsService {
     limit: number = 10,
   ): Promise<any> {
     console.log(eventId, 'event id');
+
     const eventData = await this.eventModel.findById(eventId);
     if (!eventData) {
       throw new Error('Event not found');
     }
     const skip = (page - 1) * limit;
+    const query: any = { event: eventId };
+
     try {
       const guests = await this.guestModel
-        .find({ event: eventId })
+        .find({ ...query })
         .skip(skip)
         .limit(limit)
         .exec();
@@ -344,18 +348,47 @@ export class GuestsService {
     }
   }
 
-  // async getGuestsByTicketId(ticketId: string): Promise<Guests[]> {
-  //   const ticketData = await this.ticketModel.findById(ticketId);
-  //   if (!ticketData) {
-  //     throw new Error('Ticket not found');
-  //   }
-  //   try {
-  //     const event = await this.guestModel
-  //       .find({ ticket: ticketId })
-  //       .populate('event');
-  //     return event;
-  //   } catch (error) {
-  //     throw new ForbiddenException(FORBIDDEN_MESSAGE);
-  //   }
-  // }
+  async getGuestsTicketInformation(
+    eventUniqueKey: string,
+    guestId: string,
+    ticketId: string,
+  ): Promise<any> {
+    // CHECK IF IT'S A VALID EVENT
+    const eventData: any = await this.eventModel.findOne({
+      unique_key: eventUniqueKey,
+    });
+
+    if (!eventData) {
+      throw new ForbiddenException('Event not found');
+    }
+
+    try {
+      const guestData: any = await this.guestModel.findById(guestId);
+
+      const ticket_information = guestData?.ticket_information?.find(
+        (ticket: any) => ticket.ticket_id == ticketId,
+      );
+
+      const data = {
+        personal_information: guestData.personal_information,
+        ticket_information,
+        order_number: guestData.order_number,
+        total_purchased: guestData.total_purchased,
+        total_checked_in_tickets: guestData.total_checked_in_tickets,
+        check_in_status: guestData.check_in_status,
+        order_date: guestData.order_date,
+      };
+      return data;
+    } catch (error) {
+      throw new ForbiddenException(error?.message);
+    }
+  }
+
+  async guestCheckIn(guestId: string): Promise<any> {
+    try {
+      console.log(guestId, 'guest id');
+    } catch (e) {
+      throw new ForbiddenException(e.message);
+    }
+  }
 }

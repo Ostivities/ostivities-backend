@@ -5,7 +5,7 @@ import { Events } from 'src/event/schema/event.schema';
 import { Ticket } from 'src/ticket/schema/ticket.schema';
 import { emailRegExp } from 'src/util/helper';
 import { schemaConfig } from 'src/util/schema.config';
-import { PAYMENT_METHODS } from 'src/util/types';
+import { CHECK_IN_STATUS, PAYMENT_METHODS } from 'src/util/types';
 
 export type GuestDocument = HydratedDocument<Guests>;
 
@@ -114,6 +114,18 @@ export class TicketInformation {
   })
   ticket_name: string;
 
+  // @Prop({
+  //   type: String,
+  //   required: false,
+  // })
+  // ticket_type: string;
+  //
+  // @Prop({
+  //   type: String,
+  //   required: false,
+  // })
+  // order_no: string;
+
   @Prop({ type: Number, required: true })
   quantity: number;
 
@@ -198,8 +210,16 @@ export class Guests {
       values: ['CHECKED_IN', 'NOT_CHECKED_IN'],
       message: '{VALUE} is not supported',
     },
+    default: CHECK_IN_STATUS.NOT_CHECKED_IN,
   })
   check_in_status: string;
+
+  @Prop({
+    required: false,
+    type: Number,
+    default: 0,
+  })
+  total_checked_in_tickets: number;
 
   @Prop({
     required: true,
