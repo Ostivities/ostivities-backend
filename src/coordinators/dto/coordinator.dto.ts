@@ -5,9 +5,10 @@ import {
   IsNotEmpty,
   IsString,
   Matches,
+  ValidateIf,
 } from 'class-validator';
 import { emailRegExp } from 'src/util/helper';
-import { STAFF_ROLE } from 'src/util/types';
+import { ACCOUNT_TYPE, STAFF_ROLE } from 'src/util/types';
 
 export class CoordinatorDto {
   @ApiProperty({
@@ -45,4 +46,16 @@ export class CoordinatorDto {
   @IsNotEmpty()
   @IsString()
   staff_phone_number: string;
+
+  @ApiProperty({
+    description: 'Business name',
+    type: String,
+    required: true,
+  })
+  @ValidateIf((o) => o.staff_role === STAFF_ROLE.AGENT)
+  @IsNotEmpty({
+    message: 'password is required for agent role',
+  })
+  @IsString()
+  password: string;
 }
