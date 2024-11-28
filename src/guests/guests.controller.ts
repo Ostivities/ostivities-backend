@@ -74,6 +74,12 @@ export class GuestsController {
     description: 'Number of items per page',
     example: 10,
   })
+  @ApiQuery({
+    name: 'search',
+    required: false,
+    description: `filter by guest's firstName, lastName, email and ticket_name`,
+    example: 10,
+  })
   @ApiResponse({
     status: 200,
     description: 'Guests fetched successfully.',
