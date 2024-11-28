@@ -135,18 +135,28 @@ export class GuestsController {
         message: 'Guests fetched successfully',
       };
     } catch (error) {
-      return error;
+      throw new ForbiddenException(error?.message);
     }
   }
 
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'Guest check in' })
   @ApiResponse({
     status: 200,
     description: 'Guest(s) checked successfully.',
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
-  @Put('check_in/:guest_id')
-  async guestCheckin() {}
+  @Get(':ticket_id')
+  async guestByTicketId(@Param('ticket_id') ticketId: string) {
+    try {
+      const data = await this.guestService.guestByTicketId(ticketId);
+      return {
+        statusCode: HttpStatus.OK,
+        data: data,
+        message: 'Guests fetched successfully',
+      };
+    } catch (error) {
+      throw new ForbiddenException(error?.message);
+    }
+  }
 }

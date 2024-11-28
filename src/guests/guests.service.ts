@@ -333,8 +333,6 @@ export class GuestsService {
     const skip = (page - 1) * limit;
     const query: any = { event: eventId };
 
-    // const filters: any = {};
-
     if (search) {
       query['$or'] = [
         { 'personal_information.firstName': { $regex: search, $options: 'i' } },
@@ -396,9 +394,12 @@ export class GuestsService {
     }
   }
 
-  async guestCheckIn(guestId: string): Promise<any> {
+  async guestByTicketId(ticketId: string): Promise<any> {
     try {
-      console.log(guestId, 'guest id');
+      const guestData: any = await this.guestModel
+        .find({ 'ticket_information.ticket_id': ticketId })
+        .exec();
+      return guestData;
     } catch (e) {
       throw new ForbiddenException(e.message);
     }
