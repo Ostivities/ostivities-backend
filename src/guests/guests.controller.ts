@@ -74,6 +74,12 @@ export class GuestsController {
     description: 'Number of items per page',
     example: 10,
   })
+  @ApiQuery({
+    name: 'search',
+    required: false,
+    description: `filter by guest's firstName, lastName, email and ticket_name`,
+    example: 10,
+  })
   @ApiResponse({
     status: 200,
     description: 'Guests fetched successfully.',
@@ -84,12 +90,14 @@ export class GuestsController {
     @Param('eventId') eventId: string,
     @Query('page') page: number,
     @Query('limit') limit: number,
+    @Query('search') search?: string,
   ) {
     try {
       const data = await this.guestService.getGuestsByEventId(
         eventId,
         page,
         limit,
+        search,
       );
       return {
         statusCode: HttpStatus.OK,

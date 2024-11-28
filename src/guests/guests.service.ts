@@ -322,6 +322,7 @@ export class GuestsService {
     eventId: string,
     page: number = 1,
     limit: number = 10,
+    search?: string,
   ): Promise<any> {
     console.log(eventId, 'event id');
 
@@ -332,6 +333,17 @@ export class GuestsService {
     const skip = (page - 1) * limit;
     const query: any = { event: eventId };
 
+    // const filters: any = {};
+
+    if (search) {
+      query['$or'] = [
+        { 'personal_information.firstName': { $regex: search, $options: 'i' } },
+        { 'personal_information.lastName': { $regex: search, $options: 'i' } },
+        { 'personal_information.email': { $regex: search, $options: 'i' } },
+        { 'ticket_information.ticket_name': { $regex: search, $options: 'i' } },
+      ];
+    }
+
     try {
       const guests = await this.guestModel
         .find({ ...query })
@@ -339,7 +351,7 @@ export class GuestsService {
         .limit(limit)
         .exec();
 
-      const total = await this.guestModel.countDocuments({ event: eventId });
+      const total = await this.guestModel.countDocuments({ ...query });
       const pages = Math.ceil(total / limit);
 
       return { guests, total, pages };
