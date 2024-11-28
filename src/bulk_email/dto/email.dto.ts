@@ -40,7 +40,7 @@ class Attachments {
     type: String,
     required: true,
   })
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   name?: string;
 
@@ -49,7 +49,7 @@ class Attachments {
     type: String,
     required: true,
   })
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
   content?: string;
 
@@ -59,7 +59,7 @@ class Attachments {
     required: true,
   })
   @IsUrl()
-  @IsNotEmpty()
+  @IsOptional()
   url?: string;
 }
 

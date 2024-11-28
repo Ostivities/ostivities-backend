@@ -84,12 +84,14 @@ export class GuestsController {
     @Param('eventId') eventId: string,
     @Query('page') page: number,
     @Query('limit') limit: number,
+    @Query('search') search?: string,
   ) {
     try {
       const data = await this.guestService.getGuestsByEventId(
         eventId,
         page,
         limit,
+        search,
       );
       return {
         statusCode: HttpStatus.OK,
