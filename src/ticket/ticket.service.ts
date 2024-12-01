@@ -77,7 +77,15 @@ export class TicketService {
     try {
       const updatedTicket = await this.ticketModel.findOneAndUpdate(
         { _id: ticketId },
-        { ...dto, event: eventData?._id, user: userData?._id },
+        {
+          ...dto,
+          event: eventData?._id,
+          user: userData?._id,
+          ticket_available:
+            dto.ticketQty && dto.ticketQty > ticket.ticketQty
+              ? dto.ticketQty - ticket.ticketQty + ticket.ticket_available
+              : ticket.ticket_available,
+        },
         { new: true, upsert: false, runValidators: true },
       );
       return updatedTicket;
