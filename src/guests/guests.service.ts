@@ -78,7 +78,7 @@ export class GuestsService {
 
         // calculate ticket quantity left
         const newTicketQty =
-          ticket.ticket_available + ticket_information.quantity;
+          ticket.ticket_available - ticket_information.quantity;
         const newTicketSold = ticket.ticket_sold + ticket_information.quantity;
 
         // const ticket_available =
