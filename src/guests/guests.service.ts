@@ -114,17 +114,6 @@ export class GuestsService {
           },
           { new: true },
         );
-
-        await this.eventModel.findOneAndUpdate(
-          { _id: eventData?._id },
-          {
-            $set: {
-              total_ticket_sold: newTicketSold,
-              total_sales_revenue: total_sales_revenue,
-            },
-          },
-          { new: true },
-        );
       }
     }
 
@@ -280,7 +269,7 @@ export class GuestsService {
               eventData.eventMode === EVENT_TYPE.FREE
                 ? `0`
                 : attendee_information.ticket_price,
-            order_discount: `0`, // to be changed later
+            order_discount: dto.discount?.toString(), // to be changed later
             order_subtotal: formatNumber(dto.total_amount_paid?.toString()),
             order_fees: formatNumber(dto.fees?.toString()),
             order_qty: formatNumber(dto.total_purchased?.toString()),
@@ -313,6 +302,35 @@ export class GuestsService {
           }
         }
       }
+    }
+
+    const tickets_metrics = await this.ticketModel
+      .find({ event: eventData?._id })
+      .select('ticket_sales_revenue ticket_net_sales_revenue ticket_sold')
+      .exec();
+
+    console.log(tickets_metrics, 'ticket_metrics');
+    if (tickets_metrics) {
+      const total_ticket_sold = tickets_metrics.reduce(
+        (sum, ticket) => sum + ticket.ticket_sold,
+        0,
+      );
+
+      const total_sales_revenue = tickets_metrics.reduce(
+        (sum, ticket) => sum + ticket.ticket_sales_revenue,
+        0,
+      );
+
+      await this.eventModel.findOneAndUpdate(
+        { _id: eventData?._id },
+        {
+          $set: {
+            total_ticket_sold: total_ticket_sold,
+            total_sales_revenue: total_sales_revenue,
+          },
+        },
+        { new: true },
+      );
     }
 
     return savedGuest;
