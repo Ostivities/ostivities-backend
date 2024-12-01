@@ -77,7 +77,8 @@ export class GuestsService {
         }
 
         // calculate ticket quantity left
-        const newTicketQty = ticket.ticketQty - ticket_information.quantity;
+        const newTicketQty =
+          ticket.ticket_available + ticket_information.quantity;
         const newTicketSold = ticket.ticket_sold + ticket_information.quantity;
 
         // const ticket_available =
@@ -97,7 +98,8 @@ export class GuestsService {
         if (ticket.ticketQty - ticket.ticket_sold === 0) {
           ticket.ticket_available = 0;
         } else {
-          ticket.ticket_available += ticket.ticketQty - ticket.ticket_sold;
+          ticket.ticket_available +=
+            ticket.ticket_available + ticket_information.quantity;
         }
         await this.ticketModel.findOneAndUpdate(
           { _id: ticket_information.ticket_id },
