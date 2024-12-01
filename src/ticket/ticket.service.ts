@@ -84,7 +84,9 @@ export class TicketService {
           ticket_available:
             dto.ticketQty && dto.ticketQty > ticket.ticketQty
               ? dto.ticketQty - ticket.ticketQty + ticket.ticket_available
-              : ticket.ticket_available,
+              : dto.ticketQty && dto.ticketQty < ticket.ticketQty
+                ? ticket.ticketQty - dto.ticketQty + ticket.ticket_available
+                : ticket.ticket_available,
         },
         { new: true, upsert: false, runValidators: true },
       );
