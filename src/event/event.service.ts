@@ -264,7 +264,7 @@ export class EventService {
     eventCat?: EVENT_MODES,
 
     // eventMode?: EVENT_TYPE,
-  ): Promise<Events[]> {
+  ): Promise<any> {
     const filter: any = { discover: true };
     const skip = (page - 1) * pageSize;
 
@@ -285,7 +285,11 @@ export class EventService {
         .skip(skip)
         .limit(pageSize)
         .exec();
-      return events;
+
+      const total = await this.eventModel.countDocuments({ ...filter });
+      const pages = Math.ceil(total / pageSize);
+
+      return { events, total, pages };
     } catch (error) {
       throw new ForbiddenException(FORBIDDEN_MESSAGE);
     }
