@@ -9,6 +9,8 @@ import {
   Post,
   Put,
   UseGuards,
+  Headers,
+  ForbiddenException,
 } from '@nestjs/common';
 import {
   ApiBody,
@@ -22,6 +24,7 @@ import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
 import { IResponse } from 'src/util/types';
 import { CreateTicketDto, UpdateTicketDto } from './dto/ticket.dto';
 import { TicketService } from './ticket.service';
+import { encryptText } from '../util/helper';
 
 @Controller('ticket')
 @ApiTags('Ticket Service')
@@ -111,6 +114,7 @@ export class TicketController {
     description: 'Tickets retrieved successfully.',
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @UseGuards(JwtAuthGuard)
   @Get('get_event_ticket/:id')
   async getTicketsByEventId(@Param('id') id: string): Promise<IResponse> {
     try {
@@ -122,6 +126,36 @@ export class TicketController {
       };
     } catch (error) {
       return error;
+    }
+  }
+
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'List tickets of an event' })
+  @ApiResponse({
+    status: 200,
+    description: 'Tickets retrieved successfully.',
+  })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @Get('get_event_tickets/:event_unique_key')
+  async getTicketsByEventUniqueKey(
+    @Param('event_unique_key') id: string,
+    @Headers('Reference') Reference: string,
+  ): Promise<IResponse> {
+    try {
+      if (encryptText(Reference) === false) {
+        return {
+          statusCode: HttpStatus.UNAUTHORIZED,
+          message: 'Unauthorized request',
+        };
+      }
+      const data = await this.ticketService.getTicketsByEventUniqueKey(id);
+      return {
+        statusCode: HttpStatus.OK,
+        data: data,
+        message: 'Tickets fetched successfully',
+      };
+    } catch (error) {
+      throw new ForbiddenException(error?.message);
     }
   }
 

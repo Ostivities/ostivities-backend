@@ -143,8 +143,9 @@ export class GuestsController {
   @HttpCode(HttpStatus.OK)
   @ApiResponse({
     status: 200,
-    description: 'Guest(s) checked successfully.',
+    description: 'Guest(s) fetched successfully.',
   })
+  @ApiOperation({ summary: 'Get guest using ticket ID' })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   @Get(':ticket_id')
   async guestByTicketId(@Param('ticket_id') ticketId: string) {
