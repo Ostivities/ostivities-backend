@@ -1,4 +1,8 @@
-import { ForbiddenException, Injectable } from '@nestjs/common';
+import {
+  ForbiddenException,
+  Injectable,
+  NotFoundException,
+} from '@nestjs/common';
 import { FORBIDDEN_MESSAGE } from '@nestjs/core/guards';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
@@ -6,6 +10,7 @@ import { User } from 'src/auth/schema/auth.schema';
 import { Events } from 'src/event/schema/event.schema';
 import { CreateTicketDto, UpdateTicketDto } from './dto/ticket.dto';
 import { Ticket } from './schema/ticket.schema';
+import { cipherText } from '../util/helper';
 
 @Injectable()
 export class TicketService {
@@ -102,10 +107,32 @@ export class TicketService {
     try {
       const tickets = await this.ticketModel
         .find({ event: eventData?._id })
-        .populate(['discount', 'event', 'user'])
+        .populate(['discount'])
         .exec();
+
       return tickets;
     } catch (error) {
+      throw new ForbiddenException(FORBIDDEN_MESSAGE);
+    }
+  }
+
+  async getTicketsByEventUniqueKey(eventId: string): Promise<Ticket[]> {
+    const eventData = await this.eventModel.findOne({ unique_key: eventId });
+    if (!eventData) {
+      throw new NotFoundException('Event not found');
+    }
+    try {
+      const tickets = await this.ticketModel
+        .find({ event: eventData?._id })
+        .populate(['discount'])
+        .select(
+          '-ticket_sales_revenue -ticket_net_sales_revenue -ticket_sold -ticket_available -fees',
+        )
+        .exec();
+
+      return tickets;
+    } catch (error) {
+      console.log(error);
       throw new ForbiddenException(FORBIDDEN_MESSAGE);
     }
   }

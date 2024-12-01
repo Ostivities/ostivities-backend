@@ -1,3 +1,6 @@
+import CryptoJS from 'crypto-js';
+import * as process from 'node:process';
+
 export const otpGenerator = (): string => {
   const otp = (Math.floor(Math.random() * 900000) + 100000).toString();
   return otp;
@@ -57,4 +60,29 @@ export const formatNumber = (value: number | string): string => {
     minimumFractionDigits: 2,
     maximumFractionDigits: 2,
   });
+};
+
+export const encryptText = (ciphertext: string) => {
+  // Decrypt
+  if (ciphertext) {
+    const bytes = CryptoJS.AES.decrypt(
+      ciphertext,
+      process.env.OSTIVITIES_REFERENCE_KEY,
+    );
+    const originalText = bytes.toString(CryptoJS.enc.Utf8);
+
+    if (originalText === process.env.OSTIVITIES_REFERENCE_TEXT) {
+      return true;
+    }
+  } else {
+    return false;
+  }
+};
+
+export const cipherText = () => {
+  const cip = CryptoJS.AES.encrypt(
+    process.env.OSTIVITIES_REFERENCE_TEXT,
+    process.env.OSTIVITIES_REFERENCE_KEY,
+  ).toString();
+  return cip;
 };
