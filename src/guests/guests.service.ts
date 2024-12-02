@@ -62,7 +62,10 @@ export class GuestsService {
           );
         }
 
-        if (ticket.ticketQty < ticket_information.quantity) {
+        if (
+          ticket.ticketQty < ticket_information.quantity &&
+          ticket_information.ticket_stock === TICKET_STOCK.LIMITED
+        ) {
           console.log(ticket.ticketQty, 'Q1');
           console.log(ticket_information.quantity, 'Q2');
           throw new ForbiddenException(
@@ -314,7 +317,6 @@ export class GuestsService {
       .select('ticket_sales_revenue ticket_net_sales_revenue ticket_sold')
       .exec();
 
-    console.log(tickets_metrics, 'ticket_metrics');
     if (tickets_metrics) {
       const total_ticket_sold = tickets_metrics.reduce(
         (sum, ticket) => sum + ticket.ticket_sold,
