@@ -52,73 +52,73 @@ export class GuestsService {
       let ticket_sales_revenue = 0;
       let ticket_net_sales_revenue = 0;
       for (const ticket_information of dto.ticket_information) {
-        if (ticket_information.ticket_stock === TICKET_STOCK.LIMITED) {
-          const ticket = await this.ticketModel.findOne({
-            _id: ticket_information.ticket_id,
-          });
+        const ticket = await this.ticketModel.findOne({
+          _id: ticket_information.ticket_id,
+        });
 
-          if (!ticket) {
-            throw new ForbiddenException(
-              `${ticket_information.ticket_name} not found`,
-            );
-          }
-
-          if (ticket.ticketQty < ticket_information.quantity) {
-            console.log(ticket.ticketQty, 'Q1');
-            console.log(ticket_information.quantity, 'Q2');
-            throw new ForbiddenException(
-              `Not enough tickets available for ${ticket_information.ticket_name}`,
-            );
-          }
-
-          if (ticket.ticketQty <= 0) {
-            throw new ForbiddenException(
-              `${ticket_information.ticket_name} sold out`,
-            );
-          }
-
-          // calculate ticket quantity left
-          const newTicketQty =
-            ticket.ticket_available - ticket_information.quantity;
-          const newTicketSold =
-            ticket.ticket_sold + ticket_information.quantity;
-
-          // const ticket_available =
-          //   newTicketQty === 0 ? 0 : ticket.ticketQty - newTicketSold;
-
-          total_sales_revenue +=
-            eventData.total_sales_revenue + dto.total_amount_paid;
-
-          ticket_sales_revenue +=
-            dto.fees +
-            ticket_information.total_amount +
-            ticket.ticket_sales_revenue;
-
-          ticket_net_sales_revenue +=
-            ticket_sales_revenue - dto.fees + ticket.ticket_net_sales_revenue;
-
-          if (ticket.ticketQty - ticket.ticket_sold === 0) {
-            ticket.ticket_available = 0;
-          } else {
-            ticket.ticket_available +=
-              ticket.ticket_available + ticket_information.quantity;
-          }
-          await this.ticketModel.findOneAndUpdate(
-            { _id: ticket_information.ticket_id },
-            {
-              $set: {
-                // ticketQty: newTicketQty,
-                ticket_sold: newTicketSold,
-                ticket_available: newTicketQty,
-                // map fees from fees api
-                fees: dto.fees,
-                ticket_sales_revenue,
-                ticket_net_sales_revenue,
-              },
-            },
-            { new: true },
+        if (!ticket) {
+          throw new ForbiddenException(
+            `${ticket_information.ticket_name} not found`,
           );
         }
+
+        if (ticket.ticketQty < ticket_information.quantity) {
+          console.log(ticket.ticketQty, 'Q1');
+          console.log(ticket_information.quantity, 'Q2');
+          throw new ForbiddenException(
+            `Not enough tickets available for ${ticket_information.ticket_name}`,
+          );
+        }
+
+        if (ticket.ticketQty <= 0) {
+          throw new ForbiddenException(
+            `${ticket_information.ticket_name} sold out`,
+          );
+        }
+
+        // calculate ticket quantity left
+        const newTicketQty =
+          ticket.ticket_available - ticket_information.quantity;
+        const newTicketSold = ticket.ticket_sold + ticket_information.quantity;
+
+        // const ticket_available =
+        //   newTicketQty === 0 ? 0 : ticket.ticketQty - newTicketSold;
+
+        total_sales_revenue +=
+          eventData.total_sales_revenue + dto.total_amount_paid;
+
+        ticket_sales_revenue +=
+          dto.fees +
+          ticket_information.total_amount +
+          ticket.ticket_sales_revenue;
+
+        ticket_net_sales_revenue +=
+          ticket_sales_revenue - dto.fees + ticket.ticket_net_sales_revenue;
+
+        if (ticket.ticketQty - ticket.ticket_sold === 0) {
+          ticket.ticket_available = 0;
+        } else {
+          ticket.ticket_available +=
+            ticket.ticket_available + ticket_information.quantity;
+        }
+        await this.ticketModel.findOneAndUpdate(
+          { _id: ticket_information.ticket_id },
+          {
+            $set: {
+              // ticketQty: newTicketQty,
+              ticket_sold: newTicketSold,
+              ticket_available:
+                ticket_information.ticket_stock === TICKET_STOCK.LIMITED
+                  ? newTicketQty
+                  : 0,
+              // map fees from fees api
+              fees: dto.fees,
+              ticket_sales_revenue,
+              ticket_net_sales_revenue,
+            },
+          },
+          { new: true },
+        );
       }
     }
 
