@@ -5,7 +5,7 @@ import { Events } from 'src/event/schema/event.schema';
 import { Ticket } from 'src/ticket/schema/ticket.schema';
 import { emailRegExp } from 'src/util/helper';
 import { schemaConfig } from 'src/util/schema.config';
-import { CHECK_IN_STATUS, PAYMENT_METHODS } from 'src/util/types';
+import { CHECK_IN_STATUS, PAYMENT_METHODS, TICKET_STOCK } from 'src/util/types';
 
 export type GuestDocument = HydratedDocument<Guests>;
 
@@ -88,6 +88,22 @@ class AttendeesInformation {
     required: false,
   })
   ticket_price: number;
+
+  @Prop({
+    type: String,
+    required: false,
+  })
+  ticket_type: number;
+
+  @Prop({
+    type: String,
+    required: false,
+    enum: {
+      values: ['LIMITED', 'UN_LIMITED'],
+      message: '{VALUE} is not supported',
+    },
+  })
+  ticket_stock: TICKET_STOCK;
 }
 
 @Schema(schemaConfig)
