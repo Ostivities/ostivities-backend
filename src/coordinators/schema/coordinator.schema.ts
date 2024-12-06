@@ -4,6 +4,7 @@ import { Events } from 'src/event/schema/event.schema';
 import { emailRegExp } from 'src/util/helper';
 import { schemaConfig } from 'src/util/schema.config';
 import { ACCOUNT_TYPE, STAFF_ROLE } from 'src/util/types';
+import { User } from '../../auth/schema/auth.schema';
 
 export type CoordinatorDocument = HydratedDocument<Coordinator>;
 
@@ -60,6 +61,13 @@ export class Coordinator {
     required: true,
   })
   event: mongoose.Schema.Types.ObjectId;
+
+  @Prop({
+    type: mongoose.Schema.Types.ObjectId,
+    ref: User.name,
+    required: true,
+  })
+  user: mongoose.Schema.Types.ObjectId;
 }
 
 export const CoordinatorSchema = SchemaFactory.createForClass(Coordinator);

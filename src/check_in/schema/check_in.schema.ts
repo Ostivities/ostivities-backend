@@ -29,6 +29,7 @@ class PersonalInformation {
       message: (props: { value: any }) =>
         `${props.value} is not a valid email address!`,
     },
+    unique: false,
   })
   email: string;
 
@@ -80,7 +81,7 @@ export class CheckIn {
     required: true,
     default: [],
   })
-  ticket_information: TicketInformation[];
+  ticket_information: TicketInformation;
 
   @Prop({
     required: true,

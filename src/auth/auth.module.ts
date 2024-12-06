@@ -28,6 +28,7 @@ import {
 } from './schema/forgotpassword.schema';
 import { Revoked, RevokedSchema } from './schema/revoked.schema';
 import { JwtStrategy } from './strategy/jwt.strategy';
+import { CheckIn, CheckInSchema } from '../check_in/schema/check_in.schema';
 
 @Module({
   imports: [
@@ -46,6 +47,7 @@ import { JwtStrategy } from './strategy/jwt.strategy';
       { name: Coordinator.name, schema: CoordinatorSchema },
       { name: Vendor.name, schema: VendorSchema },
       { name: Revoked.name, schema: RevokedSchema },
+      { name: CheckIn.name, schema: CheckInSchema },
     ]),
     DatabaseModule,
   ],

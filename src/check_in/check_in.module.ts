@@ -11,6 +11,10 @@ import { Guests, GuestSchema } from '../guests/schema/guests.schema';
 import { Revoked, RevokedSchema } from '../auth/schema/revoked.schema';
 import { CheckIn, CheckInSchema } from './schema/check_in.schema';
 import { checkInProviders } from './check_in.provider';
+import {
+  Coordinator,
+  CoordinatorSchema,
+} from '../coordinators/schema/coordinator.schema';
 
 @Module({
   providers: [CheckInService, ...checkInProviders],
@@ -25,6 +29,7 @@ import { checkInProviders } from './check_in.provider';
       { name: Guests.name, schema: GuestSchema },
       { name: Revoked.name, schema: RevokedSchema },
       { name: CheckIn.name, schema: CheckInSchema },
+      { name: Coordinator.name, schema: CoordinatorSchema },
     ]),
   ],
 })
