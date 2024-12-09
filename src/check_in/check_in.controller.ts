@@ -73,6 +73,13 @@ export class CheckInController {
     }
   }
 
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Check in guest' })
+  @ApiResponse({
+    status: 200,
+    description: 'Guest checked in successfully.',
+  })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
   @UseGuards(ScannerJwtAuthGuard)
   @Post(':event_id/:guest_id/:ticket_id')
   async checkInGuest(
