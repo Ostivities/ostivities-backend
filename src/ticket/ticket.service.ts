@@ -10,7 +10,6 @@ import { User } from 'src/auth/schema/auth.schema';
 import { Events } from 'src/event/schema/event.schema';
 import { CreateTicketDto, UpdateTicketDto } from './dto/ticket.dto';
 import { Ticket } from './schema/ticket.schema';
-import { cipherText } from '../util/helper';
 
 @Injectable()
 export class TicketService {

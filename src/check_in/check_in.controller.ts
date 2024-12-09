@@ -1,23 +1,97 @@
 import {
+  Body,
   Controller,
   ForbiddenException,
+  Get,
+  HttpCode,
   HttpStatus,
+  Param,
+  Patch,
   Post,
+  UseGuards,
 } from '@nestjs/common';
 import { CheckInService } from './check_in.service';
+import { LoginUserDto } from '../auth/dto/auth.dto';
+import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ScannerJwtAuthGuard } from '../auth/guard/scanner-auth.guard';
+import { CheckInDto } from './dto/check_in.dto';
 
-@Controller('check-in')
+@Controller('check_in')
+@ApiTags('Check-In Service')
 export class CheckInController {
   constructor(private checkInService: CheckInService) {}
 
-  @Post(':guest_id')
-  async guestCheckIn(guestId: string) {
+  @HttpCode(HttpStatus.OK)
+  @ApiBody({ type: LoginUserDto })
+  @ApiOperation({ summary: 'login to scanner portal' })
+  @ApiResponse({
+    status: 200,
+    description: 'Login was successful.',
+  })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @Post('login')
+  async guestCheckInLogin(@Body() dto: LoginUserDto) {
     try {
-      const data = await this.checkInService.guestCheckIn(guestId);
+      const data = await this.checkInService.checkInLogin(dto);
       return {
         statusCode: HttpStatus.OK,
         data: data,
-        message: 'Guest(s) checked in successfully',
+        message: 'Login was successful',
+      };
+    } catch (e) {
+      throw new ForbiddenException(e.message);
+    }
+  }
+
+  @UseGuards(ScannerJwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Get guest info and ticket information' })
+  @ApiResponse({
+    status: 200,
+    description: 'Guest info successfully.',
+  })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @Get(':event_id/:guest_id/:ticket_id')
+  async getGuestsTicketInformation(
+    @Param('event_id') eventId: string,
+    @Param('guest_id') guestId: string,
+    @Param('ticket_id') ticketId: string,
+  ) {
+    try {
+      const data = await this.checkInService.getGuestsTicketInformation(
+        eventId,
+        guestId,
+        ticketId,
+      );
+      return {
+        statusCode: HttpStatus.OK,
+        data: data,
+        message: 'ticket info fetched successfully',
+      };
+    } catch (e) {
+      throw new ForbiddenException(e.message);
+    }
+  }
+
+  @UseGuards(ScannerJwtAuthGuard)
+  @Post(':event_id/:guest_id/:ticket_id')
+  async checkInGuest(
+    @Param('event_id') eventId: string,
+    @Param('guest_id') guestId: string,
+    @Param('ticket_id') ticketId: string,
+    @Body() dto: CheckInDto,
+  ) {
+    try {
+      const data = await this.checkInService.CheckInGuest(
+        eventId,
+        guestId,
+        ticketId,
+        dto,
+      );
+      return {
+        statusCode: HttpStatus.OK,
+        data: data,
+        message: 'Guest checked in successfully',
       };
     } catch (e) {
       throw new ForbiddenException(e.message);

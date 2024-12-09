@@ -7,6 +7,8 @@ import { Events } from 'src/event/schema/event.schema';
 import { Ticket } from 'src/ticket/schema/ticket.schema';
 import { CoordinatorDto } from './dto/coordinator.dto';
 import { Coordinator } from './schema/coordinator.schema';
+import * as argon from 'argon2';
+import { STAFF_ROLE } from '../util/types';
 
 @Injectable()
 export class CoordinatorsService {
@@ -26,14 +28,25 @@ export class CoordinatorsService {
       throw new Error('Event not found');
     }
 
+    let payload: any = { ...dto, event: eventData?._id };
+
+    if (dto.staff_role === STAFF_ROLE.AGENT) {
+      const hash = await argon.hash(dto.password);
+      payload = { ...payload, password: hash };
+    }
+
     try {
       const createdStaff = new this.coordinatorModel({
-        ...dto,
-        event: eventData?._id,
+        ...payload,
       });
       const newStaff = await createdStaff.save();
 
-      return newStaff;
+      const staffObject = newStaff.toObject();
+      if (staffObject.password) {
+        delete staffObject.password;
+      }
+
+      return staffObject;
     } catch (error) {
       throw new ForbiddenException(FORBIDDEN_MESSAGE);
     }
