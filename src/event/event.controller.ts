@@ -353,4 +353,50 @@ export class EventController {
       throw new ForbiddenException(error?.message);
     }
   }
+
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'check in summary' })
+  @ApiResponse({
+    status: 200,
+    description: 'success.',
+  })
+  @ApiQuery({
+    name: 'page',
+    required: true,
+    description: 'Page number',
+    example: 1,
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: true,
+    description: 'Number of items per page',
+    example: 10,
+  })
+  @ApiQuery({
+    name: 'search',
+    required: false,
+    description:
+      'search by ticket name, checked in by, guest first name, guest lastname, guest email, guest checked in date',
+  })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @UseGuards(JwtAuthGuard)
+  @Get('check_in_summary/:event_id')
+  async checkInSummary(
+    @Param('event_id') eventId: string,
+    @Query('page') page: number,
+    @Query('limit') limit: number,
+    @Query('search') search?: number,
+  ) {
+    try {
+      const data = await this.eventService.getEventsCheckInSummary(
+        page,
+        limit,
+        eventId,
+        search,
+      );
+      return { statusCode: HttpStatus.OK, data: data, message: 'Success' };
+    } catch (error) {
+      throw new ForbiddenException(error?.message);
+    }
+  }
 }

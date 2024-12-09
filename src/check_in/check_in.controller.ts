@@ -6,16 +6,17 @@ import {
   HttpCode,
   HttpStatus,
   Param,
+  Patch,
   Post,
   UseGuards,
 } from '@nestjs/common';
 import { CheckInService } from './check_in.service';
 import { LoginUserDto } from '../auth/dto/auth.dto';
-import { JwtAuthGuard } from '../auth/guard/jwt-auth.guard';
 import { ApiBody, ApiOperation, ApiResponse, ApiTags } from '@nestjs/swagger';
+import { ScannerJwtAuthGuard } from '../auth/guard/scanner-auth.guard';
+import { CheckInDto } from './dto/check_in.dto';
 
-@UseGuards(JwtAuthGuard)
-@Controller('check-in')
+@Controller('check_in')
 @ApiTags('Check-In Service')
 export class CheckInController {
   constructor(private checkInService: CheckInService) {}
@@ -42,6 +43,7 @@ export class CheckInController {
     }
   }
 
+  @UseGuards(ScannerJwtAuthGuard)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get guest info and ticket information' })
   @ApiResponse({
@@ -71,5 +73,28 @@ export class CheckInController {
     }
   }
 
-  async checkInGuest() {}
+  @UseGuards(ScannerJwtAuthGuard)
+  @Post(':event_id/:guest_id/:ticket_id')
+  async checkInGuest(
+    @Param('event_id') eventId: string,
+    @Param('guest_id') guestId: string,
+    @Param('ticket_id') ticketId: string,
+    @Body() dto: CheckInDto,
+  ) {
+    try {
+      const data = await this.checkInService.CheckInGuest(
+        eventId,
+        guestId,
+        ticketId,
+        dto,
+      );
+      return {
+        statusCode: HttpStatus.OK,
+        data: data,
+        message: 'Guest checked in successfully',
+      };
+    } catch (e) {
+      throw new ForbiddenException(e.message);
+    }
+  }
 }

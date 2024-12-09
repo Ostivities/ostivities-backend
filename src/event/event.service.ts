@@ -14,6 +14,7 @@ import {
 } from './dto/event.dto';
 import { Events } from './schema/event.schema';
 import { Ticket } from '../ticket/schema/ticket.schema';
+import { CheckIn } from '../check_in/schema/check_in.schema';
 
 @Injectable()
 export class EventService {
@@ -21,6 +22,7 @@ export class EventService {
     @InjectModel(Events.name) private eventModel: Model<Events>,
     @InjectModel(User.name) private userModel: Model<User>,
     @InjectModel(Ticket.name) private ticketModel: Model<Ticket>,
+    @InjectModel(CheckIn.name) private checkIntModel: Model<CheckIn>,
   ) {}
 
   async createEvent(dto: EventDto): Promise<Events> {
@@ -344,6 +346,42 @@ export class EventService {
         { enable_registration: dto.enable_registration },
         { new: true, upsert: false },
       );
+    } catch (error) {
+      throw new ForbiddenException(FORBIDDEN_MESSAGE);
+    }
+  }
+
+  async getEventsCheckInSummary(
+    page: number,
+    limit: number,
+    eventId: string,
+    search?: any,
+  ): Promise<Events[] | any> {
+    const skip = (page - 1) * limit;
+
+    const query: any = { event: eventId };
+
+    if (search) {
+      query['$or'] = [
+        { 'personal_information.firstName': { $regex: search, $options: 'i' } },
+        { 'personal_information.lastName': { $regex: search, $options: 'i' } },
+        { 'personal_information.email': { $regex: search, $options: 'i' } },
+        { 'ticket_information.ticket_name': { $regex: search, $options: 'i' } },
+        { check_in_by: { $regex: search, $options: 'i' } },
+        { check_in_date_time: { $regex: search, $options: 'i' } },
+      ];
+    }
+
+    try {
+      const check_in_summary = await this.checkIntModel
+        .find({ ...query })
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .exec();
+
+      const total = await this.checkIntModel.countDocuments({ ...query });
+      return { check_in_summary, page, limit, total };
     } catch (error) {
       throw new ForbiddenException(FORBIDDEN_MESSAGE);
     }

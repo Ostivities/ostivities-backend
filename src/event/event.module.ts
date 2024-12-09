@@ -20,6 +20,7 @@ import { eventProviders } from './event.providers';
 import { EventService } from './event.service';
 import { Events, EventSchema } from './schema/event.schema';
 import { Revoked, RevokedSchema } from 'src/auth/schema/revoked.schema';
+import { CheckIn, CheckInSchema } from '../check_in/schema/check_in.schema';
 
 @Module({
   imports: [
@@ -36,6 +37,7 @@ import { Revoked, RevokedSchema } from 'src/auth/schema/revoked.schema';
       { name: Coordinator.name, schema: CoordinatorSchema },
       { name: Vendor.name, schema: VendorSchema },
       { name: Revoked.name, schema: RevokedSchema },
+      { name: CheckIn.name, schema: CheckInSchema },
     ]),
     DatabaseModule,
   ],

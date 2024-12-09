@@ -15,9 +15,11 @@ import {
   Coordinator,
   CoordinatorSchema,
 } from '../coordinators/schema/coordinator.schema';
+import { ScannerJwtStrategy } from '../auth/strategy/scanner-jwt.strategy';
+import { JwtModule } from '@nestjs/jwt';
 
 @Module({
-  providers: [CheckInService, ...checkInProviders],
+  providers: [CheckInService, ...checkInProviders, ScannerJwtStrategy],
   controllers: [CheckInController],
   imports: [
     DatabaseModule,
@@ -31,6 +33,10 @@ import {
       { name: CheckIn.name, schema: CheckInSchema },
       { name: Coordinator.name, schema: CoordinatorSchema },
     ]),
+    JwtModule.register({
+      global: true,
+      signOptions: { expiresIn: '24h' },
+    }),
   ],
 })
 export class CheckInModule {}

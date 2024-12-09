@@ -3,6 +3,8 @@ import mongoose, { HydratedDocument } from 'mongoose';
 import { schemaConfig } from 'src/util/schema.config';
 import { emailRegExp } from '../../util/helper';
 import { Ticket } from '../../ticket/schema/ticket.schema';
+import { Events } from '../../event/schema/event.schema';
+import { User } from '../../auth/schema/auth.schema';
 
 export type CheckInDocument = HydratedDocument<CheckIn>;
 
@@ -75,6 +77,34 @@ class TicketInformation {
 }
 
 @Schema(schemaConfig)
+class StaffInformation {
+  @Prop({
+    type: String,
+    required: true,
+  })
+  staff_name: string;
+
+  @Prop({
+    required: [true, 'email is required'],
+    validate: {
+      validator: function (v: string) {
+        return emailRegExp.test(v);
+      },
+      message: (props: { value: any }) =>
+        `${props.value} is not a valid email address!`,
+    },
+    unique: false,
+  })
+  email: string;
+
+  @Prop({
+    type: String,
+    required: true,
+  })
+  staff_role: string;
+}
+
+@Schema(schemaConfig)
 export class CheckIn {
   @Prop({
     type: [TicketInformation],
@@ -96,10 +126,24 @@ export class CheckIn {
   check_in_date_time: string;
 
   @Prop({
+    required: false,
     type: String,
-    required: true,
   })
   check_in_by: string;
+
+  @Prop({
+    type: mongoose.Schema.Types.ObjectId,
+    ref: Events.name,
+    required: true,
+  })
+  event: mongoose.Schema.Types.ObjectId;
+
+  // @Prop({
+  //   type: mongoose.Schema.Types.ObjectId,
+  //   ref: User.name,
+  //   required: true,
+  // })
+  // user: mongoose.Schema.Types.ObjectId;
 }
 
 export const CheckInSchema = SchemaFactory.createForClass(CheckIn);
