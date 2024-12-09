@@ -4,7 +4,7 @@ import { schemaConfig } from 'src/util/schema.config';
 import { emailRegExp } from '../../util/helper';
 import { Ticket } from '../../ticket/schema/ticket.schema';
 import { Events } from '../../event/schema/event.schema';
-import { User } from '../../auth/schema/auth.schema';
+// import { User } from '../../auth/schema/auth.schema';
 
 export type CheckInDocument = HydratedDocument<CheckIn>;
 
@@ -77,32 +77,32 @@ class TicketInformation {
 }
 
 @Schema(schemaConfig)
-class StaffInformation {
-  @Prop({
-    type: String,
-    required: true,
-  })
-  staff_name: string;
-
-  @Prop({
-    required: [true, 'email is required'],
-    validate: {
-      validator: function (v: string) {
-        return emailRegExp.test(v);
-      },
-      message: (props: { value: any }) =>
-        `${props.value} is not a valid email address!`,
-    },
-    unique: false,
-  })
-  email: string;
-
-  @Prop({
-    type: String,
-    required: true,
-  })
-  staff_role: string;
-}
+// class StaffInformation {
+//   @Prop({
+//     type: String,
+//     required: true,
+//   })
+//   staff_name: string;
+//
+//   @Prop({
+//     required: [true, 'email is required'],
+//     validate: {
+//       validator: function (v: string) {
+//         return emailRegExp.test(v);
+//       },
+//       message: (props: { value: any }) =>
+//         `${props.value} is not a valid email address!`,
+//     },
+//     unique: false,
+//   })
+//   email: string;
+//
+//   @Prop({
+//     type: String,
+//     required: true,
+//   })
+//   staff_role: string;
+// }
 
 @Schema(schemaConfig)
 export class CheckIn {
