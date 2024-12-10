@@ -27,7 +27,13 @@ export class CoordinatorsService {
     console.log(user, 'user');
     const eventData = await this.eventModel.findById(eventId);
     if (!eventData) {
-      throw new Error('Event not found');
+      throw new ForbiddenException('Event not found');
+    }
+
+    if (user?.email === dto.staff_email) {
+      throw new ForbiddenException(
+        'You cannot assign yourself as a coordinator.',
+      );
     }
 
     let payload: any = { ...dto, event: eventData?._id, user: user?._id };

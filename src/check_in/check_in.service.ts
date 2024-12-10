@@ -49,6 +49,12 @@ export class CheckInService {
       );
     }
 
+    if (staff.staff_email === dto.email) {
+      throw new UnauthorizedException(
+        `This user or coordinator does not have the required permissions. Please contact the event owner for assistance.`,
+      );
+    }
+
     if (staff && staff.staff_role !== STAFF_ROLE.AGENT) {
       throw new UnauthorizedException(
         `This user or coordinator does not have the required permissions. Please contact the event owner for assistance.`,
