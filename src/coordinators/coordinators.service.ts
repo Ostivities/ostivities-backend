@@ -41,12 +41,12 @@ export class CoordinatorsService {
       });
       const newStaff = await createdStaff.save();
 
-      const staffObject = newStaff.toObject();
-      if (staffObject.password) {
-        delete staffObject.password;
-      }
+      // const staffObject = newStaff.toObject();
+      // if (staffObject.password) {
+      //   delete staffObject.password;
+      // }
 
-      return staffObject;
+      return newStaff;
     } catch (error) {
       throw new ForbiddenException(FORBIDDEN_MESSAGE);
     }
