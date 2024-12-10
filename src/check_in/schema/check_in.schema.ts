@@ -77,34 +77,6 @@ class TicketInformation {
 }
 
 @Schema(schemaConfig)
-// class StaffInformation {
-//   @Prop({
-//     type: String,
-//     required: true,
-//   })
-//   staff_name: string;
-//
-//   @Prop({
-//     required: [true, 'email is required'],
-//     validate: {
-//       validator: function (v: string) {
-//         return emailRegExp.test(v);
-//       },
-//       message: (props: { value: any }) =>
-//         `${props.value} is not a valid email address!`,
-//     },
-//     unique: false,
-//   })
-//   email: string;
-//
-//   @Prop({
-//     type: String,
-//     required: true,
-//   })
-//   staff_role: string;
-// }
-
-@Schema(schemaConfig)
 export class CheckIn {
   @Prop({
     type: [TicketInformation],
