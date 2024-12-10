@@ -24,6 +24,7 @@ import { activationTokenTemplate } from 'src/templates/welcome';
 import { IResponse } from 'src/util/types';
 import { CoordinatorsService } from './coordinators.service';
 import { CoordinatorDto } from './dto/coordinator.dto';
+import { GetCurrentUser } from '../auth/decorator/user.decorator';
 
 @UseGuards(JwtAuthGuard)
 @Controller('coordinators')
@@ -44,9 +45,14 @@ export class CoordinatorsController {
   async createStaff(
     @Body() dto: CoordinatorDto,
     @Param('eventId') eventId: string,
+    @GetCurrentUser('id') user: string,
   ): Promise<IResponse> {
     try {
-      const data = await this.coordinatorService.createStaff(dto, eventId);
+      const data = await this.coordinatorService.createStaff(
+        dto,
+        eventId,
+        user,
+      );
       // const email: EmailDto = {
       //   name: dto.staff_name,
       //   email: dto.staff_email,
