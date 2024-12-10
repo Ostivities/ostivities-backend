@@ -2,6 +2,7 @@ import {
   Body,
   Controller,
   Delete,
+  ForbiddenException,
   Get,
   HttpCode,
   HttpStatus,
@@ -46,20 +47,20 @@ export class CoordinatorsController {
   ): Promise<IResponse> {
     try {
       const data = await this.coordinatorService.createStaff(dto, eventId);
-      const email: EmailDto = {
-        name: dto.staff_name,
-        email: dto.staff_email,
-        htmlContent: activationTokenTemplate(dto.staff_name, 123456),
-        subject: `Success`,
-      };
-      await EmailService(email);
+      // const email: EmailDto = {
+      //   name: dto.staff_name,
+      //   email: dto.staff_email,
+      //   htmlContent: activationTokenTemplate(dto.staff_name, 123456),
+      //   subject: `Success`,
+      // };
+      // await EmailService(email);
       return {
         statusCode: HttpStatus.CREATED,
         data: data,
         message: 'Staff created successfully',
       };
     } catch (error) {
-      return error;
+      throw new ForbiddenException(error?.message);
     }
   }
 
