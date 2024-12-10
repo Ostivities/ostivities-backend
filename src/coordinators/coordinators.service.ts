@@ -22,13 +22,15 @@ export class CoordinatorsService {
   async createStaff(
     dto: CoordinatorDto,
     eventId: string,
+    user: any,
   ): Promise<Coordinator> {
+    console.log(user, 'user');
     const eventData = await this.eventModel.findById(eventId);
     if (!eventData) {
       throw new Error('Event not found');
     }
 
-    let payload: any = { ...dto, event: eventData?._id };
+    let payload: any = { ...dto, event: eventData?._id, user: user?._id };
 
     if (dto.staff_role === STAFF_ROLE.AGENT) {
       const hash = await argon.hash(dto.password);
@@ -41,12 +43,12 @@ export class CoordinatorsService {
       });
       const newStaff = await createdStaff.save();
 
-      // const staffObject = newStaff.toObject();
-      // if (staffObject.password) {
-      //   delete staffObject.password;
-      // }
+      const staffObject = newStaff.toObject();
+      if (staffObject.password) {
+        delete staffObject.password;
+      }
 
-      return newStaff;
+      return staffObject;
     } catch (error) {
       throw new ForbiddenException(FORBIDDEN_MESSAGE);
     }
