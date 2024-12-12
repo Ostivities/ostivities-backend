@@ -32,16 +32,12 @@ export class CheckInService {
   ) {}
   async checkInLogin(dto: LoginUserDto): Promise<any> {
     console.log(dto, 'dto');
-    const user = await this.userModel.findOne({
-      email: dto.email,
-    });
-    console.log(user, 'lop');
 
     const staff = await this.coordinatorModel.findOne({
       staff_email: dto.email,
     });
 
-    if (!user && !staff) {
+    if (!staff) {
       throw new ConflictException(
         'The specified user or coordinator could not be found.',
       );
@@ -53,13 +49,6 @@ export class CheckInService {
       );
     }
 
-    if (user) {
-      const pwdMatch = await argon.verify(user.hash, dto.password);
-      if (!pwdMatch) {
-        throw new BadRequestException('The provided password is incorrect.');
-      }
-    }
-
     if (staff && staff.staff_role === STAFF_ROLE.AGENT) {
       const pwdMatch = await argon.verify(staff.password, dto.password);
       if (!pwdMatch) {
@@ -69,20 +58,13 @@ export class CheckInService {
 
     let payload: any = {};
 
-    if (user) {
-      payload = { ...payload, user_id: user._id, user };
-    }
-
     if (staff) {
-      const user = await this.userModel.findOne({
-        _id: staff.user,
-      });
+      const eventData = await this.eventModel.findById(staff.event);
       payload = {
         ...payload,
-        user_id: staff.user,
-        event_id: staff.event,
-        user,
-        staff,
+        event_unique_key: eventData?.unique_key,
+        staff_email: staff.staff_email,
+        staff_name: staff.staff_name,
       };
     }
 
@@ -116,7 +98,8 @@ export class CheckInService {
       const ticket_information = guestData?.ticket_information?.find(
         (ticket: any) => ticket.ticket_id == ticketId,
       );
-      const ticket_data = {
+
+      return {
         personal_information: guestData.personal_information,
         ticket_information,
         order_number: guestData.order_number,
@@ -125,7 +108,6 @@ export class CheckInService {
         check_in_status: guestData.check_in_status,
         order_date: guestData.order_date,
       };
-      return ticket_data;
     } catch (error) {
       throw new ForbiddenException(error?.message);
     }

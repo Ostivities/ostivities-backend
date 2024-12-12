@@ -3,6 +3,7 @@ import {
   IsEmail,
   IsEnum,
   IsNotEmpty,
+  IsOptional,
   IsString,
   Matches,
   ValidateIf,
@@ -43,9 +44,9 @@ export class CoordinatorDto {
     type: String,
     required: true,
   })
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
-  staff_phone_number: string;
+  staff_phone_number?: string;
 
   @ApiProperty({
     description: 'Business name',

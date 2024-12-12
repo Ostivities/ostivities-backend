@@ -30,12 +30,6 @@ export class CoordinatorsService {
       throw new ForbiddenException('Event not found');
     }
 
-    if (user?.email === dto.staff_email) {
-      throw new ForbiddenException(
-        'You cannot assign yourself as a coordinator.',
-      );
-    }
-
     let payload: any = { ...dto, event: eventData?._id, user: user?._id };
 
     if (dto.staff_role === STAFF_ROLE.AGENT) {
@@ -56,16 +50,15 @@ export class CoordinatorsService {
 
       return staffObject;
     } catch (error) {
-      throw new ForbiddenException(FORBIDDEN_MESSAGE);
+      throw new ForbiddenException(error?.message);
     }
   }
 
   async getCoordinatorById(id: string): Promise<Coordinator> {
     try {
-      const staff = await this.coordinatorModel.findOne({ _id: id }).lean();
-      return staff;
+      return await this.coordinatorModel.findOne({ _id: id }).lean();
     } catch (error) {
-      throw new ForbiddenException(FORBIDDEN_MESSAGE);
+      throw new ForbiddenException(error?.message);
     }
   }
 
@@ -86,16 +79,15 @@ export class CoordinatorsService {
       });
       return { data: staffs, total };
     } catch (error) {
-      throw new ForbiddenException(FORBIDDEN_MESSAGE);
+      throw new ForbiddenException(error?.message);
     }
   }
 
   async deleteCoordinatorById(id: string): Promise<any> {
     try {
-      const deletedStaff = await this.coordinatorModel.findByIdAndDelete({
+      return await this.coordinatorModel.findByIdAndDelete({
         _id: id,
       });
-      return deletedStaff;
     } catch (error) {
       throw new ForbiddenException(FORBIDDEN_MESSAGE);
     }

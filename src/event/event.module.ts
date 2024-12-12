@@ -21,6 +21,7 @@ import { EventService } from './event.service';
 import { Events, EventSchema } from './schema/event.schema';
 import { Revoked, RevokedSchema } from 'src/auth/schema/revoked.schema';
 import { CheckIn, CheckInSchema } from '../check_in/schema/check_in.schema';
+import { CoordinatorsService } from '../coordinators/coordinators.service';
 
 @Module({
   imports: [
@@ -41,7 +42,12 @@ import { CheckIn, CheckInSchema } from '../check_in/schema/check_in.schema';
     ]),
     DatabaseModule,
   ],
-  providers: [EventService, ...eventProviders, JwtStrategy],
+  providers: [
+    EventService,
+    ...eventProviders,
+    JwtStrategy,
+    CoordinatorsService,
+  ],
   controllers: [EventController],
 })
 export class EventModule {}

@@ -3,7 +3,12 @@ import { FORBIDDEN_MESSAGE } from '@nestjs/core/guards';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { User } from 'src/auth/schema/auth.schema';
-import { EVENT_MODE, EVENT_MODES } from 'src/util/types';
+import {
+  ACCOUNT_TYPE,
+  EVENT_MODE,
+  EVENT_MODES,
+  STAFF_ROLE,
+} from 'src/util/types';
 import {
   EventDto,
   StringArrayDto,
@@ -15,6 +20,8 @@ import {
 import { Events } from './schema/event.schema';
 import { Ticket } from '../ticket/schema/ticket.schema';
 import { CheckIn } from '../check_in/schema/check_in.schema';
+import { CoordinatorDto } from '../coordinators/dto/coordinator.dto';
+import { Coordinator } from '../coordinators/schema/coordinator.schema';
 
 @Injectable()
 export class EventService {
@@ -23,6 +30,7 @@ export class EventService {
     @InjectModel(User.name) private userModel: Model<User>,
     @InjectModel(Ticket.name) private ticketModel: Model<Ticket>,
     @InjectModel(CheckIn.name) private checkIntModel: Model<CheckIn>,
+    @InjectModel(Coordinator.name) private coordinatorModel: Model<Coordinator>,
   ) {}
 
   async createEvent(dto: EventDto): Promise<Events> {
@@ -30,15 +38,40 @@ export class EventService {
 
     const userData = await this.userModel.findById(user);
     if (!userData) {
-      throw new Error('User not found');
+      throw new ForbiddenException('User not found');
     }
+
+    console.log(userData, 'userData');
 
     try {
       const createdEvent = new this.eventModel({
         ...dto,
         mode: EVENT_MODE.PRIVATE,
       });
-      return await createdEvent.save();
+
+      const savedEvent = await createdEvent.save();
+
+      if (savedEvent) {
+        //   ADD OWNER AS COORDINATOR
+        const payload: CoordinatorDto = {
+          staff_email: userData?.email,
+          staff_role: STAFF_ROLE.AGENT,
+          password: userData?.hash,
+          staff_phone_number: userData?.phone_number,
+          staff_name:
+            userData?.accountType === ACCOUNT_TYPE.PERSONAL
+              ? `${userData?.firstName} ${userData?.lastName}`
+              : `${userData?.businessName}`,
+        };
+        const createdStaff = new this.coordinatorModel({
+          ...payload,
+          event: savedEvent?._id,
+          user: userData?._id,
+        });
+        await createdStaff.save();
+      }
+
+      return savedEvent;
     } catch (error) {
       throw new ForbiddenException(error.message);
     }
@@ -79,6 +112,8 @@ export class EventService {
   ): Promise<Events[] | any> {
     const skip = (page - 1) * limit;
 
+    console.log(id, 'olop');
+
     try {
       const userData = await this.userModel.findById(id);
       if (!userData) {
@@ -101,7 +136,7 @@ export class EventService {
       const total = await this.eventModel.countDocuments({ user: id });
       return { data: events, page, limit, total };
     } catch (error) {
-      throw new ForbiddenException(FORBIDDEN_MESSAGE);
+      throw new ForbiddenException(error.message);
     }
   }
 
