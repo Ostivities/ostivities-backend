@@ -41,17 +41,9 @@ export class CheckInService {
       staff_email: dto.email,
     });
 
-    console.log(staff, 'staff');
-
     if (!user && !staff) {
       throw new ConflictException(
         'The specified user or coordinator could not be found.',
-      );
-    }
-
-    if (staff.staff_email === dto.email) {
-      throw new UnauthorizedException(
-        `This user or coordinator does not have the required permissions. Please contact the event owner for assistance.`,
       );
     }
 
