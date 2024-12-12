@@ -37,6 +37,9 @@ export const GetCurrentUser = createParamDecorator(
           ignoreExpiration: false,
         });
 
+        console.log(decoded, 'decoded');
+        console.log(data, 'decoded data');
+
         return data ? decoded?._doc : decoded;
       } catch (error) {
         if (

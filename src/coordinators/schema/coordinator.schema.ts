@@ -50,7 +50,7 @@ export class Coordinator {
   password: string;
 
   @Prop({
-    required: [true, 'phone number is required'],
+    required: false,
     type: String,
   })
   staff_phone_number: string;

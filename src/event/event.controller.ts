@@ -92,6 +92,7 @@ export class EventController {
     @Query('search') search: string,
     @GetCurrentUser('id') id: string,
   ): Promise<IResponse> {
+    console.log(id, 'new id');
     try {
       const data = await this.eventService.getAllUserEventsById(
         page,

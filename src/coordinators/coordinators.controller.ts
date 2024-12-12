@@ -18,9 +18,6 @@ import {
   ApiTags,
 } from '@nestjs/swagger';
 import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
-import { EmailDto } from 'src/email/dto/email.dto';
-import { EmailService } from 'src/email/email.service';
-import { activationTokenTemplate } from 'src/templates/welcome';
 import { IResponse } from 'src/util/types';
 import { CoordinatorsService } from './coordinators.service';
 import { CoordinatorDto } from './dto/coordinator.dto';

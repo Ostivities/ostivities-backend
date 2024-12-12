@@ -170,7 +170,7 @@ export class AuthService {
     } catch (error) {}
   }
 
-  // ACTIVATE ACCONT
+  // ACTIVATE ACCOUNT
   async activateAccount(dto: VerifyAccountDto): Promise<any> {
     const userActive: any = await this.activateAccountModel.findOne({
       email: dto.email,
@@ -230,7 +230,7 @@ export class AuthService {
     }
   }
 
-  // LPGIN USER
+  // LOGIN USER
   async login(dto: LoginUserDto) {
     const user = await this.userModel.findOne({
       email: dto.email,
