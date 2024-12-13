@@ -14,7 +14,7 @@ import {
   ValidateNested,
 } from 'class-validator';
 import { emailRegExp } from 'src/util/helper';
-import { ACCOUNT_TYPE, PAYMENT_METHODS, TICKET_STOCK } from 'src/util/types';
+import { PAYMENT_METHODS, TICKET_STOCK } from 'src/util/types';
 
 class PersonalInformation {
   @ApiProperty({
@@ -193,6 +193,15 @@ class TicketInformation {
   @IsEnum(TICKET_STOCK)
   @IsNotEmpty()
   ticket_stock: TICKET_STOCK;
+
+  @ApiProperty({
+    type: String,
+    description: 'ticket order number',
+    required: true,
+  })
+  @IsNotEmpty()
+  @IsString()
+  order_number: string;
 }
 
 export class GuestDto {

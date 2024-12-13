@@ -147,6 +147,12 @@ export class TicketInformation {
 
   @Prop({ type: Number, required: true })
   total_amount: number;
+
+  @Prop({
+    required: true,
+    type: String,
+  })
+  order_number: string;
 }
 
 @Schema(schemaConfig)
@@ -207,12 +213,6 @@ export class Guests {
     type: String,
   })
   discountCode: string;
-
-  @Prop({
-    required: true,
-    type: String,
-  })
-  order_number: string;
 
   @Prop({
     required: true,
