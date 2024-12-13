@@ -22,7 +22,12 @@ import {
 } from '@nestjs/swagger';
 import { GetCurrentUser } from 'src/auth/decorator/user.decorator';
 import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
-import { EVENT_MODE, EVENT_MODES, IResponse } from 'src/util/types';
+import {
+  EVENT_MODE,
+  EVENT_MODES,
+  EVENT_TYPES,
+  IResponse,
+} from 'src/util/types';
 import {
   CreateEventDto,
   StringArrayDto,
@@ -269,7 +274,7 @@ export class EventController {
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Discover events' })
   @ApiQuery({ name: 'eventName', required: false, type: String })
-  @ApiQuery({ name: 'eventCat', required: false, enum: EVENT_MODES })
+  @ApiQuery({ name: 'eventCat', required: false, enum: EVENT_TYPES })
   @ApiQuery({ name: 'state', required: false, type: String })
   @ApiQuery({ name: 'page', required: true, type: Number, example: 1 })
   @ApiQuery({ name: 'pageSize', required: true, type: Number, example: 10 })
@@ -284,7 +289,7 @@ export class EventController {
     @Query('pageSize') pageSize: number,
     @Query('eventName') eventName?: string,
     @Query('state') state?: string,
-    @Query('eventCat') eventCat?: EVENT_MODES,
+    @Query('eventCat') eventCat?: EVENT_TYPES,
   ): Promise<IResponse> {
     try {
       const data = await this.eventService.discoverEvents(
