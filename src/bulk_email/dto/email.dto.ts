@@ -69,9 +69,8 @@ export class BulkEmailDto {
     type: String,
     required: true,
   })
-  @IsNotEmpty()
-  @IsAlpha()
-  sender_name: string;
+  @IsOptional()
+  sender_name?: string;
 
   @ApiProperty({
     description: 'Sender email',
