@@ -131,15 +131,11 @@ export class TicketService {
       throw new NotFoundException('Event not found');
     }
     try {
-      const tickets = await this.ticketModel
+      return await this.ticketModel
         .find({ event: eventData?._id })
         .populate(['discount'])
-        .select(
-          '-ticket_sales_revenue -ticket_net_sales_revenue -ticket_sold -ticket_available -fees',
-        )
+        .select('-ticket_sales_revenue -ticket_net_sales_revenue   -fees')
         .exec();
-
-      return tickets;
     } catch (error) {
       console.log(error);
       throw new ForbiddenException(FORBIDDEN_MESSAGE);
