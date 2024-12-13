@@ -7,6 +7,7 @@ import {
   ACCOUNT_TYPE,
   EVENT_MODE,
   EVENT_MODES,
+  EVENT_TYPES,
   STAFF_ROLE,
 } from 'src/util/types';
 import {
@@ -298,7 +299,7 @@ export class EventService {
     pageSize: number,
     eventName?: string,
     state?: string,
-    eventCat?: EVENT_MODES,
+    eventCat?: EVENT_TYPES,
 
     // eventMode?: EVENT_TYPE,
   ): Promise<any> {
