@@ -13,8 +13,6 @@ import {
   TICKET_STOCK,
   TICKET_TYPE,
 } from 'src/util/types';
-import { Discounts } from '../../discount/schema/discount.schema';
-import { Ticket } from '../../ticket/schema/ticket.schema';
 
 export type EventDocument = HydratedDocument<Events>;
 

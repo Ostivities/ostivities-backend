@@ -107,6 +107,11 @@ export class CheckInService {
         total_checked_in_tickets: guestData.total_checked_in_tickets,
         check_in_status: guestData.check_in_status,
         order_date: guestData.order_date,
+        event_information: {
+          event_name: eventData.eventName,
+          event_appearance: eventData.eventImage,
+          event_type: eventData.eventType,
+        },
       };
     } catch (error) {
       throw new ForbiddenException(error?.message);
