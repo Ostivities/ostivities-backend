@@ -381,6 +381,7 @@ export class GuestsService {
     try {
       const guests = await this.guestModel
         .find({ ...query })
+        .sort({ createdAt: -1 })
         .skip(skip)
         .limit(limit)
         .exec();
