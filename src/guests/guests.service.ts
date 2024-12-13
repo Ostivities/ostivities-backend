@@ -89,14 +89,19 @@ export class GuestsService {
 
         total_sales_revenue +=
           eventData.total_sales_revenue + dto.total_amount_paid;
+        //
+        // ticket_sales_revenue +=
+        //   dto.fees +
+        //   ticket_information.total_amount +
+        //   ticket.ticket_sales_revenue;
 
         ticket_sales_revenue +=
-          dto.fees +
-          ticket_information.total_amount +
-          ticket.ticket_sales_revenue;
+          newTicketSold * ticket_information.ticket_price + dto.fees;
+        //
+        // ticket_net_sales_revenue +=
+        //   ticket_sales_revenue - dto.fees + ticket.ticket_net_sales_revenue;
 
-        ticket_net_sales_revenue +=
-          ticket_sales_revenue - dto.fees + ticket.ticket_net_sales_revenue;
+        ticket_net_sales_revenue += ticket_sales_revenue - dto.fees;
 
         if (ticket.ticketQty - ticket.ticket_sold === 0) {
           ticket.ticket_available = 0;
