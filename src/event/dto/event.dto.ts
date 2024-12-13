@@ -262,6 +262,26 @@ export class EventDto {
   @IsOptional()
   @IsString()
   event_coordinates?: string;
+
+  @ApiProperty({
+    type: String,
+    description: 'start date',
+    required: true,
+  })
+  @IsNotEmpty()
+  @IsString()
+  @ValidateIf((o) => o.ventInfo === EVENT_INFO.SINGLE)
+  start_date_time: string;
+
+  @ApiProperty({
+    type: String,
+    description: 'end date',
+    required: true,
+  })
+  @IsNotEmpty()
+  @IsString()
+  @ValidateIf((o) => o.ventInfo === EVENT_INFO.SINGLE)
+  end_date_time: string;
 }
 
 export class CreateEventDto extends OmitType(EventDto, ['user']) {}

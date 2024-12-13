@@ -381,6 +381,12 @@ export class Events {
     required: false,
   })
   event_coordinates: string;
+
+  @Prop({ required: false, type: String })
+  start_data_time: string;
+
+  @Prop({ required: false, type: String })
+  end_date_time: string;
 }
 
 export const EventSchema = SchemaFactory.createForClass(Events);
