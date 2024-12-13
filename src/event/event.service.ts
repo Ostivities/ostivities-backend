@@ -305,15 +305,15 @@ export class EventService {
     const filter: any = { discover: true };
     const skip = (page - 1) * pageSize;
 
-    if (eventName !== undefined) {
-      filter.eventName = eventName;
-    } else if (state !== undefined) {
-      filter.state = state;
-    } else if (eventCat !== undefined) {
-      filter.mode = eventCat;
+    if (eventName) {
+      filter['$or'] = [{ eventName: { $regex: eventName, $options: 'i' } }];
     }
-
-    console.log(filter, 'filter');
+    if (state) {
+      filter['$or'] = [{ state: { $regex: state, $options: 'i' } }];
+    }
+    if (eventCat) {
+      filter['$or'] = [{ eventType: { $regex: eventCat, $options: 'i' } }];
+    }
 
     try {
       const events = await this.eventModel
