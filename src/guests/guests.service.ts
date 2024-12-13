@@ -166,6 +166,12 @@ export class GuestsService {
               name,
             } = orderPurchase;
 
+            const qr_code = {
+              event_id: eventData?._id,
+              guest_id: savedGuest._id,
+              ticket_id: ticket.ticket_id,
+            };
+
             return {
               order_number,
               order_date,
@@ -174,7 +180,7 @@ export class GuestsService {
               event_name,
               buyer_name: name,
               ticket_type: ticket.ticket_type,
-              qr_code: `${process.env.OSTIVITIES_ORIGIN_URL}/check_in_portal/${savedGuest._id}/${eventData?._id}`,
+              qr_code: JSON.stringify(qr_code),
               ostivities_logo: OSTIVITIES_LOGO,
               ticket_banner: TICKET_BANNER,
               ticket_name: ticket.ticket_name,
