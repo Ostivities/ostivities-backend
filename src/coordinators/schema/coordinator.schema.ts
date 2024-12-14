@@ -11,7 +11,7 @@ export type CoordinatorDocument = HydratedDocument<Coordinator>;
 @Schema(schemaConfig)
 export class Coordinator {
   @Prop({
-    unique: true,
+    unique: false,
     required: [true, 'email is required'],
     validate: {
       validator: function (v: string) {
@@ -42,7 +42,9 @@ export class Coordinator {
   @Prop({
     validate: {
       validator: function (value: string) {
-        return this.staff_role === STAFF_ROLE.AGENT ? !!value : true;
+        return this.staff_role === STAFF_ROLE.AGENT || STAFF_ROLE.OWNER
+          ? !!value
+          : true;
       },
       message: 'password is required for agent role',
     },

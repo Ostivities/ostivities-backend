@@ -2,7 +2,6 @@ import { ForbiddenException, Injectable } from '@nestjs/common';
 import { FORBIDDEN_MESSAGE } from '@nestjs/core/guards';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model } from 'mongoose';
-import { BulkEmailService } from 'src/bulk_email/bulk_email.service';
 import { BulkEmailDto } from 'src/bulk_email/dto/email.dto';
 import { Discounts } from 'src/discount/schema/discount.schema';
 import { Events } from 'src/event/schema/event.schema';
@@ -22,6 +21,9 @@ import { pdfGenerator } from '../util/pdf';
 import { PdfDto } from '../util/dto/pdf.dto';
 import { OSTIVITIES_LOGO } from '../util/logo';
 import { TICKET_BANNER } from '../util/ticketBanner';
+import { BulkEmailGuestDto } from './dto/guest_bulk_email.dto';
+import * as brevo from '@getbrevo/brevo';
+import { BulkEmailService } from 'src/bulk_email/bulk_email.service';
 
 // Net sales Revenue = Sales revenue - Fees
 // Sales revenue = fee + ticket price*qty
@@ -416,7 +418,7 @@ export class GuestsService {
         (ticket: any) => ticket.ticket_id == ticketId,
       );
 
-      const data = {
+      return {
         personal_information: guestData.personal_information,
         ticket_information,
         order_number: guestData.order_number,
@@ -425,7 +427,6 @@ export class GuestsService {
         check_in_status: guestData.check_in_status,
         order_date: guestData.order_date,
       };
-      return data;
     } catch (error) {
       throw new ForbiddenException(error?.message);
     }
@@ -433,12 +434,72 @@ export class GuestsService {
 
   async guestByTicketId(ticketId: string): Promise<any> {
     try {
-      const guestData: any = await this.guestModel
+      return await this.guestModel
         .find({ 'ticket_information.ticket_id': ticketId })
         .exec();
-      return guestData;
     } catch (e) {
       throw new ForbiddenException(e.message);
+    }
+  }
+
+  async sendEmailToGuest(event_id: string, dto: BulkEmailGuestDto) {
+    console.log(event_id, 'event id');
+
+    const eventData = await this.eventModel.findById(event_id);
+    if (!eventData) {
+      throw new Error('Event not found');
+    }
+    try {
+      const apiInstance: any = new brevo.TransactionalEmailsApi();
+      const apiKey = apiInstance.authentications['apiKey'];
+      apiKey.apiKey = process.env.SEND_IN_BLUE_EMAIL_API_KEY;
+      const sendSmtpEmail = new brevo.SendSmtpEmail();
+
+      sendSmtpEmail.sender = {
+        name: dto.sender_name,
+        email: dto.sender_email,
+      };
+
+      sendSmtpEmail.subject = `${dto.subject}`;
+      sendSmtpEmail.htmlContent =
+        '<html><body><h1>+001 content</h1></body></html>'; // template here
+      // sendSmtpEmail.messageVersions = dto.recipients?.map((recipient) => {
+      //   return {
+      //     to: [
+      //       {
+      //         email: recipient.email,
+      //         name: recipient.name,
+      //       },
+      //     ],
+      //     params: {},
+      //     subject: `${dto.subject}`,
+      //     htmlContent: '<html><body><h1>+001 content</h1></body></html>',
+      //   };
+      // });
+      sendSmtpEmail.to = [
+        ...dto.recipients?.map((i) => {
+          return { name: i.name, email: i.email };
+        }),
+      ];
+      sendSmtpEmail.replyTo = {
+        email: dto.reply_to ? dto.reply_to : process.env.SMTP_NO_REPLY,
+        name: dto.sender_name,
+      };
+      if (dto.email_attachment && dto.email_attachment.length > 0) {
+        sendSmtpEmail.attachment = dto.email_attachment;
+      }
+      await apiInstance.sendTransacEmail(sendSmtpEmail).then(
+        function (data: any) {
+          console.log('API called successfully. Returned data: ', data);
+          return data;
+        },
+        function (error: any) {
+          console.error(error?.body?.message, 'error');
+          throw new ForbiddenException(error?.body?.message);
+        },
+      );
+    } catch (error) {
+      throw new ForbiddenException(error?.message);
     }
   }
 }

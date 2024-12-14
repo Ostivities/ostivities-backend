@@ -7,7 +7,6 @@ import {
   HttpStatus,
   Param,
   Post,
-  Put,
   Query,
   UseGuards,
 } from '@nestjs/common';
@@ -22,6 +21,7 @@ import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
 import { IResponse } from 'src/util/types';
 import { GuestDto } from './dto/guests.dto';
 import { GuestsService } from './guests.service';
+import { BulkEmailGuestDto } from './dto/guest_bulk_email.dto';
 
 @Controller('guest')
 @ApiTags('Guest Service')
@@ -155,6 +155,28 @@ export class GuestsController {
         statusCode: HttpStatus.OK,
         data: data,
         message: 'Guests fetched successfully',
+      };
+    } catch (error) {
+      throw new ForbiddenException(error?.message);
+    }
+  }
+
+  @UseGuards(JwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @ApiBody({ type: BulkEmailGuestDto })
+  @ApiOperation({ summary: 'Send bulk email to guest' })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @Post('bulk_email/:event_id')
+  async sendEmailToGuest(
+    @Param('event_id') event_id: string,
+    @Body() dto: BulkEmailGuestDto,
+  ) {
+    try {
+      const data = await this.guestService.sendEmailToGuest(event_id, dto);
+      return {
+        statusCode: HttpStatus.OK,
+        data: data,
+        message: 'Email sent successfully',
       };
     } catch (error) {
       throw new ForbiddenException(error?.message);
