@@ -50,6 +50,16 @@ export class Coordinator {
   password: string;
 
   @Prop({
+    validate: {
+      validator: function (value: string) {
+        return this.staff_role === STAFF_ROLE.AGENT ? !!value : true;
+      },
+      message: 'password is required for agent role',
+    },
+  })
+  password_text: string;
+
+  @Prop({
     required: false,
     type: String,
   })
