@@ -39,7 +39,7 @@ export class CheckInService {
 
     if (!staff) {
       throw new ConflictException(
-        'The specified user or coordinator could not be found.',
+        'The specified ticketing agent could not be found.',
       );
     }
 

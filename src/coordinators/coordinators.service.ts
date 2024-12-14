@@ -40,6 +40,7 @@ export class CoordinatorsService {
     try {
       const createdStaff = new this.coordinatorModel({
         ...payload,
+        password_text: dto.password,
       });
       const newStaff = await createdStaff.save();
 
