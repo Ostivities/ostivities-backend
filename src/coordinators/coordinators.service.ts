@@ -34,13 +34,12 @@ export class CoordinatorsService {
 
     if (dto.staff_role === STAFF_ROLE.AGENT) {
       const hash = await argon.hash(dto.password);
-      payload = { ...payload, password: hash };
+      payload = { ...payload, password: hash, password_text: dto.password };
     }
 
     try {
       const createdStaff = new this.coordinatorModel({
         ...payload,
-        password_text: dto.password,
       });
       const newStaff = await createdStaff.save();
 
