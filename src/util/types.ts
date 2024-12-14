@@ -48,6 +48,7 @@ export enum STAFF_ROLE {
   AGENT = 'AGENT',
   USHER = 'USHER',
   AUDITOR = 'AUDITOR',
+  OWNER = 'OWNER',
 }
 
 export enum STATUS {

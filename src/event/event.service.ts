@@ -42,37 +42,13 @@ export class EventService {
       throw new ForbiddenException('User not found');
     }
 
-    console.log(userData, 'userData');
-
     try {
       const createdEvent = new this.eventModel({
         ...dto,
         mode: EVENT_MODE.PRIVATE,
       });
 
-      const savedEvent = await createdEvent.save();
-
-      if (savedEvent) {
-        //   ADD OWNER AS COORDINATOR
-        const payload: CoordinatorDto = {
-          staff_email: userData?.email,
-          staff_role: STAFF_ROLE.AGENT,
-          password: userData?.hash,
-          staff_phone_number: userData?.phone_number,
-          staff_name:
-            userData?.accountType === ACCOUNT_TYPE.PERSONAL
-              ? `${userData?.firstName} ${userData?.lastName}`
-              : `${userData?.businessName}`,
-        };
-        const createdStaff = new this.coordinatorModel({
-          ...payload,
-          event: savedEvent?._id,
-          user: userData?._id,
-        });
-        await createdStaff.save();
-      }
-
-      return savedEvent;
+      return await createdEvent.save();
     } catch (error) {
       throw new ForbiddenException(error.message);
     }

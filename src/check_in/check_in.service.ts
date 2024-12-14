@@ -12,7 +12,7 @@ import { CheckIn } from './schema/check_in.schema';
 import { LoginUserDto } from '../auth/dto/auth.dto';
 import { User } from '../auth/schema/auth.schema';
 import { Coordinator } from '../coordinators/schema/coordinator.schema';
-import { CHECK_IN_STATUS, STAFF_ROLE } from '../util/types';
+import { ACCOUNT_TYPE, CHECK_IN_STATUS, STAFF_ROLE } from '../util/types';
 import * as argon from 'argon2';
 import { JwtService } from '@nestjs/jwt';
 import { ConfigService } from '@nestjs/config';
@@ -33,13 +33,18 @@ export class CheckInService {
   async checkInLogin(dto: LoginUserDto): Promise<any> {
     console.log(dto, 'dto');
 
+    const user = await this.userModel.findOne({
+      email: dto.email,
+    });
+    console.log(user, 'lop');
+
     const staff = await this.coordinatorModel.findOne({
       staff_email: dto.email,
     });
 
-    if (!staff) {
+    if (!user && !staff) {
       throw new ConflictException(
-        'The specified ticketing agent could not be found.',
+        'The specified user or coordinator could not be found.',
       );
     }
 
@@ -47,6 +52,13 @@ export class CheckInService {
       throw new UnauthorizedException(
         `This user or coordinator does not have the required permissions. Please contact the event owner for assistance.`,
       );
+    }
+
+    if (user) {
+      const pwdMatch = await argon.verify(user.hash, dto.password);
+      if (!pwdMatch) {
+        throw new BadRequestException('The provided password is incorrect.');
+      }
     }
 
     if (staff && staff.staff_role === STAFF_ROLE.AGENT) {
@@ -57,6 +69,18 @@ export class CheckInService {
     }
 
     let payload: any = {};
+
+    if (user) {
+      payload = {
+        ...payload,
+        user_id: user._id,
+        staff_email: user?.email,
+        staff_name:
+          user.accountType === ACCOUNT_TYPE.PERSONAL
+            ? `${user.firstName} ${user.lastName}`
+            : `${user.businessName}`,
+      };
+    }
 
     if (staff) {
       const eventData = await this.eventModel.findById(staff.event);
