@@ -159,7 +159,7 @@ export class AuthService {
         );
 
       if (activateAccountModelUpdate) {
-        EmailService({
+        await EmailService({
           subject: 'Activate account',
           htmlContent: activationTokenTemplate(name, otp),
           email: dto.email,
@@ -328,7 +328,7 @@ export class AuthService {
         user.accountType === ACCOUNT_TYPE.PERSONAL
           ? user.firstName
           : user.businessName;
-      EmailService({
+      await EmailService({
         subject: 'Password reset',
         htmlContent: PasswordReset(name, otp),
         email: dto.email,
@@ -387,8 +387,7 @@ export class AuthService {
   // GET ALL USERS
   async getAllUsers(): Promise<User[]> {
     try {
-      const users = await this.userModel.find().populate('events').exec();
-      return users;
+      return await this.userModel.find().populate('events').exec();
     } catch (error) {
       throw new ForbiddenException(FORBIDDEN_MESSAGE);
     }
@@ -396,8 +395,7 @@ export class AuthService {
 
   async getUserProfile(user: string): Promise<User> {
     try {
-      const userData = await this.userModel.findById(user);
-      return userData;
+      return await this.userModel.findById(user);
     } catch (error) {
       throw new ForbiddenException(FORBIDDEN_MESSAGE);
     }
@@ -440,14 +438,13 @@ export class AuthService {
     const hash = await argon.hash(dto.password);
 
     try {
-      const user = await this.userModel.findByIdAndUpdate(
+      return await this.userModel.findByIdAndUpdate(
         { _id: userId },
         {
           hash,
         },
         { new: true, runValidators: true, upsert: true },
       );
-      return user;
     } catch (error) {
       throw new ForbiddenException(FORBIDDEN_MESSAGE);
     }
