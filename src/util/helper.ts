@@ -86,3 +86,67 @@ export const cipherText = () => {
   ).toString();
   return cip;
 };
+
+export const attendee_payload = [
+  {
+    event: '',
+    event_unique_code: '',
+    personal_information: {
+      firstname: '',
+      lastname: '',
+      email: '',
+      phone: '',
+    },
+    ticket_information: {
+      ticket_id: '',
+      ticket_quantity: '',
+      ticket_price: '',
+      order_date: '',
+      ticket_name: '',
+    },
+    total_purchased: 1,
+    order_number: '',
+    guest_category: 'attendee',
+  },
+  {
+    event: '',
+    event_unique_code: '',
+    personal_information: {
+      firstname: '',
+      lastname: '',
+      email: '',
+      phone: '',
+    },
+    ticket_information: {
+      ticket_id: '',
+      ticket_quantity: '',
+      ticket_price: '',
+      order_date: '',
+      ticket_name: '',
+    },
+    total_purchased: 1,
+    order_number: '',
+
+    guest_category: 'attendee',
+  },
+  {
+    event: '',
+    event_unique_code: '',
+    personal_information: {
+      firstname: '',
+      lastname: '',
+      email: '',
+      phone: '',
+    },
+    ticket_information: {
+      ticket_id: '',
+      ticket_quantity: '',
+      ticket_price: '',
+      order_date: '',
+      ticket_name: '',
+    },
+    total_purchased: 1,
+    order_number: '',
+    guest_category: 'attendee',
+  },
+];

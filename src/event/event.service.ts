@@ -276,7 +276,6 @@ export class EventService {
     eventName?: string,
     state?: string,
     eventCat?: EVENT_TYPES,
-
     // eventMode?: EVENT_TYPE,
   ): Promise<any> {
     const filter: any = { discover: true };

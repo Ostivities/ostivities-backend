@@ -11,12 +11,10 @@ import {
   IsOptional,
   IsString,
   Matches,
-  ValidateIf,
   ValidateNested,
 } from 'class-validator';
 import { emailRegExp } from 'src/util/helper';
 import { GUEST_CATEGORY, PAYMENT_METHODS, TICKET_STOCK } from 'src/util/types';
-import { AttendeeDto } from './attendees.dto';
 
 class PersonalInformation {
   @ApiProperty({
@@ -55,81 +53,6 @@ class PersonalInformation {
   @IsNotEmpty()
   @IsString()
   phoneNumber: string;
-}
-
-class AttendeesInformation {
-  @ApiProperty({
-    description: 'First name',
-    type: String,
-    required: true,
-  })
-  @IsNotEmpty()
-  @IsAlpha()
-  firstName: string;
-
-  @ApiProperty({
-    description: 'Last name',
-    type: String,
-    required: true,
-  })
-  @IsNotEmpty()
-  @IsAlpha()
-  lastName: string;
-
-  @ApiProperty({
-    description: 'Email address',
-    type: String,
-    required: false,
-  })
-  @IsEmail()
-  @IsOptional()
-  @Matches(emailRegExp, { message: 'email must be a valid email' })
-  email: string;
-
-  @ApiProperty({
-    description: 'Phone number',
-    type: String,
-    required: false,
-  })
-  @IsOptional()
-  @IsString()
-  phoneNumber: string;
-
-  @ApiProperty({
-    type: String,
-    description: 'ticket name',
-    required: true,
-  })
-  @IsOptional()
-  @IsString()
-  ticket_name: string;
-
-  @ApiProperty({
-    type: String,
-    description: 'ticket name',
-    required: true,
-  })
-  @IsOptional()
-  @IsString()
-  ticket_price: string;
-}
-
-class AdditionalInformation {
-  @ApiProperty({
-    type: String,
-    description: 'question',
-    required: true,
-  })
-  @IsOptional()
-  question?: string;
-
-  @ApiProperty({
-    type: String,
-    description: 'question',
-    required: false,
-  })
-  @IsOptional()
-  answer?: string;
 }
 
 class TicketInformation {
@@ -206,7 +129,7 @@ class TicketInformation {
   order_number: string;
 }
 
-export class GuestDto {
+export class AttendeeDto {
   @ApiProperty({
     type: String,
     description: 'event Id',
@@ -232,7 +155,7 @@ export class GuestDto {
   })
   @ValidateNested({ each: true })
   @Type(() => TicketInformation)
-  ticket_information: TicketInformation[];
+  ticket_information: TicketInformation;
 
   @ApiProperty({
     description: 'Personal Information',
@@ -245,70 +168,12 @@ export class GuestDto {
   personal_information: PersonalInformation;
 
   @ApiProperty({
-    description: 'Attendees Information',
-    type: [AttendeeDto],
-    required: false,
-  })
-  @ValidateNested({ each: true })
-  @Type(() => AttendeeDto)
-  @IsOptional()
-  attendees_information?: AttendeeDto[];
-
-  @ApiProperty({
-    description: 'Additional Information',
-    type: [AdditionalInformation],
-    required: false,
-  })
-  @ValidateNested({ each: true })
-  @Type(() => AdditionalInformation)
-  @IsOptional()
-  additional_information?: AdditionalInformation[];
-
-  @ApiProperty({
     enum: GUEST_CATEGORY,
     description: 'guest category',
   })
   @IsEnum(GUEST_CATEGORY)
   @IsNotEmpty()
   guest_category: GUEST_CATEGORY;
-
-  @ApiProperty({
-    description: 'service fee',
-    type: Number,
-    required: true,
-  })
-  @IsNumber()
-  @IsNotEmpty()
-  @ValidateIf((o) => o.guest_category === GUEST_CATEGORY.BUYER)
-  fees: number;
-
-  @ApiProperty({
-    description: 'discount',
-    type: Number,
-    required: true,
-  })
-  @IsNumber()
-  @IsNotEmpty()
-  @ValidateIf((o) => o.guest_category === GUEST_CATEGORY.BUYER)
-  discount: number;
-
-  @ApiProperty({
-    description: 'Total amount paid',
-    type: Number,
-    required: true,
-  })
-  @IsNumber()
-  @IsNotEmpty()
-  total_amount_paid: number;
-
-  @ApiProperty({
-    description: 'Discount code',
-    type: String,
-    required: false,
-  })
-  @IsString()
-  @IsOptional()
-  discountCode?: string;
 
   @ApiProperty({
     description: 'total purchased',
@@ -324,7 +189,15 @@ export class GuestDto {
     description: 'payment method',
   })
   @IsEnum(PAYMENT_METHODS)
-  @IsNotEmpty()
-  @ValidateIf((o) => o.guest_category === GUEST_CATEGORY.BUYER)
-  payment_method: PAYMENT_METHODS;
+  @IsOptional()
+  payment_method?: PAYMENT_METHODS;
+
+  @ApiProperty({
+    description: 'Total amount paid',
+    type: Number,
+    required: true,
+  })
+  @IsNumber()
+  @IsOptional()
+  total_amount_paid?: number;
 }
