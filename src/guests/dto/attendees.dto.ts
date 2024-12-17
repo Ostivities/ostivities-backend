@@ -11,6 +11,7 @@ import {
   IsOptional,
   IsString,
   Matches,
+  ValidateIf,
   ValidateNested,
 } from 'class-validator';
 import { emailRegExp } from 'src/util/helper';
@@ -200,4 +201,22 @@ export class AttendeeDto {
   @IsNumber()
   @IsOptional()
   total_amount_paid?: number;
+
+  @ApiProperty({
+    description: 'service fee',
+    type: Number,
+    required: true,
+  })
+  @IsNumber()
+  @IsOptional()
+  fees: number;
+
+  @ApiProperty({
+    description: 'discount',
+    type: Number,
+    required: true,
+  })
+  @IsNumber()
+  @IsOptional()
+  discount: number;
 }

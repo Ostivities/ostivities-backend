@@ -135,6 +135,33 @@ class AttendeesInformation {
     default: CHECK_IN_STATUS.NOT_CHECKED_IN,
   })
   check_in_status: string;
+  @Prop({
+    required: false,
+    type: Number,
+    // validate: {
+    //   validator: function (value: string) {
+    //     return this.guest_category === GUEST_CATEGORY.BUYER
+    //       ? !!value && /^[A-Za-z]+$/.test(value)
+    //       : true;
+    //   },
+    //   message: 'fee is required for buyer',
+    // },
+  })
+  fees: number;
+
+  @Prop({
+    required: false,
+    type: Number,
+    // validate: {
+    //   validator: function (value: string) {
+    //     return this.guest_category === GUEST_CATEGORY.BUYER
+    //       ? !!value && /^[A-Za-z]+$/.test(value)
+    //       : true;
+    //   },
+    //   message: 'fee is required for buyer',
+    // },
+  })
+  discount: number;
 }
 
 @Schema(schemaConfig)
