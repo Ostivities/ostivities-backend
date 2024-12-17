@@ -51,6 +51,11 @@ export enum STAFF_ROLE {
   OWNER = 'OWNER',
 }
 
+export enum GUEST_CATEGORY {
+  BUYER = 'BUYER',
+  ATTENDEE = 'ATTENDEE',
+}
+
 export enum STATUS {
   PENDING = 'PENDING',
   APPROVED = 'APPROVED',

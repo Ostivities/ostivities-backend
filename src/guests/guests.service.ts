@@ -14,7 +14,7 @@ import {
   generateOrderNumber,
   getFormattedDate,
 } from 'src/util/helper';
-import { CHECK_IN_STATUS, EVENT_TYPE, TICKET_STOCK } from 'src/util/types';
+import { CHECK_IN_STATUS, TICKET_STOCK } from 'src/util/types';
 import { GuestDto } from './dto/guests.dto';
 import { Guests } from './schema/guests.schema';
 import { pdfGenerator } from '../util/pdf';
@@ -24,6 +24,7 @@ import { TICKET_BANNER } from '../util/ticketBanner';
 import { BulkEmailGuestDto } from './dto/guest_bulk_email.dto';
 import * as brevo from '@getbrevo/brevo';
 import { BulkEmailService } from 'src/bulk_email/bulk_email.service';
+import { AttendeeDto } from './dto/attendees.dto';
 
 // Net sales Revenue = Sales revenue - Fees
 // Sales revenue = fee + ticket price*qty
@@ -151,7 +152,9 @@ export class GuestsService {
         name: `${dto.personal_information.firstName} ${dto.personal_information.lastName}`,
         event_name: eventData.eventName,
         event_address: eventData.address,
-        event_date_time: eventData.startDate,
+        event_date_time: eventData.start_date_time
+          ? eventData.start_date_time
+          : eventData.startDate,
         order_number: order_number.toString(),
         order_date: getFormattedDate(),
         order_discount: dto.discount.toString(),
@@ -165,7 +168,7 @@ export class GuestsService {
         (ticket) =>
           Array.from({ length: ticket.quantity }, () => {
             const {
-              order_number,
+              // order_number,
               order_date,
               event_date_time,
               event_address,
@@ -180,7 +183,7 @@ export class GuestsService {
             };
 
             return {
-              order_number,
+              order_number: ticket.order_number,
               order_date,
               event_date_time,
               event_address,
@@ -258,78 +261,13 @@ export class GuestsService {
       });
     }
 
-    // SEND EMAIL TO ATTENDEES
-    if (dto?.attendees_information && dto?.attendees_information.length > 0) {
-      console.log('call second');
-      // SEND ATTENDEES EMAIL
-      for (const attendee_information of dto.attendees_information) {
-        if (attendee_information.email) {
-          // REGISTER EACH ATTENDEE
-          const pdfDto: PdfDto = {
-            order_date: getFormattedDate(),
-            buyer_name: `${attendee_information.firstName} ${attendee_information.lastName}`,
-            event_address: eventData.address,
-            event_date_time: eventData.startDate,
-            event_name: eventData.eventName,
-            order_number: order_number.toString(),
-            event_id: eventData?._id,
-            buyer_id: '',
-            total_pages: 0,
-            content: [],
-          };
-          const pdfBase64 = await pdfGenerator(pdfDto);
-          const orderPurchase: CreateOrderEmailDto = {
-            name: `${attendee_information.firstName} ${attendee_information.lastName}`,
-            event_name: eventData.eventName,
-            event_address: eventData.address,
-            event_date_time: eventData.startDate,
-            order_number: order_number.toString(),
-            ticket_name: attendee_information.ticket_name,
-            order_date: getFormattedDate(),
-            order_price:
-              eventData.eventMode === EVENT_TYPE.FREE
-                ? `0`
-                : attendee_information.ticket_price,
-            order_discount: dto.discount?.toString(), // to be changed later
-            order_subtotal: formatNumber(dto.total_amount_paid?.toString()),
-            order_fees: formatNumber(dto.fees?.toString()),
-            order_qty: formatNumber(dto.total_purchased?.toString()),
-            host_email: eventData?.user?.email,
-          };
-
-          if (pdfBase64) {
-            const payload: BulkEmailDto = {
-              sender_name: process.env.SMTP_SENDER_NAME,
-              sender_email: process.env.SMTP_SALES_SENDER_EMAIL,
-              reply_to: process.env.SMTP_SALES_SENDER_EMAIL,
-              receipients: [
-                {
-                  name: `${attendee_information.firstName} ${attendee_information.lastName}`,
-                  email: attendee_information.email,
-                },
-              ],
-              email_subject: `Order`,
-              email_content: TicketPurchase(orderPurchase),
-            };
-            await this.emailService.sendBulkEmail({
-              ...payload,
-              email_attachment: [
-                {
-                  content: pdfBase64,
-                  name: `${order_number}.pdf`,
-                },
-              ],
-            });
-          }
-        }
-      }
-    }
-
+    // CALCULATE TICKET METRICS
     const tickets_metrics = await this.ticketModel
       .find({ event: eventData?._id })
       .select('ticket_sales_revenue ticket_net_sales_revenue ticket_sold')
       .exec();
 
+    // SAVE AND UPDATE THE CALCULATED TICKET METRICS
     if (tickets_metrics) {
       const total_ticket_sold = tickets_metrics.reduce(
         (sum, ticket) => sum + ticket.ticket_sold,
@@ -353,7 +291,98 @@ export class GuestsService {
       );
     }
 
+    // REGISTER AND SAVE ATTENDEES IF THEY EXIST
+    if (dto.attendees_information?.length > 0) {
+      await this.registerAttendees(dto.attendees_information, eventData?._id);
+    }
+
     return savedGuest;
+  }
+
+  async registerAttendees(dto: AttendeeDto[], event_id: string): Promise<any> {
+    console.log('reg attendees');
+    try {
+      // check_in_status: CHECK_IN_STATUS.NOT_CHECKED_IN,
+      const mappedGuests = dto.map((item) => {
+        return {
+          ...item,
+          check_in_status: CHECK_IN_STATUS.NOT_CHECKED_IN,
+          event: event_id,
+        };
+      });
+
+      console.log(mappedGuests, 'mapped guests');
+
+      const savedAttendees = await this.guestModel.insertMany(mappedGuests);
+
+      // SEND EMAIL TO ATTENDEES AFTER INSERTING THEM ALL
+      // if (savedAttendees) {
+      //   for (const attendee_information of dto.attendees_information) {
+      //     if (attendee_information.email) {
+      //       const pdfDto: PdfDto = {
+      //         order_date: getFormattedDate(),
+      //         buyer_name: `${attendee_information.firstName} ${attendee_information.lastName}`,
+      //         event_address: eventData.address,
+      //         event_date_time: eventData.startDate,
+      //         event_name: eventData.eventName,
+      //         order_number: order_number.toString(),
+      //         event_id: eventData?._id,
+      //         buyer_id: '',
+      //         total_pages: 0,
+      //         content: [],
+      //       };
+      //       const pdfBase64 = await pdfGenerator(pdfDto);
+      //       const orderPurchase: CreateOrderEmailDto = {
+      //         name: `${attendee_information.firstName} ${attendee_information.lastName}`,
+      //         event_name: eventData.eventName,
+      //         event_address: eventData.address,
+      //         event_date_time: eventData.startDate,
+      //         order_number: order_number.toString(),
+      //         ticket_name: attendee_information.ticket_name,
+      //         order_date: getFormattedDate(),
+      //         order_price:
+      //           eventData.eventMode === EVENT_TYPE.FREE
+      //             ? `0`
+      //             : attendee_information.ticket_price,
+      //         order_discount: dto.discount?.toString(), // to be changed later
+      //         order_subtotal: formatNumber(dto.total_amount_paid?.toString()),
+      //         order_fees: formatNumber(dto.fees?.toString()),
+      //         order_qty: formatNumber(dto.total_purchased?.toString()),
+      //         host_email: eventData?.user?.email,
+      //       };
+      //
+      //       if (pdfBase64) {
+      //         const payload: BulkEmailDto = {
+      //           sender_name: process.env.SMTP_SENDER_NAME,
+      //           sender_email: process.env.SMTP_SALES_SENDER_EMAIL,
+      //           reply_to: process.env.SMTP_SALES_SENDER_EMAIL,
+      //           receipients: [
+      //             {
+      //               name: `${attendee_information.firstName} ${attendee_information.lastName}`,
+      //               email: attendee_information.email,
+      //             },
+      //           ],
+      //           email_subject: `Order`,
+      //           email_content: TicketPurchase(orderPurchase),
+      //         };
+      //         await this.emailService.sendBulkEmail({
+      //           ...payload,
+      //           email_attachment: [
+      //             {
+      //               content: pdfBase64,
+      //               name: `${order_number}.pdf`,
+      //             },
+      //           ],
+      //         });
+      //       }
+      //     }
+      //   }
+      // }
+      console.log(savedAttendees, 'saved attendees');
+      return savedAttendees;
+    } catch (error) {
+      throw new ForbiddenException(error.message);
+    }
   }
 
   async getGuestsByEventId(
@@ -393,7 +422,7 @@ export class GuestsService {
 
       return { guests, total, pages };
     } catch (error) {
-      throw new ForbiddenException(FORBIDDEN_MESSAGE);
+      throw new ForbiddenException(error.message);
     }
   }
 
