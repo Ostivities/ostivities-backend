@@ -9,6 +9,9 @@ import { CoordinatorDto } from './dto/coordinator.dto';
 import { Coordinator } from './schema/coordinator.schema';
 import * as argon from 'argon2';
 import { STAFF_ROLE } from '../util/types';
+import { EmailService } from '../email/email.service';
+import { VerifyAccountTemplate } from '../templates/verifyAcoount';
+import { TicketAgent } from '../templates/ticketAgent';
 
 @Injectable()
 export class CoordinatorsService {
@@ -26,6 +29,7 @@ export class CoordinatorsService {
   ): Promise<Coordinator> {
     console.log(user, 'user');
     const eventData = await this.eventModel.findById(eventId);
+
     if (!eventData) {
       throw new ForbiddenException('Event not found');
     }
@@ -46,6 +50,22 @@ export class CoordinatorsService {
       const staffObject = newStaff.toObject();
       if (staffObject.password) {
         delete staffObject.password;
+      }
+
+      if (newStaff && STAFF_ROLE.AGENT) {
+        //   SEND EMAIL TO IICKET AGENT
+        await EmailService({
+          subject: 'Ticketing Agent Invitation!',
+          name: `${staffObject.staff_name}`,
+          email: `${staffObject.staff_email}`,
+          htmlContent: TicketAgent(
+            staffObject.staff_name,
+            eventData?.eventName,
+            staffObject.staff_email,
+            staffObject.password_text,
+            user.email as unknown as string,
+          ),
+        });
       }
 
       return staffObject;
