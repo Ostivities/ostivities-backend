@@ -21,9 +21,9 @@ import { PdfDto } from '../util/dto/pdf.dto';
 import { OSTIVITIES_LOGO } from '../util/logo';
 import { TICKET_BANNER } from '../util/ticketBanner';
 import { BulkEmailGuestDto } from './dto/guest_bulk_email.dto';
-import * as brevo from '@getbrevo/brevo';
 import { BulkEmailService } from 'src/bulk_email/bulk_email.service';
 import { AttendeeDto } from './dto/attendees.dto';
+import { guestEmail } from '../templates/guest';
 
 // Net sales Revenue = Sales revenue - Fees
 // Sales revenue = fee + ticket price*qty
@@ -89,6 +89,7 @@ export class GuestsService {
         // const ticket_available =
         //   newTicketQty === 0 ? 0 : ticket.ticketQty - newTicketSold;
 
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
         total_sales_revenue +=
           eventData.total_sales_revenue + dto.total_amount_paid;
         //
@@ -293,108 +294,115 @@ export class GuestsService {
 
       console.log(savedAttendees, 'saved attendees');
 
-      // SEND EMAIL TO ATTENDEES AFTER INSERTING THEM ALL
-      if (savedAttendees) {
-        for (const attendee_information of dto) {
-          if (attendee_information.personal_information.email) {
-            const find_attendee_info = savedAttendees?.find(
-              (i) =>
-                i.personal_information.email ===
-                attendee_information.personal_information.email,
-            );
+      if (savedAttendees?.length > 0) {
+        // Prepare email sending for each attendee
+        const emailPromises = dto.map(async (attendeeInfo) => {
+          if (!attendeeInfo.personal_information.email) return;
 
-            const qr_code = {
-              event_id: eventData?._id,
-              guest_id: find_attendee_info?._id,
-              order_number:
-                attendee_information.ticket_information.order_number,
-            };
+          // Find saved attendee data by email
+          const savedAttendee = savedAttendees.find(
+            (i) =>
+              i.personal_information.email ===
+              attendeeInfo.personal_information.email,
+          );
 
-            const content: PdfDto['content'] = [
-              {
-                order_number:
-                  attendee_information.ticket_information.order_number,
-                order_date: getFormattedDate(),
-                event_date_time: eventData.startDate,
-                event_address: eventData.address,
-                event_name: eventData.eventName,
-                buyer_name: `${attendee_information.personal_information.firstName} ${attendee_information.personal_information.firstName}`,
-                ticket_type:
-                  attendee_information.ticket_information.ticket_type,
-                qr_code: JSON.stringify(qr_code),
-                ostivities_logo: OSTIVITIES_LOGO,
-                ticket_banner: TICKET_BANNER,
-                ticket_name:
-                  attendee_information.ticket_information.ticket_name,
-              },
-            ];
-            const pdfDto: PdfDto = {
+          if (!savedAttendee) return;
+
+          // Generate QR Code Data
+          const qrCode = {
+            event_id: eventData._id,
+            guest_id: savedAttendee._id,
+            order_number: attendeeInfo.ticket_information.order_number,
+          };
+
+          // Create PDF Content
+          const content: PdfDto['content'] = [
+            {
+              order_number: attendeeInfo.ticket_information.order_number,
               order_date: getFormattedDate(),
-              buyer_name: `${attendee_information.personal_information.firstName} ${attendee_information.personal_information.firstName}`,
-              event_address: eventData.address,
               event_date_time: eventData.startDate,
-              event_name: eventData.eventName,
-              order_number:
-                attendee_information.ticket_information.order_number,
-              event_id: eventData?._id,
-              buyer_id: find_attendee_info?._id as unknown as string,
-              total_pages: 0,
-              content,
-            };
-            const pdfBase64 = await pdfGenerator(pdfDto);
-            const orderPurchase: CreateOrderEmailDto = {
-              name: `${attendee_information.personal_information.firstName} ${attendee_information.personal_information.firstName}`,
-              event_name: eventData.eventName,
               event_address: eventData.address,
-              event_date_time: eventData.startDate,
-              order_number:
-                attendee_information.ticket_information.order_number,
-              ticket_name: attendee_information.ticket_information.ticket_name,
-              order_date: getFormattedDate(),
-              order_price:
-                eventData.eventMode === EVENT_TYPE.FREE
-                  ? `0`
-                  : attendee_information.ticket_information.ticket_price?.toString(),
-              order_discount: attendee_information?.discount?.toString(), // to be changed later
-              order_subtotal: formatNumber(
-                attendee_information.total_amount_paid?.toString(),
-              ),
-              order_fees: formatNumber(attendee_information.fees?.toString()),
-              order_qty: formatNumber(
-                attendee_information.total_purchased?.toString(),
-              ),
-              host_email: eventData?.user?.email,
+              event_name: eventData.eventName,
+              buyer_name: `${attendeeInfo.personal_information.firstName} ${attendeeInfo.personal_information.lastName}`,
+              ticket_type: attendeeInfo.ticket_information.ticket_type,
+              qr_code: JSON.stringify(qrCode),
+              ostivities_logo: OSTIVITIES_LOGO,
+              ticket_banner: TICKET_BANNER,
+              ticket_name: attendeeInfo.ticket_information.ticket_name,
+            },
+          ];
+
+          const pdfDto: PdfDto = {
+            order_date: getFormattedDate(),
+            buyer_name: `${attendeeInfo.personal_information.firstName} ${attendeeInfo.personal_information.lastName}`,
+            event_address: eventData.address,
+            event_date_time: eventData.startDate,
+            event_name: eventData.eventName,
+            order_number: attendeeInfo.ticket_information.order_number,
+            event_id: eventData._id,
+            buyer_id: savedAttendee._id.toString(),
+            total_pages: 0,
+            content,
+          };
+
+          // Generate PDF as Base64
+          const pdfBase64 = await pdfGenerator(pdfDto);
+
+          // Construct order purchase details
+          const orderPurchase: CreateOrderEmailDto = {
+            name: `${attendeeInfo.personal_information.firstName} ${attendeeInfo.personal_information.lastName}`,
+            event_name: eventData.eventName,
+            event_address: eventData.address,
+            event_date_time: eventData.startDate,
+            order_number: attendeeInfo.ticket_information.order_number,
+            ticket_name: attendeeInfo.ticket_information.ticket_name,
+            order_date: getFormattedDate(),
+            order_price:
+              eventData.eventMode === EVENT_TYPE.FREE
+                ? '0'
+                : attendeeInfo.ticket_information.ticket_price?.toString(),
+            order_discount: attendeeInfo?.discount?.toString(),
+            order_subtotal: formatNumber(
+              attendeeInfo.total_amount_paid?.toString(),
+            ),
+            order_fees: formatNumber(attendeeInfo.fees?.toString()),
+            order_qty: formatNumber(attendeeInfo.total_purchased?.toString()),
+            host_email: eventData.user?.email,
+          };
+
+          // Send email if PDF is generated
+          if (pdfBase64) {
+            const emailPayload: BulkEmailDto = {
+              sender_name: process.env.SMTP_SENDER_NAME,
+              sender_email: process.env.SMTP_SALES_SENDER_EMAIL,
+              reply_to: process.env.SMTP_SALES_SENDER_EMAIL,
+              receipients: [
+                {
+                  name: `${attendeeInfo.personal_information.firstName} ${attendeeInfo.personal_information.lastName}`,
+                  email: attendeeInfo.personal_information.email,
+                },
+              ],
+              email_subject: `Order Confirmation`,
+              email_content: TicketPurchase(orderPurchase),
+              email_attachment: [
+                {
+                  content: pdfBase64,
+                  name: `${attendeeInfo.ticket_information.order_number}.pdf`,
+                },
+              ],
             };
 
-            if (pdfBase64) {
-              const payload: BulkEmailDto = {
-                sender_name: process.env.SMTP_SENDER_NAME,
-                sender_email: process.env.SMTP_SALES_SENDER_EMAIL,
-                reply_to: process.env.SMTP_SALES_SENDER_EMAIL,
-                receipients: [
-                  {
-                    name: `${attendee_information.personal_information.firstName} ${attendee_information.personal_information.firstName}`,
-                    email: attendee_information.personal_information.email,
-                  },
-                ],
-                email_subject: `Order`,
-                email_content: TicketPurchase(orderPurchase),
-              };
-              await this.emailService.sendBulkEmail({
-                ...payload,
-                email_attachment: [
-                  {
-                    content: pdfBase64,
-                    name: `${attendee_information.ticket_information.order_number}.pdf`,
-                  },
-                ],
-              });
-            }
+            // Send the email
+            await this.emailService.sendBulkEmail(emailPayload);
           }
-        }
+        });
+
+        // Execute all email promises concurrently
+        await Promise.all(emailPromises);
       }
-      console.log(savedAttendees, 'saved attendees');
+
       return savedAttendees;
+      // return savedAttendees;
     } catch (error) {
       throw new ForbiddenException(error.message);
     }
@@ -488,60 +496,55 @@ export class GuestsService {
 
   async sendEmailToGuest(event_id: string, dto: BulkEmailGuestDto) {
     console.log(event_id, 'event id');
+    console.log(dto, 'dto');
 
     const eventData = await this.eventModel.findById(event_id);
     if (!eventData) {
       throw new Error('Event not found');
     }
+    const query: any = { event: event_id };
     try {
-      const apiInstance: any = new brevo.TransactionalEmailsApi();
-      const apiKey = apiInstance.authentications['apiKey'];
-      apiKey.apiKey = process.env.SEND_IN_BLUE_EMAIL_API_KEY;
-      const sendSmtpEmail = new brevo.SendSmtpEmail();
+      const guests = await this.guestModel
+        .find({ ...query })
+        .sort({ createdAt: -1 });
 
-      sendSmtpEmail.sender = {
-        name: dto.sender_name,
-        email: dto.sender_email,
-      };
+      const guestEmails: { name: string; email: string }[] = guests.map((i) => {
+        return {
+          name: `${i.personal_information.firstName} ${i.personal_information.lastName}`,
+          email: i.personal_information.email,
+        };
+      });
 
-      sendSmtpEmail.subject = `${dto.subject}`;
-      sendSmtpEmail.htmlContent =
-        '<html><body><h1>+001 content</h1></body></html>'; // template here
-      // sendSmtpEmail.messageVersions = dto.recipients?.map((recipient) => {
-      //   return {
-      //     to: [
-      //       {
-      //         email: recipient.email,
-      //         name: recipient.name,
-      //       },
-      //     ],
-      //     params: {},
-      //     subject: `${dto.subject}`,
-      //     htmlContent: '<html><body><h1>+001 content</h1></body></html>',
-      //   };
-      // });
-      sendSmtpEmail.to = [
-        ...dto.recipients?.map((i) => {
-          return { name: i.name, email: i.email };
-        }),
-      ];
-      sendSmtpEmail.replyTo = {
-        email: dto.reply_to ? dto.reply_to : process.env.SMTP_NO_REPLY,
-        name: dto.sender_name,
-      };
-      if (dto.email_attachment && dto.email_attachment.length > 0) {
-        sendSmtpEmail.attachment = dto.email_attachment;
-      }
-      await apiInstance.sendTransacEmail(sendSmtpEmail).then(
-        function (data: any) {
-          console.log('API called successfully. Returned data: ', data);
-          return data;
-        },
-        function (error: any) {
-          console.error(error?.body?.message, 'error');
-          throw new ForbiddenException(error?.body?.message);
-        },
-      );
+      // Prepare email sending promises
+      const emailPromises = guestEmails.map((guest) => {
+        const emailContent = guestEmail(
+          guest.name,
+          eventData.eventName,
+          dto.message,
+          dto.sender_email,
+        );
+
+        const payload: BulkEmailDto = {
+          sender_name: dto.sender_name,
+          sender_email: dto.sender_email,
+          reply_to: dto.reply_to,
+          receipients: [{ name: guest.name, email: guest.email }],
+          email_subject: dto.subject,
+          email_content: emailContent,
+          email_attachment: dto.email_attachment
+            ? dto.email_attachment?.map((attachment) => ({
+                url: attachment.url,
+                name: attachment.name,
+              }))
+            : [],
+        };
+
+        // Send email for each guest
+        return this.emailService.sendBulkEmail(payload);
+      });
+
+      // Execute all email sends in parallel
+      await Promise.all(emailPromises);
     } catch (error) {
       throw new ForbiddenException(error?.message);
     }

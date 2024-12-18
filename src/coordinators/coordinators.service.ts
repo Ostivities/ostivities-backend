@@ -53,7 +53,7 @@ export class CoordinatorsService {
       }
 
       if (newStaff && STAFF_ROLE.AGENT) {
-        //   SEND EMAIL TO IICKET AGENT
+        //   SEND EMAIL TO TICKET AGENT
         await EmailService({
           subject: 'Ticketing Agent Invitation!',
           name: `${staffObject.staff_name}`,

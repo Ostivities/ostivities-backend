@@ -4,6 +4,7 @@ import {
   IsArray,
   IsEmail,
   IsNotEmpty,
+  IsObject,
   IsOptional,
   IsString,
   IsUrl,
@@ -98,7 +99,7 @@ export class BulkEmailGuestDto {
     description: 'recipient(s)',
     required: true,
   })
-  @IsNotEmpty()
+  @IsOptional()
   @IsArray()
   @ValidateNested({ each: true })
   @Type(() => Recipient)
