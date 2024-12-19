@@ -11,7 +11,6 @@ import {
   IsOptional,
   IsString,
   Matches,
-  ValidateIf,
   ValidateNested,
 } from 'class-validator';
 import { emailRegExp } from 'src/util/helper';
@@ -51,9 +50,9 @@ class PersonalInformation {
     type: String,
     required: true,
   })
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
-  phoneNumber: string;
+  phoneNumber?: string;
 }
 
 class TicketInformation {

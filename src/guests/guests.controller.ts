@@ -109,6 +109,53 @@ export class GuestsController {
     }
   }
 
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'Get all guests' })
+  @ApiQuery({
+    name: 'page',
+    required: true,
+    description: 'Page number',
+    example: 1,
+  })
+  @ApiQuery({
+    name: 'limit',
+    required: true,
+    description: 'Number of items per page',
+    example: 10,
+  })
+  @ApiQuery({
+    name: 'search',
+    required: false,
+    description: `filter by guest's firstName, lastName, email and ticket_name`,
+    example: 10,
+  })
+  @ApiResponse({
+    status: 200,
+    description: 'Guests fetched successfully.',
+  })
+  @ApiResponse({ status: 403, description: 'Forbidden.' })
+  @Get('event/guests/:event_unique_key')
+  async getGuestsByUniqueKey(
+    @Param('event_unique_key') event_unique_key: string,
+    @Query('page') page: number,
+    @Query('limit') limit: number,
+  ) {
+    try {
+      const data = await this.guestService.getGuestByUniquekey(
+        event_unique_key,
+        page,
+        limit,
+      );
+      return {
+        statusCode: HttpStatus.OK,
+        data: data,
+        message: 'Guests fetched successfully',
+      };
+    } catch (error) {
+      throw new ForbiddenException(error?.message);
+    }
+  }
+
   @UseGuards(JwtAuthGuard)
   @HttpCode(HttpStatus.OK)
   @ApiOperation({ summary: 'Get guest info and ticket information' })

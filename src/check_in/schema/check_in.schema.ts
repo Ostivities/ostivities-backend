@@ -64,10 +64,11 @@ class TicketInformation {
   ticket_type: string;
 
   @Prop({
+    required: true,
     type: String,
-    required: false,
+    unique: true,
   })
-  order_no: string;
+  order_number: string;
 
   @Prop({ type: Number, required: true })
   quantity: number;

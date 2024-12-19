@@ -53,7 +53,7 @@ export class BulkEmailService {
         },
         function (error: any) {
           console.error(error, 'error');
-          throw new ForbiddenException(error.message);
+          throw new ForbiddenException(error?.body?.message);
         },
       );
     } catch (error) {

@@ -107,7 +107,7 @@ export class CheckInService {
   async getGuestsTicketInformation(
     eventId: string,
     guestId: string,
-    ticketId: string,
+    orderNumber: string,
   ): Promise<any> {
     const eventData: any = await this.eventModel.findOne({
       _id: eventId,
@@ -117,20 +117,28 @@ export class CheckInService {
       throw new ForbiddenException('The specified event could not be found.');
     }
     try {
-      const guestData: any = await this.guestModel.findById(guestId);
+      const guestData: any = await this.guestModel.findOne({
+        _id: guestId,
+        'ticket_information.order_number': orderNumber,
+      });
+
+      if (!guestData) {
+        throw new ForbiddenException('ticket / guest information not found');
+      }
 
       const ticket_information = guestData?.ticket_information?.find(
-        (ticket: any) => ticket.ticket_id == ticketId,
+        (ticket: any) => ticket.order_number == orderNumber,
       );
+
+      console.log(guestData, 'guest data');
 
       return {
         personal_information: guestData.personal_information,
         ticket_information,
-        order_number: guestData.order_number,
         total_purchased: guestData.total_purchased,
         total_checked_in_tickets: guestData.total_checked_in_tickets,
         check_in_status: guestData.check_in_status,
-        order_date: guestData.order_date,
+        order_date: guestData.createdAt,
         event_information: {
           event_name: eventData.eventName,
           event_appearance: eventData.eventImage,
@@ -145,7 +153,7 @@ export class CheckInService {
   async CheckInGuest(
     eventId: string,
     guestId: string,
-    ticketId: string,
+    orderNumber: string,
     dto: CheckInDto,
   ) {
     const eventData: any = await this.eventModel.findOne({
@@ -156,27 +164,59 @@ export class CheckInService {
       throw new ForbiddenException('The specified event could not be found.');
     }
 
-    const guest: any = await this.guestModel.findById(guestId);
+    const guestData: any = await this.guestModel.findOne({
+      _id: guestId,
+      'ticket_information.order_number': orderNumber,
+    });
 
-    const ticket_information = guest?.ticket_information?.find(
-      (ticket: any) => ticket.ticket_id == ticketId,
+    const ticket_information = guestData?.ticket_information?.find(
+      (ticket: any) => ticket.order_number == orderNumber,
     );
 
-    if (!guest) {
-      throw new ForbiddenException('Guest not be found.');
+    if (!guestData) {
+      throw new ForbiddenException('Guest not found.');
     }
 
-    if (guest.total_checked_in_tickets >= guest.total_purchased) {
-      throw new BadRequestException('All tickets have already been checked in');
+    if (guestData.total_checked_in_tickets >= guestData.total_purchased) {
+      throw new ForbiddenException('This ticket has already been checked in.');
+    }
+
+    const checkInData: any = await this.checkInModel.findOne({
+      _id: guestId,
+      'ticket_information.order_number': orderNumber,
+    });
+
+    console.log(checkInData, 'checkInData');
+
+    if (
+      checkInData &&
+      checkInData.ticket_information.order_number === orderNumber
+    ) {
+      throw new ForbiddenException('This ticket has already been checked in.');
     }
 
     try {
-      guest.total_checked_in_tickets += 1;
-      guest.check_in_status = CHECK_IN_STATUS.CHECKED_IN;
-      const updatedGuest = await guest.save();
+      // guestData.total_checked_in_tickets += 1;
+      // guestData.check_in_status = CHECK_IN_STATUS.CHECKED_IN;
+      const updatedGuest = await this.guestModel.findByIdAndUpdate(
+        {
+          _id: guestId,
+        },
+        {
+          total_checked_in_tickets: guestData.total_checked_in_tickets + 1,
+          check_in_status: CHECK_IN_STATUS.CHECKED_IN,
+          guest_category: guestData.guest_category,
+        },
+        {
+          new: true,
+          runValidators: true,
+          upsert: true,
+        },
+      );
 
+      // console.log(updatedGuest, 'updated guest');
       const checkIn = new this.checkInModel({
-        personal_information: guest.personal_information,
+        personal_information: guestData.personal_information,
         ticket_information: ticket_information,
         event: eventData?._id,
         check_in_by: dto.check_in_by,
