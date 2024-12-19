@@ -50,17 +50,17 @@ export class CheckInController {
     description: 'Guest info successfully.',
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
-  @Get(':event_id/:guest_id/:ticket_id')
+  @Get(':event_id/:guest_id/:order_number')
   async getGuestsTicketInformation(
     @Param('event_id') eventId: string,
     @Param('guest_id') guestId: string,
-    @Param('ticket_id') ticketId: string,
+    @Param('order_number') orderNumber: string,
   ) {
     try {
       const data = await this.checkInService.getGuestsTicketInformation(
         eventId,
         guestId,
-        ticketId,
+        orderNumber,
       );
       return {
         statusCode: HttpStatus.OK,
@@ -80,18 +80,18 @@ export class CheckInController {
   })
   @ApiResponse({ status: 403, description: 'Forbidden.' })
   @UseGuards(ScannerJwtAuthGuard)
-  @Post(':event_id/:guest_id/:ticket_id')
+  @Post(':event_id/:guest_id/:order_number')
   async checkInGuest(
     @Param('event_id') eventId: string,
     @Param('guest_id') guestId: string,
-    @Param('ticket_id') ticketId: string,
+    @Param('order_number') orderNumber: string,
     @Body() dto: CheckInDto,
   ) {
     try {
       const data = await this.checkInService.CheckInGuest(
         eventId,
         guestId,
-        ticketId,
+        orderNumber,
         dto,
       );
       return {

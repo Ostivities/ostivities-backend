@@ -41,7 +41,7 @@ class PersonalInformation {
 
   @Prop({
     type: String,
-    required: true,
+    required: false,
   })
   phoneNumber: string;
 }
@@ -80,8 +80,9 @@ export class TicketInformation {
   total_amount: number;
 
   @Prop({
-    required: true,
     type: String,
+    unique: true,
+    // required: true,
   })
   order_number: string;
 }
@@ -293,6 +294,18 @@ export class Guests {
     },
   })
   payment_method: PAYMENT_METHODS;
+
+  // @Prop({
+  //   type: String,
+  //   required: true,
+  // })
+  // check_in_date_time: string;
+  //
+  // @Prop({
+  //   required: false,
+  //   type: String,
+  // })
+  // check_in_by: string;
 
   @Prop({ type: mongoose.Schema.Types.ObjectId, ref: User.name })
   user: mongoose.Schema.Types.ObjectId;

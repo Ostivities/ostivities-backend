@@ -3,13 +3,7 @@ import { FORBIDDEN_MESSAGE } from '@nestjs/core/guards';
 import { InjectModel } from '@nestjs/mongoose';
 import { Model, Types } from 'mongoose';
 import { User } from 'src/auth/schema/auth.schema';
-import {
-  ACCOUNT_TYPE,
-  EVENT_MODE,
-  EVENT_MODES,
-  EVENT_TYPES,
-  STAFF_ROLE,
-} from 'src/util/types';
+import { EVENT_MODE, EVENT_TYPES } from 'src/util/types';
 import {
   EventDto,
   StringArrayDto,
@@ -21,7 +15,6 @@ import {
 import { Events } from './schema/event.schema';
 import { Ticket } from '../ticket/schema/ticket.schema';
 import { CheckIn } from '../check_in/schema/check_in.schema';
-import { CoordinatorDto } from '../coordinators/dto/coordinator.dto';
 import { Coordinator } from '../coordinators/schema/coordinator.schema';
 
 @Injectable()

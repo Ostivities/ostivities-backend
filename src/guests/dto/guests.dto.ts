@@ -52,9 +52,9 @@ class PersonalInformation {
     type: String,
     required: true,
   })
-  @IsNotEmpty()
+  @IsOptional()
   @IsString()
-  phoneNumber: string;
+  phoneNumber?: string;
 }
 
 class AttendeesInformation {

@@ -133,9 +133,23 @@ export class GuestsService {
       }
     }
 
+    // filter dto if attendees info exist
+    const filter_payload = (payload: GuestDto) => {
+      if (
+        payload.attendees_information &&
+        payload.attendees_information.length > 0
+      ) {
+        // Remove attendees_information from the payload
+        // eslint-disable-next-line @typescript-eslint/no-unused-vars
+        const { attendees_information, ...filteredPayload } = payload;
+        return filteredPayload;
+      }
+      // Return the original payload if no attendees_information or it's empty
+      return payload;
+    };
+
     const newRegistration = new this.guestModel({
-      ...dto,
-      order_number: order_number.toString(),
+      ...filter_payload(dto),
       event: eventData?._id,
       check_in_status: CHECK_IN_STATUS.NOT_CHECKED_IN,
     });
@@ -179,7 +193,7 @@ export class GuestsService {
             const qr_code = {
               event_id: eventData?._id,
               guest_id: savedGuest._id,
-              ticket_id: ticket.ticket_id,
+              order_number: ticket.order_number,
             };
 
             return {
@@ -449,6 +463,38 @@ export class GuestsService {
     }
   }
 
+  async getGuestByUniquekey(
+    event_unique_key: string,
+    page: number,
+    limit: number,
+  ): Promise<any> {
+    const skip = (page - 1) * limit;
+    const eventData = await this.eventModel.findOne({
+      unique_key: event_unique_key,
+    });
+    try {
+      const guests = await this.guestModel
+        .find({ event: eventData?._id })
+        .sort({ createdAt: -1 })
+        .select([
+          'personal_information.firstName',
+          'personal_information.lastName',
+        ])
+        .skip(skip)
+        .limit(limit)
+        .exec();
+
+      const total = await this.guestModel.countDocuments({
+        event: eventData?._id,
+      });
+      const pages = Math.ceil(total / limit);
+
+      return { guests, total, pages };
+    } catch (error) {
+      throw new ForbiddenException(error.message);
+    }
+  }
+
   async getGuestsTicketInformation(
     eventUniqueKey: string,
     guestId: string,
@@ -503,48 +549,90 @@ export class GuestsService {
       throw new Error('Event not found');
     }
     const query: any = { event: event_id };
+
     try {
-      const guests = await this.guestModel
-        .find({ ...query })
-        .sort({ createdAt: -1 });
+      if (dto.recipients.length > 0) {
+        const recipeintEmails: { name: string; email: string }[] =
+          dto.recipients.map((i) => {
+            return {
+              name: `${i.name}`,
+              email: i.email,
+            };
+          });
+        const recipientemailPromises = recipeintEmails.map((guest) => {
+          const emailContent = guestEmail(
+            guest.name,
+            eventData.eventName,
+            dto.message,
+            dto.sender_email,
+          );
 
-      const guestEmails: { name: string; email: string }[] = guests.map((i) => {
-        return {
-          name: `${i.personal_information.firstName} ${i.personal_information.lastName}`,
-          email: i.personal_information.email,
-        };
-      });
+          const payload: BulkEmailDto = {
+            sender_name: dto.sender_name,
+            sender_email: dto.sender_email,
+            reply_to: dto.reply_to,
+            receipients: [{ name: guest.name, email: guest.email }],
+            email_subject: dto.subject,
+            email_content: emailContent,
+            email_attachment: dto.email_attachment
+              ? dto.email_attachment?.map((attachment) => ({
+                  url: attachment.url,
+                  name: attachment.name,
+                }))
+              : [],
+          };
 
-      // Prepare email sending promises
-      const emailPromises = guestEmails.map((guest) => {
-        const emailContent = guestEmail(
-          guest.name,
-          eventData.eventName,
-          dto.message,
-          dto.sender_email,
+          // Send email for each guest
+          return this.emailService.sendBulkEmail(payload);
+        });
+
+        // Execute all email sends in parallel
+        await Promise.all(recipientemailPromises);
+      } else {
+        const guests = await this.guestModel
+          .find({ ...query })
+          .sort({ createdAt: -1 });
+
+        const guestEmails: { name: string; email: string }[] = guests.map(
+          (i) => {
+            return {
+              name: `${i.personal_information.firstName} ${i.personal_information.lastName}`,
+              email: i.personal_information.email,
+            };
+          },
         );
 
-        const payload: BulkEmailDto = {
-          sender_name: dto.sender_name,
-          sender_email: dto.sender_email,
-          reply_to: dto.reply_to,
-          receipients: [{ name: guest.name, email: guest.email }],
-          email_subject: dto.subject,
-          email_content: emailContent,
-          email_attachment: dto.email_attachment
-            ? dto.email_attachment?.map((attachment) => ({
-                url: attachment.url,
-                name: attachment.name,
-              }))
-            : [],
-        };
+        // Prepare email sending promises
+        const emailPromises = guestEmails.map((guest) => {
+          const emailContent = guestEmail(
+            guest.name,
+            eventData.eventName,
+            dto.message,
+            dto.sender_email,
+          );
 
-        // Send email for each guest
-        return this.emailService.sendBulkEmail(payload);
-      });
+          const payload: BulkEmailDto = {
+            sender_name: dto.sender_name,
+            sender_email: dto.sender_email,
+            reply_to: dto.reply_to,
+            receipients: [{ name: guest.name, email: guest.email }],
+            email_subject: dto.subject,
+            email_content: emailContent,
+            email_attachment: dto.email_attachment
+              ? dto.email_attachment?.map((attachment) => ({
+                  url: attachment.url,
+                  name: attachment.name,
+                }))
+              : [],
+          };
 
-      // Execute all email sends in parallel
-      await Promise.all(emailPromises);
+          // Send email for each guest
+          return this.emailService.sendBulkEmail(payload);
+        });
+
+        // Execute all email sends in parallel
+        await Promise.all(emailPromises);
+      }
     } catch (error) {
       throw new ForbiddenException(error?.message);
     }

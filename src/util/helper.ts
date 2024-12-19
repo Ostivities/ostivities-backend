@@ -80,73 +80,8 @@ export const encryptText = (ciphertext: string) => {
 };
 
 export const cipherText = () => {
-  const cip = CryptoJS.AES.encrypt(
+  return CryptoJS.AES.encrypt(
     process.env.OSTIVITIES_REFERENCE_TEXT,
     process.env.OSTIVITIES_REFERENCE_KEY,
   ).toString();
-  return cip;
 };
-
-export const attendee_payload = [
-  {
-    event: '',
-    event_unique_code: '',
-    personal_information: {
-      firstname: '',
-      lastname: '',
-      email: '',
-      phone: '',
-    },
-    ticket_information: {
-      ticket_id: '',
-      ticket_quantity: '',
-      ticket_price: '',
-      order_date: '',
-      ticket_name: '',
-    },
-    total_purchased: 1,
-    order_number: '',
-    guest_category: 'attendee',
-  },
-  {
-    event: '',
-    event_unique_code: '',
-    personal_information: {
-      firstname: '',
-      lastname: '',
-      email: '',
-      phone: '',
-    },
-    ticket_information: {
-      ticket_id: '',
-      ticket_quantity: '',
-      ticket_price: '',
-      order_date: '',
-      ticket_name: '',
-    },
-    total_purchased: 1,
-    order_number: '',
-
-    guest_category: 'attendee',
-  },
-  {
-    event: '',
-    event_unique_code: '',
-    personal_information: {
-      firstname: '',
-      lastname: '',
-      email: '',
-      phone: '',
-    },
-    ticket_information: {
-      ticket_id: '',
-      ticket_quantity: '',
-      ticket_price: '',
-      order_date: '',
-      ticket_name: '',
-    },
-    total_purchased: 1,
-    order_number: '',
-    guest_category: 'attendee',
-  },
-];
