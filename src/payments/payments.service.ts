@@ -31,6 +31,7 @@ export class PaymentsService {
     if (!userData) {
       throw new ForbiddenException('User not found');
     }
+
     if (!eventData) {
       throw new BadRequestException('Event not found');
     }
@@ -87,13 +88,13 @@ export class PaymentsService {
         ),
       );
       if (data) {
-        return await this.paymentModel.updateOne({
+        await this.paymentModel.updateOne({
           payment_reference: reference,
           status: data?.data?.status,
           meta_data: data?.data,
         });
       }
-      return { message: `Payment of ${payment.amount} was successful.` };
+      return { data, message: `Payment of ${payment.amount} was successful.` };
     } catch (e) {
       throw new ForbiddenException(e.message);
     }

@@ -104,6 +104,33 @@ export class CheckInService {
     }
   }
 
+  async checkInEvents(
+    user_id: string,
+    page: number,
+    limit: number,
+    search?: any,
+  ): Promise<Events[] | any> {
+    try {
+      const skip = (page - 1) * limit;
+      const events = await this.eventModel
+        .find({ user: user_id })
+        .or([
+          { eventName: { $regex: search, $options: 'i' } },
+          { eventType: { $regex: search, $options: 'i' } },
+          { mode: { $regex: search, $options: 'i' } },
+          // { created_at: { $regex: search, $options: 'i' } },
+        ])
+        .sort({ createdAt: -1 })
+        .skip(skip)
+        .limit(limit)
+        .exec();
+      const total = await this.eventModel.countDocuments({ user: user_id });
+      return { data: events, page, limit, total };
+    } catch (error) {
+      throw new ForbiddenException(error.message);
+    }
+  }
+
   async getGuestsTicketInformation(
     eventId: string,
     guestId: string,
