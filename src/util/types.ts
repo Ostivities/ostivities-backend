@@ -62,6 +62,12 @@ export enum STATUS {
   DECLINED = 'DECLINED',
 }
 
+export enum PAYMENT_STATUS {
+  pending = 'pending',
+  success = 'success',
+  failed = 'failed',
+}
+
 export enum EVENT_TYPES {
   WEDDING = 'Wedding',
   BIRTHDAY = 'Birthday',
