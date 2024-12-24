@@ -1,7 +1,6 @@
 import { Prop, Schema, SchemaFactory } from '@nestjs/mongoose';
 import mongoose, { HydratedDocument } from 'mongoose';
 import { Events } from '../../event/schema/event.schema';
-import { User } from '../../auth/schema/auth.schema';
 import { schemaConfig } from '../../util/schema.config';
 
 export type PaymentDocument = HydratedDocument<Payments>;
@@ -15,8 +14,8 @@ export class Payments {
   })
   event: mongoose.Schema.Types.ObjectId;
 
-  @Prop({ type: mongoose.Schema.Types.ObjectId, ref: User.name })
-  user: mongoose.Schema.Types.ObjectId;
+  // @Prop({ type: mongoose.Schema.Types.ObjectId, ref: User.name })
+  // user: mongoose.Schema.Types.ObjectId;
 
   @Prop({
     required: true,
