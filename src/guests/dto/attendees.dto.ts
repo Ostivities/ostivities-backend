@@ -149,7 +149,7 @@ export class AttendeeDto {
   event_unique_code: string;
 
   @ApiProperty({
-    type: [TicketInformation],
+    type: TicketInformation,
     description: 'ticket information',
     required: true,
   })

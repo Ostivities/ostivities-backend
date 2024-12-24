@@ -19,8 +19,7 @@ import { SettleAccountsModule } from './settle_accounts/settle_accounts.module';
 import { TicketModule } from './ticket/ticket.module';
 import { VendorModule } from './vendor/vendor.module';
 import { CheckInModule } from './check_in/check_in.module';
-
-// sudo  mongod --dbpath=/Users/dreezy/data/db
+import { PaymentsModule } from './payments/payments.module';
 
 @Module({
   imports: [
@@ -46,6 +45,7 @@ import { CheckInModule } from './check_in/check_in.module';
     BulkEmailModule,
     FeesModule,
     CheckInModule,
+    PaymentsModule,
   ],
   controllers: [AppController],
   providers: [AppService],

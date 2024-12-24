@@ -37,8 +37,7 @@ export class SettleAccountsService {
         ...dto,
         user: userData?._id,
       });
-      const savedAccount = await settlementAccount.save();
-      return savedAccount;
+      return await settlementAccount.save();
     } catch (error) {
       throw new ForbiddenException(FORBIDDEN_MESSAGE);
     }
@@ -104,12 +103,10 @@ export class SettleAccountsService {
         ),
       );
 
-      const result = data?.data?.map((i: IBanks) => ({
+      return data?.data?.map((i: IBanks) => ({
         name: i.name,
         code: i.code,
       }));
-
-      return result;
     } catch (e) {
       throw new ForbiddenException(e.message);
     }

@@ -22,12 +22,7 @@ import {
 } from '@nestjs/swagger';
 import { GetCurrentUser } from 'src/auth/decorator/user.decorator';
 import { JwtAuthGuard } from 'src/auth/guard/jwt-auth.guard';
-import {
-  EVENT_MODE,
-  EVENT_MODES,
-  EVENT_TYPES,
-  IResponse,
-} from 'src/util/types';
+import { EVENT_MODE, EVENT_TYPES, IResponse } from 'src/util/types';
 import {
   CreateEventDto,
   StringArrayDto,

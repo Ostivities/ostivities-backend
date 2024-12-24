@@ -329,6 +329,8 @@ export class GuestsService {
             order_number: attendeeInfo.ticket_information.order_number,
           };
 
+          console.log(attendeeInfo, 'attendeeInfo');
+
           // Create PDF Content
           const content: PdfDto['content'] = [
             {
