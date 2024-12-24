@@ -7,6 +7,7 @@ import {
   HttpStatus,
   Param,
   Post,
+  Query,
   UseGuards,
 } from '@nestjs/common';
 import { CheckInService } from './check_in.service';
@@ -36,6 +37,33 @@ export class CheckInController {
         statusCode: HttpStatus.OK,
         data: data,
         message: 'Login was successful',
+      };
+    } catch (e) {
+      throw new ForbiddenException(e.message);
+    }
+  }
+
+  @UseGuards(ScannerJwtAuthGuard)
+  @HttpCode(HttpStatus.OK)
+  @ApiOperation({ summary: 'events' })
+  @Get('events/:user_id')
+  async checkInEvents(
+    @Param('user_id') user_id: string,
+    @Query('page') page: number,
+    @Query('limit') limit: number,
+    @Query('search') search: string,
+  ) {
+    try {
+      const data = await this.checkInService.checkInEvents(
+        user_id,
+        page,
+        limit,
+        search,
+      );
+      return {
+        statusCode: HttpStatus.OK,
+        data: data,
+        message: 'events fetched successfully',
       };
     } catch (e) {
       throw new ForbiddenException(e.message);
