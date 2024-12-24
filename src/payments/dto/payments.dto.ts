@@ -30,12 +30,12 @@ export class InitiatePaymentDto {
   @IsNotEmpty()
   event_unique_key: string;
 
-  @ApiProperty({
-    description: 'user id',
-    type: String,
-    required: true,
-  })
-  @IsString()
-  @IsNotEmpty()
-  user_id: string;
+  // @ApiProperty({
+  //   description: 'user id',
+  //   type: String,
+  //   required: true,
+  // })
+  // @IsString()
+  // @IsNotEmpty()
+  // user_id: string;
 }

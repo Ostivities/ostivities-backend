@@ -22,15 +22,9 @@ export class PaymentsService {
   ) {}
 
   async initiatePayment(dto: InitiatePaymentDto) {
-    const userData = await this.userModel.findById({ _id: dto.user_id });
-
     const eventData = await this.eventModel.findOne({
       unique_key: dto.event_unique_key,
     });
-
-    if (!userData) {
-      throw new ForbiddenException('User not found');
-    }
 
     if (!eventData) {
       throw new BadRequestException('Event not found');
@@ -52,7 +46,6 @@ export class PaymentsService {
       // Update payment model
       if (data) {
         const payment = new this.paymentModel({
-          user: dto.user_id,
           event: eventData?._id,
           amount: dto.amount,
           payment_reference: data.data.reference,

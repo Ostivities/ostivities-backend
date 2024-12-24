@@ -45,20 +45,20 @@ export class CheckInController {
 
   @UseGuards(ScannerJwtAuthGuard)
   @HttpCode(HttpStatus.OK)
-  @ApiOperation({ summary: 'events' })
+  @ApiOperation({ summary: 'user events' })
   @Get('events/:user_id')
   async checkInEvents(
     @Param('user_id') user_id: string,
     @Query('page') page: number,
     @Query('limit') limit: number,
-    @Query('search') search: string,
+    // @Query('search') search: string,
   ) {
     try {
       const data = await this.checkInService.checkInEvents(
         user_id,
         page,
         limit,
-        search,
+        // search,
       );
       return {
         statusCode: HttpStatus.OK,
