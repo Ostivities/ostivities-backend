@@ -1,5 +1,6 @@
 import {
   ForbiddenException,
+  HttpException,
   Injectable,
   NotFoundException,
 } from '@nestjs/common';
@@ -26,20 +27,46 @@ export class SettleAccountsService {
     private readonly httpService: HttpService,
   ) {}
 
-  async createSettleAccount(dto: SettlementDto): Promise<SettlementAccount> {
+  // Promise<SettlementAccount>
+
+  async createSettleAccount(dto: SettlementDto): Promise<any> {
     const { user } = dto;
     const userData = await this.userModel.findById(user);
     if (!userData) {
       throw new Error('User not found');
     }
     try {
-      const settlementAccount = new this.settlementModel({
-        ...dto,
-        user: userData?._id,
-      });
-      return await settlementAccount.save();
+      const { data } = await firstValueFrom(
+        this.httpService.post(
+          `${process.env.OSTIVITIES_PAYSTACK_API_BASE_URL}/transferrecipient`,
+          {
+            type: 'nuban',
+            name: dto.account_name,
+            account_number: dto.account_number,
+            bank_code: dto.bank_code,
+            currency: 'NGN',
+          },
+          {
+            headers: {
+              Authorization: `Bearer ${process.env.OSTIVITIES_PAYSTACK_SECRET_KEY}`,
+            },
+          },
+        ),
+      );
+      if (data) {
+        const settlementAccount = new this.settlementModel({
+          ...dto,
+          user: userData?._id,
+          recipient_code: data?.data?.recipient_code,
+        });
+        return await settlementAccount.save();
+      }
     } catch (error) {
-      throw new ForbiddenException(FORBIDDEN_MESSAGE);
+      if (error.response) {
+        const { status, data } = error.response;
+        throw new HttpException(data.message, status);
+      }
+      throw new ForbiddenException(error?.data?.message || error?.message);
     }
   }
 

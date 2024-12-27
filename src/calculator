@@ -86,3 +86,66 @@ Variable Fee (3.5% of ₦100,000): ₦3,500.
 Total Fee: ₦150 + ₦3,500 = ₦3,650.
 
 Total Cost to Customer: ₦100,000 + ₦3,650 = ₦103,650.
+
+
+
+async initiateTransfer(recipientCode: string, amount: number, reason: string) {
+  const response = await this.httpService.post(
+    'https://api.paystack.co/transfer',
+    {
+      source: 'balance', // Ensure your Paystack wallet has enough funds
+      amount: amount * 100, // Paystack expects the amount in kobo
+      recipient: recipientCode,
+      reason: reason,
+    },
+    { headers: { Authorization: `Bearer ${this.PAYSTACK_SECRET}` } },
+  ).toPromise();
+
+  return response.data;
+}
+
+
+async calculateRevenue(eventId: string): Promise<{ totalRevenue: number }> {
+  const successfulPayments = await this.paymentModel.find({
+    eventId: eventId,
+    status: 'success',
+  });
+
+  const totalRevenue = successfulPayments.reduce((sum, payment) => sum + payment.amount, 0);
+
+  return { totalRevenue };
+}
+
+async disburseFunds(eventId: string, accountDetails: { accountNumber: string; bankCode: string; accountName: string }) {
+  // Step 1: Calculate Total Revenue
+  const { totalRevenue } = await this.calculateRevenue(eventId);
+
+  if (totalRevenue <= 0) {
+    throw new Error('No revenue to disburse for this event.');
+  }
+
+  // Step 2: Verify Bank Account
+  const accountValidation = await this.verifyBankAccount(accountDetails.accountNumber, accountDetails.bankCode);
+  if (!accountValidation.status) {
+    throw new Error('Invalid bank account details.');
+  }
+
+  // Step 3: Create Transfer Recipient
+  const recipientCode = await this.createTransferRecipient(
+    accountDetails.accountName,
+    accountDetails.accountNumber,
+    accountDetails.bankCode,
+  );
+
+  // Step 4: Initiate Transfer
+  const transfer = await this.initiateTransfer(
+    recipientCode,
+    totalRevenue,
+    `Revenue for Event ID: ${eventId}`,
+  );
+
+  // Step 5: Update Event Status (Optional)
+  await this.eventModel.findByIdAndUpdate(eventId, { status: 'completed' });
+
+  return transfer;
+}

@@ -35,6 +35,12 @@ export class SettlementAccount {
   bank_name: string;
 
   @Prop({
+    type: String,
+    required: true,
+  })
+  recipient_code: string;
+
+  @Prop({
     type: mongoose.Schema.Types.ObjectId,
     ref: User.name,
     required: true,
