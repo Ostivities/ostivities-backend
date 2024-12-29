@@ -1,6 +1,7 @@
 import {
   BadRequestException,
   ForbiddenException,
+  HttpException,
   Injectable,
 } from '@nestjs/common';
 import { InjectModel } from '@nestjs/mongoose';
@@ -90,6 +91,29 @@ export class PaymentsService {
       return { data, message: `Payment of ${payment.amount} was successful.` };
     } catch (e) {
       throw new ForbiddenException(e.message);
+    }
+  }
+
+  async paymentHistory(page: number, limit: number) {
+    try {
+      const { data } = await firstValueFrom(
+        this.httpService.get(
+          `${process.env.OSTIVITIES_PAYSTACK_API_BASE_URL}/transfer?page=${page}&perPage=${limit}`,
+          {
+            headers: {
+              Authorization: `Bearer ${process.env.OSTIVITIES_PAYSTACK_SECRET_KEY}`,
+            },
+          },
+        ),
+      );
+      console.log(data, 'data');
+      return data;
+    } catch (error) {
+      if (error.response) {
+        const { status, data } = error.response;
+        throw new HttpException(data.message, status);
+      }
+      throw new ForbiddenException(error.message);
     }
   }
 }

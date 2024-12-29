@@ -1,5 +1,12 @@
 import { ApiProperty } from '@nestjs/swagger';
-import { IsEmail, IsNotEmpty, IsString, Matches } from 'class-validator';
+import {
+  IsEmail,
+  IsNotEmpty,
+  IsNumber,
+  IsOptional,
+  IsString,
+  Matches,
+} from 'class-validator';
 import { emailRegExp } from '../../util/helper';
 
 export class InitiatePaymentDto {
@@ -39,3 +46,25 @@ export class InitiatePaymentDto {
   // @IsNotEmpty()
   // user_id: string;
 }
+
+export class InitiateTransferDto {
+  @ApiProperty({
+    description: 'Amount',
+    type: Number,
+    required: true,
+  })
+  @IsNotEmpty()
+  @IsNumber()
+  amount: string;
+
+  @ApiProperty({
+    description: 'reason',
+    type: String,
+    required: true,
+  })
+  @IsString()
+  @IsOptional()
+  reason?: string;
+}
+
+export class FinaliseTransferDto {}
