@@ -208,7 +208,7 @@ export class AttendeeDto {
   })
   @IsNumber()
   @IsOptional()
-  fees: number;
+  fees?: number;
 
   @ApiProperty({
     description: 'discount',
@@ -217,5 +217,5 @@ export class AttendeeDto {
   })
   @IsNumber()
   @IsOptional()
-  discount: number;
+  discount?: number;
 }

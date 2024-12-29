@@ -134,8 +134,12 @@ export class SettleAccountsService {
         name: i.name,
         code: i.code,
       }));
-    } catch (e) {
-      throw new ForbiddenException(e.message);
+    } catch (error) {
+      if (error.response) {
+        const { status, data } = error.response;
+        throw new HttpException(data.message, status);
+      }
+      throw new ForbiddenException(error.message);
     }
   }
 
@@ -154,8 +158,12 @@ export class SettleAccountsService {
       );
 
       return data;
-    } catch (e) {
-      throw new ForbiddenException(e.message);
+    } catch (error) {
+      if (error.response) {
+        const { status, data } = error.response;
+        throw new HttpException(data.message, status);
+      }
+      throw new ForbiddenException(error.message);
     }
   }
 }
