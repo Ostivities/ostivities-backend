@@ -384,7 +384,7 @@ export class GuestsService {
               attendeeInfo.total_amount_paid?.toString(),
             ),
             order_fees: formatNumber(attendeeInfo.fees?.toString()),
-            order_qty: formatNumber(attendeeInfo.total_purchased?.toString()),
+            order_qty: attendeeInfo.total_purchased?.toString(),
             host_email: eventData.user?.email,
           };
 
