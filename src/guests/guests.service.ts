@@ -162,6 +162,20 @@ export class GuestsService {
         0,
       );
 
+      const combineTickets = (tickets: any): any => {
+        const ticketMap: any = {};
+
+        tickets.forEach((ticket) => {
+          if (!ticketMap[ticket.ticket_id]) {
+            ticketMap[ticket.ticket_id] = { ...ticket };
+          } else {
+            ticketMap[ticket.ticket_id].quantity += ticket.quantity;
+          }
+        });
+
+        return Object.values(ticketMap);
+      };
+
       const orderPurchase: CreateOrderEmailDto = {
         name: `${dto.personal_information.firstName} ${dto.personal_information.lastName}`,
         event_name: eventData.eventName,
@@ -175,7 +189,7 @@ export class GuestsService {
         order_subtotal: formatNumber(dto.total_amount_paid?.toString()),
         order_fees: formatNumber(dto.fees?.toString()),
         host_email: eventData?.user?.email,
-        tickets: dto.ticket_information as any,
+        tickets: combineTickets(dto.ticket_information as any),
       };
 
       const content: PdfDto['content'] = dto.ticket_information.flatMap(
