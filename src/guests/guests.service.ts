@@ -364,6 +364,10 @@ export class GuestsService {
           // Generate PDF as Base64
           const pdfBase64 = await pdfGenerator(pdfDto);
 
+          //  eventData.eventMode === EVENT_TYPE.FREE
+          //                 ? '0'
+          //                 : attendeeInfo.ticket_information.ticket_price?.toString(),
+
           // Construct order purchase details
           const orderPurchase: CreateOrderEmailDto = {
             name: `${attendeeInfo.personal_information.firstName} ${attendeeInfo.personal_information.lastName}`,
@@ -374,9 +378,7 @@ export class GuestsService {
             ticket_name: attendeeInfo.ticket_information.ticket_name,
             order_date: getFormattedDate(),
             order_price:
-              eventData.eventMode === EVENT_TYPE.FREE
-                ? '0'
-                : attendeeInfo.ticket_information.ticket_price?.toString(),
+              attendeeInfo.ticket_information.ticket_price?.toString(),
             order_discount: attendeeInfo?.discount?.toString(),
             order_subtotal: formatNumber(
               attendeeInfo.total_amount_paid?.toString(),
